@@ -1,3 +1,10 @@
+const EXCLUDE_NAMES_NAMING_CONVENTION_REGEXPS = ['.*graphQL.*'];
+
+const excludeNamesNamingConventionRegexpsRegex =
+  EXCLUDE_NAMES_NAMING_CONVENTION_REGEXPS.join('|');
+
+const finalExcludeRegex = `${excludeNamesNamingConventionRegexpsRegex}`;
+
 const initialRules = {
   'eslint-comments/require-description': [
     'warn',
@@ -25,7 +32,7 @@ const initialRules = {
   'no-magic-numbers': [
     'error',
     {
-      ignore: [-1, 0, 1],
+      ignore: [-1, 0, 1, 100],
       ignoreArrayIndexes: true,
       ignoreDefaultValues: true,
       ignoreClassFieldInitialValues: true,
@@ -42,25 +49,366 @@ const initialRules = {
   ],
 };
 
+const tsRules = {
+  '@typescript-eslint/no-shadow': 'error', // Vars with the same name in different scopes are not allowed
+  '@typescript-eslint/no-unused-vars': [
+    'error',
+    { argsIgnorePattern: '^_', destructuredArrayIgnorePattern: '^_' },
+  ], // Ignore variables with "_" prefix
+  '@typescript-eslint/no-unused-expressions': ['error'],
+  '@typescript-eslint/explicit-function-return-type': [
+    'warn',
+    { allowExpressions: true },
+  ],
+  '@typescript-eslint/no-floating-promises': 'error',
+  '@typescript-eslint/no-use-before-define': [
+    'error',
+    {
+      variables: false,
+    },
+  ],
+  '@typescript-eslint/no-inferrable-types': 'off', // we should always set types, even if they are trivial (number, boolean, etc)
+  'class-methods-use-this': 'off',
+  'consistent-return': 'off',
+  '@typescript-eslint/no-unsafe-assignment': 'error',
+  '@typescript-eslint/no-unsafe-member-access': 'warn',
+  '@typescript-eslint/no-unsafe-return': 'warn',
+};
+
+const spellCheckerRule = {
+  '@cspell/spellchecker': [
+    'error',
+    {
+      checkComments: true,
+    },
+  ],
+};
+
+const importSortOrderRule = {
+  'simple-import-sort/imports': [
+    'error',
+    {
+      groups: [
+        ['^(@?\\w|\\w)'], // libs
+        ['^$\\.*'], // ts-aliases
+        ['^\\./'], // relative folder imports
+        ['^\\.\\./'], // parent folder imports
+      ],
+    },
+  ],
+};
+
+const importRules = {
+  'import/extensions': 'off', // if error then throws error on $module/???/module
+  'no-duplicate-imports': 'error', // imports from the same source must be in one record
+  'no-restricted-imports': [
+    'error',
+    {
+      patterns: [
+        {
+          group: ['./module'],
+          message: 'Please import modules directly.',
+        },
+      ],
+    },
+  ],
+  'import/no-cycle': ['error', { maxDepth: '∞' }],
+  'import/prefer-default-export': 'off', // we use only named exports in the project
+  'import/no-extraneous-dependencies': [
+    'error',
+    {
+      devDependencies: ['scripts/*.ts', '**/*.spec.ts', '**/jest.config.ts'],
+    },
+  ],
+  ...importSortOrderRule,
+};
+
+const paddingsRule = {
+  'padding-line-between-statements': [
+    'error',
+    {
+      blankLine: 'always',
+      prev: '*',
+      next: [
+        'return',
+        'if',
+        'export',
+        'function',
+        'while',
+        'try',
+        'throw',
+        'class',
+      ],
+    },
+    {
+      blankLine: 'always',
+      prev: ['if', 'function', 'while', 'export', 'throw', 'class'],
+      next: '*',
+    },
+    { blankLine: 'any', prev: 'const', next: ['const', 'let'] },
+    { blankLine: 'always', prev: 'const', next: '*' },
+    { blankLine: 'any', prev: 'const', next: 'const' },
+    {
+      blankLine: 'always',
+      prev: 'multiline-const',
+      next: '*',
+    },
+    {
+      blankLine: 'always',
+      prev: '*',
+      next: 'multiline-const',
+    },
+  ],
+};
+
+const namingConventionRule = {
+  '@typescript-eslint/naming-convention': [
+    'error',
+    {
+      selector: 'default',
+      format: ['strictCamelCase'],
+      filter: {
+        match: false,
+        regex: finalExcludeRegex,
+      },
+    },
+    {
+      selector: 'variable',
+      modifiers: ['global'],
+      types: ['number', 'string'],
+      format: ['UPPER_CASE'],
+      filter: {
+        match: false,
+        regex: finalExcludeRegex,
+      },
+    },
+    {
+      selector: 'variable',
+      modifiers: ['destructured'],
+      format: ['strictCamelCase', 'StrictPascalCase'],
+      filter: {
+        match: false,
+        regex: finalExcludeRegex,
+      },
+    },
+    {
+      selector: 'variable',
+      modifiers: ['exported'],
+      format: ['strictCamelCase', 'StrictPascalCase', 'UPPER_CASE'],
+      filter: {
+        match: false,
+        regex: finalExcludeRegex,
+      },
+    },
+    {
+      selector: 'variable',
+      types: ['function'],
+      format: ['strictCamelCase', 'StrictPascalCase'],
+      filter: {
+        match: false,
+        regex: finalExcludeRegex,
+      },
+    },
+    {
+      selector: 'function',
+      format: ['strictCamelCase', 'StrictPascalCase'],
+      filter: {
+        match: false,
+        regex: finalExcludeRegex,
+      },
+    },
+    {
+      selector: 'property',
+      format: ['strictCamelCase', 'StrictPascalCase'],
+      filter: {
+        match: false,
+        regex: finalExcludeRegex,
+      },
+    },
+    {
+      selector: 'enum',
+      format: ['StrictPascalCase'],
+      filter: {
+        match: false,
+        regex: finalExcludeRegex,
+      },
+    },
+    {
+      selector: 'enumMember',
+      format: ['UPPER_CASE'],
+      filter: {
+        match: false,
+        regex: finalExcludeRegex,
+      },
+    },
+    {
+      selector: 'parameter',
+      format: ['strictCamelCase'],
+      leadingUnderscore: 'allow',
+      filter: {
+        match: false,
+        regex: finalExcludeRegex,
+      },
+    },
+    {
+      selector: 'variable',
+      types: ['boolean'],
+      format: ['StrictPascalCase'],
+      prefix: [
+        'is',
+        'are',
+        'has',
+        'show',
+        'with',
+        'use',
+        'no',
+        'newIs',
+        'initialIs',
+        'can',
+        'should',
+      ],
+      filter: {
+        match: false,
+        regex: finalExcludeRegex,
+      },
+    },
+    {
+      selector: 'interface',
+      format: ['StrictPascalCase'],
+      filter: {
+        match: false,
+        regex: finalExcludeRegex,
+      },
+    },
+    {
+      selector: 'typeLike',
+      format: ['StrictPascalCase'],
+      filter: {
+        match: false,
+        regex: finalExcludeRegex,
+      },
+    },
+  ],
+};
+
+const override = {
+  tsFilesOnlyWithExports: {
+    files: ['**/index.ts', '**/*constants.ts'],
+    rules: {
+      'padding-line-between-statements': [
+        'error',
+        { blankLine: 'any', prev: 'export', next: 'export' },
+      ],
+    },
+  },
+  js: {
+    files: ['**/*.js'],
+    rules: {
+      '@typescript-eslint/explicit-function-return-type': 'off',
+    },
+  },
+  modules: {
+    files: ['**/*.module.ts'],
+    rules: {
+      'import/no-cycle': 'off',
+    },
+  },
+  dto: {
+    files: ['**/*.dto.ts', '**/*.enum.ts'],
+    rules: {
+      '@typescript-eslint/no-redeclare': 'off',
+    },
+  },
+  namingConventionExceptions: {
+    files: [
+      'src/config/*.ts',
+      '**/*.dto.ts',
+      '**/*.enum.ts',
+      'database.datasource.ts',
+    ],
+    rules: {
+      '@typescript-eslint/naming-convention': 'off',
+    },
+  },
+  env: {
+    files: ['env.d.ts', 'src/config/*.ts'],
+    rules: {
+      'no-magic-numbers': 'off',
+      'typescript-sort-keys/interface': 'off',
+      '@typescript-eslint/naming-convention': 'off',
+    },
+  },
+  disableReturnType: {
+    files: [
+      'src/config/*.ts', // we don't need duplicate type
+    ],
+    rules: {
+      '@typescript-eslint/explicit-function-return-type': 'off',
+    },
+  },
+  importExtensions: {
+    files: ['src/*.ts', 'src/**/*.ts'],
+    rules: {
+      'import/extensions': 'off',
+    },
+  },
+  noUnsafeEnumComparison: {
+    files: ['src/config/*.ts'],
+    rules: {
+      '@typescript-eslint/no-unsafe-enum-comparison': 'off',
+    },
+  },
+  twoClassesPerFile: {
+    files: ['pagination.dto.ts'],
+    rules: {
+      'max-classes-per-file': 'off',
+    },
+  },
+  cspellInMigrations: {
+    files: ['src/modules/database/migrations/*.ts'],
+    rules: {
+      '@cspell/spellchecker': 'off',
+    },
+  },
+};
+
 module.exports = {
   parser: '@typescript-eslint/parser',
   parserOptions: {
     project: 'tsconfig.json',
     tsconfigRootDir: __dirname,
     sourceType: 'module',
+    ecmaVersion: 2023,
   },
-  plugins: ['@typescript-eslint/eslint-plugin'],
   extends: [
-    'plugin:@typescript-eslint/recommended',
+    'airbnb',
+    'airbnb-typescript',
+    'prettier',
     'plugin:prettier/recommended',
+    'plugin:@typescript-eslint/recommended',
+    'plugin:eslint-comments/recommended',
+    'plugin:@typescript-eslint/recommended-type-checked',
+    'plugin:@cspell/recommended',
+  ],
+  plugins: [
+    '@typescript-eslint/eslint-plugin',
+    'eslint-plugin-import',
+    'simple-import-sort',
+    'typescript-sort-keys',
   ],
   root: true,
   env: {
     node: true,
     jest: true,
   },
-  ignorePatterns: ['.eslintrc.js'],
+  ignorePatterns: ['.eslintrc.js', '.prettierrc.js'],
   rules: {
-    ...initialRules
+    ...initialRules,
+    ...tsRules,
+    ...spellCheckerRule,
+    ...importRules,
+    ...paddingsRule,
+    ...namingConventionRule,
   },
+  overrides: [...Object.values(override)],
 };
