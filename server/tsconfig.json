@@ -27,5 +27,6 @@
   },
   "ts-node": {
     "require": ["tsconfig-paths/register"]
-  }
+  },
+  "watchOptions": { "watchFile": "fixedPollingInterval" } // needed for watcher inside docker
 }

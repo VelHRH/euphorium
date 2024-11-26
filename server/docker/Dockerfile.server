@@ -1,0 +1,26 @@
+###################
+# BUILD FOR LOCAL DEVELOPMENT
+###################
+
+FROM node:20-alpine AS development
+
+# Create app directory
+WORKDIR /app
+
+# Copy application dependency manifests to the container image.
+# Copying this first prevents re-running npm install on every code change.
+COPY  package*.json ./
+
+RUN apk add --no-cache python3 py3-pip make g++
+ENV PYTHON /usr/bin/python3
+
+# Install dependencies with scripts omiting
+RUN yarn install --ignore-scripts
+
+# Bundle app source
+COPY tsconfig*.json ./
+COPY /nest* ./
+COPY src ./src
+
+# Set up development environment.
+ENV NODE_ENV development
