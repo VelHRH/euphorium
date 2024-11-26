@@ -10,8 +10,33 @@ services:
     restart: always
     env_file:
       - .env
+    environment:
+      DATABASE_URL: postgres://postgres:postgres@database:5432/newblood?schema=public
     volumes:
       - .:/app
       - /app/node_modules
     ports:
       - ${PORT}:${PORT}
+    depends_on:
+      - database
+
+  database:
+    container_name: database
+    image: database_image
+    build:
+      context: .
+      dockerfile: docker/Dockerfile.db
+    restart: always
+    env_file:
+      - .env
+    environment:
+      POSTGRES_DB: newblood
+      POSTGRES_USER: postgres
+      POSTGRES_PASSWORD: postgres
+    ports:
+      - 5432:5432
+    volumes:
+      - postgres:/var/lib/postgresql/data
+
+volumes:
+  postgres: {}
