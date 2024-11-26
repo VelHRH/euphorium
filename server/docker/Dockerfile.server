@@ -21,6 +21,3 @@ RUN yarn install --ignore-scripts
 COPY tsconfig*.json ./
 COPY /nest* ./
 COPY src ./src
-
-# Set up development environment.
-ENV NODE_ENV development
