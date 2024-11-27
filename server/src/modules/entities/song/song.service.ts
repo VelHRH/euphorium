@@ -5,6 +5,6 @@ import { GetSongOutputDto } from './dto';
 @Injectable()
 export class SongService {
   get(): GetSongOutputDto {
-    return { name: 'Satellite' };
+    return { name: 'Satellite'.split('').reverse().join('') };
   }
 }
