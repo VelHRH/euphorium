@@ -1,0 +1,71 @@
+name: Bug report
+description: Create a report to help us improve
+labels: ['bug']
+title: '[Bug]: '
+body:
+  - type: textarea
+    id: bug-describe
+    attributes:
+      label: Description
+      description: Describe the bug
+      placeholder: A clear and concise description of what the bug is.
+    validations:
+      required: true
+  - type: textarea
+    id: bug-reproduce
+    attributes:
+      label: Steps To Reproduce
+      description: Steps to reproduce the behavior
+      placeholder: |
+        1. Go to '...'
+        2. Click on '....'
+        3. Scroll down to '....'
+        4. See error
+    validations:
+      required: true
+  - type: textarea
+    id: bug-expected
+    attributes:
+      label: Expected behavior
+      description: A clear and concise description of what you expected to happen.
+    validations:
+      required: true
+  - type: textarea
+    id: bug-actual
+    attributes:
+      label: Actual behavior
+      description: A clear and concise description of what you actualy happen.
+    validations:
+      required: true
+  - type: dropdown
+    id: environment
+    attributes:
+      label: Environment
+      description: Test environment
+      options:
+        - Desktop
+        - Smartphone
+      default: 0
+    validations:
+      required: true
+  - type: textarea
+    id: environment-details
+    attributes:
+      label: Environment details
+      placeholder: |
+        Device: [e.g. iPhone6]
+        OS: [e.g. iOS8.1]
+        Browser [e.g. stock browser, safari, chrome]
+        Version [e.g. 22]
+    validations:
+      required: true
+  - type: textarea
+    id: bug-screenshots
+    attributes:
+      label: Screenshots
+      description: If applicable, add screenshots or video to help explain your problem. (Just drag-n-drop here)
+  - type: textarea
+    id: additional
+    attributes:
+      label: Additional context
+      description: Add any other context about the problem here

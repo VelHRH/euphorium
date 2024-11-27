@@ -1,0 +1,29 @@
+name: Feature request
+description: Suggest an idea for this project
+labels: ['Feature request']
+title: '[Feature request]: '
+body:
+  - type: textarea
+    id: feature-describe
+    attributes:
+      label: Describe
+      description: Is your feature request related to a problem? Please describe.
+      placeholder: A clear and concise description of what the problem is. Ex. I'm always frustrated when [...]
+  - type: textarea
+    id: feature-solution
+    attributes:
+      label: Suggested solution
+      description: Describe the solution you'd like
+      placeholder: A clear and concise description of what you want to happen.
+  - type: textarea
+    id: feature-alternative
+    attributes:
+      label: Alternatives
+      description: Describe alternatives you've considered
+      placeholder: A clear and concise description of any alternative solutions or features you've considered.
+  - type: textarea
+    id: feature-additional
+    attributes:
+      label: Additional
+      description: Additional context
+      placeholder: Add any other context or screenshots about the feature request here.
