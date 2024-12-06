@@ -1,10 +1,10 @@
 import { Injectable } from '@nestjs/common';
 
-import { GetSongOutputDto } from './dto';
+import { GetSongInputDto, GetSongOutputDto } from './dto';
 
 @Injectable()
 export class SongService {
-  get(): GetSongOutputDto {
-    return { name: 'Satellite'.split('').reverse().join('') };
+  get(input: GetSongInputDto): GetSongOutputDto {
+    return { name: input.id.toString() };
   }
 }
