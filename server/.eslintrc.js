@@ -117,7 +117,7 @@ const importRules = {
   'import/no-extraneous-dependencies': [
     'error',
     {
-      devDependencies: ['scripts/*.ts', '**/*.spec.ts', '**/jest.config.ts'],
+      devDependencies: ['scripts/*.ts'],
     },
   ],
   ...importSortOrderRule,

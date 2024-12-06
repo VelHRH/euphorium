@@ -14,7 +14,8 @@
     "paths": {
       "$modules/*": ["modules/*"],
       "$config": ["config"],
-      "$config/*": ["config/*"]
+      "$config/*": ["config/*"],
+      "shared": ["node_modules/shared"]
     },
     "incremental": true,
     "skipLibCheck": true,
