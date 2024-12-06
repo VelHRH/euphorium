@@ -37,12 +37,10 @@
     "graphql": "^16.9.0",
     "husky": "^9.1.7",
     "joi": "^17.13.3",
-    "nestjs-zod": "^4.2.0",
     "pg": "^8.13.1",
     "reflect-metadata": "^0.2.0",
     "rxjs": "^7.8.1",
-    "typeorm": "^0.3.20",
-    "shared": "file:../shared"
+    "typeorm": "^0.3.20"
   },
   "devDependencies": {
     "@cspell/eslint-plugin": "^8.16.0",

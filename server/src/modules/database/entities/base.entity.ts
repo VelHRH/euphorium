@@ -1,5 +1,4 @@
 import { Field, Int, ObjectType } from '@nestjs/graphql';
-import { Base } from 'shared';
 import {
   CreateDateColumn,
   PrimaryGeneratedColumn,
@@ -7,7 +6,7 @@ import {
 } from 'typeorm';
 
 @ObjectType()
-export class BaseEntity implements Base {
+export class BaseEntity {
   @PrimaryGeneratedColumn('increment')
   @Field(() => Int)
   readonly id: number;

@@ -1,1 +1,1 @@
-export * from './get-song';
+export * from './get';

@@ -2,14 +2,10 @@
 # THIS FILE WAS AUTOMATICALLY GENERATED (DO NOT MODIFY)
 # ------------------------------------------------------
 
-input GetSongInputDto {
-  id: Int!
-}
-
 type GetSongOutputDto {
   name: String!
 }
 
 type Query {
-  song(input: GetSongInputDto!): GetSongOutputDto!
+  song: GetSongOutputDto!
 }

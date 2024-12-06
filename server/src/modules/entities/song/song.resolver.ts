@@ -1,15 +1,15 @@
-import { Args, Query, Resolver } from '@nestjs/graphql';
+import { Query, Resolver } from '@nestjs/graphql';
 
-import { GetSongInputDto, GetSongOutputDto } from './dto';
-import { SongEntity } from './song.entity';
+import { GetSongOutputDto } from './dto';
+import { Song } from './song.entity';
 import { SongService } from './song.service';
 
-@Resolver(() => SongEntity)
+@Resolver(() => Song)
 export class SongResolver {
   constructor(private readonly songService: SongService) {}
 
   @Query(() => GetSongOutputDto)
-  song(@Args('input') input: GetSongInputDto): GetSongOutputDto {
-    return this.songService.get(input);
+  song(): GetSongOutputDto {
+    return this.songService.get();
   }
 }
