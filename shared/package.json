@@ -2,14 +2,25 @@
   "name": "shared",
   "version": "1.0.0",
   "main": "./build/index.js",
+  "types": "./build/index.d.ts",
+  "exports": {
+    ".": {
+      "require": "./build/index.js",
+      "import": "./build/index.js",
+      "types": "./build/index.d.ts"
+    }
+  },
   "license": "MIT",
   "scripts": {
-    "build": "del -rf build && tsc"
+    "build": "tsc"
   },
   "dependencies": {
     "zod": "^3.23.8"
   },
   "devDependencies": {
     "typescript": "^5.7.2"
-  }
+  },
+  "files": [
+    "build"
+  ]
 }
