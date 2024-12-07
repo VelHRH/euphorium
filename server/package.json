@@ -33,16 +33,16 @@
     "@nestjs/graphql": "^12.2.1",
     "@nestjs/platform-express": "^10.0.0",
     "@nestjs/typeorm": "^10.0.2",
+    "class-transformer": "^0.5.1",
     "dotenv": "^16.4.5",
     "graphql": "^16.9.0",
     "husky": "^9.1.7",
     "joi": "^17.13.3",
-    "nestjs-zod": "^4.2.0",
+    "nestjs-graphql-zod": "^3.4.1",
     "pg": "^8.13.1",
-    "reflect-metadata": "^0.2.0",
     "rxjs": "^7.8.1",
-    "typeorm": "^0.3.20",
-    "shared": "file:../shared"
+    "shared": "file:../shared",
+    "typeorm": "^0.3.20"
   },
   "devDependencies": {
     "@cspell/eslint-plugin": "^8.16.0",
