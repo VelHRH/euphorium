@@ -1,6 +1,8 @@
-import { Args, Query, Resolver } from '@nestjs/graphql';
+import { Query, Resolver } from '@nestjs/graphql';
+import { ZodArgs } from 'nestjs-graphql-zod';
+import { GetSongInput, getSongInputSchema } from 'shared';
 
-import { GetSongInputDto, GetSongOutputDto } from './dto';
+import { GetSongOutputDto } from './dto';
 import { SongEntity } from './song.entity';
 import { SongService } from './song.service';
 
@@ -9,7 +11,9 @@ export class SongResolver {
   constructor(private readonly songService: SongService) {}
 
   @Query(() => GetSongOutputDto)
-  song(@Args('input') input: GetSongInputDto): GetSongOutputDto {
+  song(
+    @ZodArgs(getSongInputSchema, 'input') input: GetSongInput,
+  ): GetSongOutputDto {
     return this.songService.get(input);
   }
 }

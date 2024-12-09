@@ -2,14 +2,36 @@
 # THIS FILE WAS AUTOMATICALLY GENERATED (DO NOT MODIFY)
 # ------------------------------------------------------
 
-input GetSongInputDto {
-  id: Int!
-}
+"""
+A date-time string at UTC, such as 2019-12-03T09:54:33Z, compliant with the date-time format.
+"""
+scalar DateTime
 
 type GetSongOutputDto {
   name: String!
 }
 
 type Query {
-  song(input: GetSongInputDto!): GetSongOutputDto!
+  song(input: SongInput!): GetSongOutputDto!
+}
+
+type SessionEntity {
+  createdAt: DateTime!
+  id: Int!
+  refreshToken: String!
+  updatedAt: DateTime!
+  user: UserEntity!
+}
+
+""""""
+input SongInput {
+  name: String!
+}
+
+type UserEntity {
+  createdAt: DateTime!
+  email: String!
+  id: Int!
+  session: [SessionEntity!]!
+  updatedAt: DateTime!
 }
