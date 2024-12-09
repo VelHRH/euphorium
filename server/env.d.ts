@@ -8,6 +8,9 @@ declare global {
 
       // * Database
       DATABASE_URL: string;
+
+      // * AUTH
+      SALT: string;
     }
   }
 }

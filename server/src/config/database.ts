@@ -10,6 +10,6 @@ export const databaseValidationSchema = joi.object({
 export const databaseConfig = () => ({
   url: process.env.DATABASE_URL,
   entities: ['dist/**/*.entity.js'],
-  migrations: ['dist/modules/database/migrations/*.{ts,js}'],
+  migrations: ['dist/src/modules/database/migrations/*.{ts,js}'],
   migrationsTableName: 'migrations',
 });
