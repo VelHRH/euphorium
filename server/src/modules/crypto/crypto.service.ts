@@ -4,6 +4,10 @@ import { KEY_LENGTH, SCRYPT_OPTIONS, SCRYPT_PREFIX } from './crypto.constants';
 import { DeserializedHash } from './crypto.types';
 
 export class CryptoService {
+  public generateUUID(): string {
+    return crypto.randomUUID();
+  }
+
   public hashPassword(password: string, saltLength: number): Promise<string> {
     return new Promise((resolve, reject) => {
       crypto.randomBytes(saltLength, (err, salt) => {

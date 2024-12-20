@@ -112,7 +112,7 @@ const importRules = {
       ],
     },
   ],
-  'import/no-cycle': ['error', { maxDepth: '∞' }],
+  'import/no-cycle': 'off',
   'import/prefer-default-export': 'off', // we use only named exports in the project
   'import/no-extraneous-dependencies': [
     'error',

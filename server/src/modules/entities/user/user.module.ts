@@ -10,5 +10,6 @@ import { CryptoModule } from '$modules/crypto/crypto.module';
 @Module({
   imports: [CryptoModule, TypeOrmModule.forFeature([UserEntity])],
   providers: [UserService, UserResolver],
+  exports: [UserService],
 })
 export class UserModule {}

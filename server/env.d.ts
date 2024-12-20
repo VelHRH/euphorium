@@ -9,8 +9,17 @@ declare global {
       // * Database
       DATABASE_URL: string;
 
-      // * AUTH
+      // * Crypto
       SALT: string;
+
+      // * Cookies
+      COOKIE_SECRET: string;
+
+      // * Jwt
+      ACCESS_TOKEN_SECRET: string;
+      ACCESS_TOKEN_EXPIRE_IN_S: string;
+      REFRESH_TOKEN_SECRET: string;
+      REFRESH_TOKEN_EXPIRE_IN_S: string;
     }
   }
 }

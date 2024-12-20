@@ -22,7 +22,7 @@ export class UserService {
     this.salt = this.configService.getOrThrow('jwt.salt', { infer: true });
   }
 
-  private findOne(
+  findOne(
     where: FindOptionsWhere<UserEntity>,
     select?: FindOptionsSelect<UserEntity>,
   ): Promise<UserEntity | null> {
@@ -32,8 +32,22 @@ export class UserService {
     });
   }
 
+  strictFindOne(
+    where: FindOptionsWhere<UserEntity>,
+    select?: FindOptionsSelect<UserEntity>,
+  ): Promise<UserEntity> {
+    return this.userRepository.findOneOrFail({
+      where,
+      select,
+    });
+  }
+
   get(input: GetUserInput): Promise<UserEntity | null> {
     return this.findOne({ id: input.id });
+  }
+
+  list(): Promise<UserEntity[]> {
+    return this.userRepository.find();
   }
 
   async create(input: CreateUserInput): Promise<UserEntity> {
@@ -43,5 +57,9 @@ export class UserService {
     );
 
     return this.userRepository.save({ ...input, password });
+  }
+
+  async getBySession(refreshToken: string): Promise<UserEntity> {
+    return this.strictFindOne({ session: { refreshToken } });
   }
 }

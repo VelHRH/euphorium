@@ -7,12 +7,36 @@ A date-time string at UTC, such as 2019-12-03T09:54:33Z, compliant with the date
 """
 scalar DateTime
 
+""""""
+input GetSongInput {
+  name: String!
+}
+
 type GetSongOutputDto {
   name: String!
 }
 
+""""""
+input GetUserInput {
+  id: Int!
+}
+
+""""""
+input LoginInput {
+  email: String!
+  password: String!
+}
+
+type Mutation {
+  login(input: LoginInput!): UserEntity
+  logout: Boolean!
+  signUp(input: SignUpInput!): UserEntity!
+}
+
 type Query {
-  song(input: SongInput!): GetSongOutputDto!
+  song(input: GetSongInput!): GetSongOutputDto!
+  user(input: GetUserInput!): UserEntity
+  users: [UserEntity!]!
 }
 
 type SessionEntity {
@@ -24,8 +48,9 @@ type SessionEntity {
 }
 
 """"""
-input SongInput {
-  name: String!
+input SignUpInput {
+  email: String!
+  password: String!
 }
 
 type UserEntity {
