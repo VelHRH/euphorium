@@ -1,18 +1,22 @@
 import { Injectable, UnauthorizedException } from '@nestjs/common';
-import { ConfigService } from '@nestjs/config';
 import { InjectRepository } from '@nestjs/typeorm';
 import { DataSource, Repository } from 'typeorm';
 
 import { SessionEntity } from './session.entity';
-import { CreateParams, SaveParams, VerifyParams } from './session.types';
+import {
+  CreateParams,
+  SaveParams,
+  UpdateResponse,
+  VerifyParams,
+  VerifyResponse,
+} from './types';
 
 import { UserService } from '../user/user.service';
 
-import { Config } from '$config';
 import { GqlContext } from '$modules/app/types';
 import { CryptoService } from '$modules/crypto/crypto.service';
 import { TokenService } from '$modules/token/token.service';
-import { JwtPayload, SingedTokens } from '$modules/token/token.types';
+import { JwtPayload, SingedTokens } from '$modules/token/types';
 
 @Injectable()
 export class SessionService {
@@ -22,7 +26,6 @@ export class SessionService {
     private readonly tokenService: TokenService,
     private readonly userService: UserService,
     private readonly cryptoService: CryptoService,
-    private readonly configService: ConfigService<Config>,
     private readonly dataSource: DataSource,
   ) {}
 
@@ -32,17 +35,17 @@ export class SessionService {
 
       const tokens = await this.save({ userId, email });
 
-      this.tokenService.insertTokensInCookies({ response, ...tokens });
+      this.tokenService.insertInCookies({ response, ...tokens });
     } catch (error) {
       throw new UnauthorizedException(); // TODO: proper error handling
     }
   }
 
-  async verify(params: VerifyParams): Promise<SingedTokens> {
+  async verify(params: VerifyParams): Promise<VerifyResponse> {
     const { signedAccessToken, signedRefreshToken } = params;
 
     try {
-      const { userId, email } = await this.tokenService.decode(
+      const { userId, email } = await this.tokenService.decodeToken(
         signedAccessToken,
         'accessToken',
       );
@@ -50,29 +53,51 @@ export class SessionService {
       await this.userService.strictFindOne({ id: userId, email });
 
       return {
-        signedAccessToken: signedAccessToken!,
-        signedRefreshToken: signedRefreshToken!,
+        user: { userId, email },
+        tokens: {
+          signedAccessToken: signedAccessToken!,
+          signedRefreshToken: signedRefreshToken!,
+        },
       };
     } catch {
       return this.update(signedRefreshToken);
     }
   }
 
-  async update(signedRefreshToken?: string): Promise<SingedTokens> {
+  async refresh(response: GqlContext['res']): Promise<boolean> {
     try {
-      const { refreshToken: decodedRefreshToken } =
-        await this.tokenService.decode(signedRefreshToken, 'refreshToken');
+      const { signedRefreshToken } = this.tokenService.getFromCookies(response);
+
+      const { tokens } = await this.update(signedRefreshToken);
+
+      this.tokenService.insertInCookies({ response, ...tokens });
+
+      return true;
+    } catch (error) {
+      throw new UnauthorizedException(); // TODO: proper error handling
+    }
+  }
+
+  async update(signedRefreshToken?: string): Promise<UpdateResponse> {
+    try {
+      const { decodedRefreshToken } = await this.tokenService.decodeToken(
+        signedRefreshToken,
+        'refreshToken',
+      );
 
       const user = await this.userService.getBySession(decodedRefreshToken);
-      const { id, email } = user;
+      const { id: userId, email } = user;
 
       const newTokens = await this.save({
-        userId: id,
+        userId,
         email,
         decodedRefreshToken,
       });
 
-      return newTokens;
+      return {
+        tokens: newTokens,
+        user: { email, userId },
+      };
     } catch {
       throw new UnauthorizedException();
     }
@@ -80,32 +105,26 @@ export class SessionService {
 
   async delete(response: GqlContext['res']): Promise<boolean> {
     try {
-      const { refreshToken } = this.configService.getOrThrow('jwt', {
-        infer: true,
-      });
-
-      const { refreshToken: decodedRefreshToken } =
-        await this.tokenService.decode(
-          response.req.signedCookies[refreshToken.cookieName] as string,
-          'refreshToken',
-        );
+      const {
+        refreshToken: { decodedRefreshToken },
+      } = await this.tokenService.decodeFromCookies(response);
 
       const queryRunner = this.dataSource.createQueryRunner();
 
       await queryRunner.connect();
       await queryRunner.startTransaction();
 
-      // to remove from database and cookies
+      // to remove both from database and from cookies
       try {
         const sessionDeleteResult = await this.sessionRepository.delete({
           refreshToken: decodedRefreshToken,
         });
 
         if (sessionDeleteResult.affected === 0) {
-          throw new Error();
+          throw new UnauthorizedException();
         }
 
-        this.tokenService.removeTokensFromCookies(response);
+        this.tokenService.removeFromCookies(response);
         await queryRunner.commitTransaction();
       } catch (error) {
         await queryRunner.rollbackTransaction();
@@ -115,7 +134,7 @@ export class SessionService {
 
       return true;
     } catch (error) {
-      throw new Error();
+      throw new UnauthorizedException();
     }
   }
 
@@ -130,7 +149,7 @@ export class SessionService {
 
     const createTokensPayload: JwtPayload = {
       accessToken: { userId, email },
-      refreshToken: { refreshToken: uuidString },
+      refreshToken: { decodedRefreshToken: uuidString },
     };
 
     const tokens = await this.tokenService.create(createTokensPayload);

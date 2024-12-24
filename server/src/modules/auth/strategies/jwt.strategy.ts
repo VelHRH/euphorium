@@ -6,9 +6,8 @@ import { ExtractJwt, Strategy } from 'passport-jwt';
 import { StrategyName } from '../constants';
 
 import { Config } from '$config';
-import { GqlContext } from '$modules/app/types';
+import { GqlContext, UserInGqlContext } from '$modules/app/types';
 import { SessionService } from '$modules/entities/session/session.service';
-import { SingedTokens } from '$modules/token/token.types';
 
 @Injectable()
 export class JwtStrategy extends PassportStrategy(Strategy, StrategyName.JWT) {
@@ -33,7 +32,7 @@ export class JwtStrategy extends PassportStrategy(Strategy, StrategyName.JWT) {
     this.jwtConfig = jwtConfig;
   }
 
-  async validate(req: GqlContext['req']): Promise<SingedTokens> {
+  async validate(req: GqlContext['req']): Promise<UserInGqlContext> {
     const signedAccessToken = req.signedCookies[
       this.jwtConfig.accessToken.cookieName
     ] as string | undefined;
@@ -42,13 +41,13 @@ export class JwtStrategy extends PassportStrategy(Strategy, StrategyName.JWT) {
       this.jwtConfig.refreshToken.cookieName
     ] as string | undefined;
 
-    const tokens = await this.sessionService.verify({
+    const { tokens, user } = await this.sessionService.verify({
       signedAccessToken,
       signedRefreshToken,
     });
 
     req.newTokens = tokens;
 
-    return tokens;
+    return user;
   }
 }

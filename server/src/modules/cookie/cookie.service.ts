@@ -1,8 +1,7 @@
 import { Injectable } from '@nestjs/common';
 import { ConfigService } from '@nestjs/config';
-import { Response } from 'express';
 
-import { ClearCookieParams, SetCookieParams } from './cookie.types';
+import { ClearParams, SetParams } from './types';
 
 import { Config } from '$config';
 
@@ -14,22 +13,22 @@ export class CookieService {
     this.domain = this.configService.getOrThrow('app.domain', { infer: true });
   }
 
-  setCookie(response: Response, params: SetCookieParams): void {
-    const { name, value, options } = params;
+  set(params: SetParams): void {
+    const { name, value, options, response } = params;
     const { expires, isHttpOnly, isSecure, isSigned } = options;
 
     response.cookie(name, value, {
       httpOnly: isHttpOnly,
       secure: isSecure,
       signed: isSigned,
-      sameSite: 'none',
+      sameSite: 'lax',
       domain: this.domain,
       expires,
     });
   }
 
-  clearCookie(response: Response, params: ClearCookieParams): void {
-    const { name } = params;
+  clear(params: ClearParams): void {
+    const { name, response } = params;
 
     response.clearCookie(name);
   }

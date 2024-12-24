@@ -1,7 +1,7 @@
 import { Injectable } from '@nestjs/common';
 import { ConfigService } from '@nestjs/config';
 import { InjectRepository } from '@nestjs/typeorm';
-import { CreateUserInput, GetUserInput } from 'shared';
+import { CreateUserInput, GetUserInput, UpdateUserInput } from 'shared';
 import { FindOptionsSelect, FindOptionsWhere, Repository } from 'typeorm';
 
 import { UserEntity } from './user.entity';
@@ -51,15 +51,24 @@ export class UserService {
   }
 
   async create(input: CreateUserInput): Promise<UserEntity> {
-    const password = await this.cryptoService.hashPassword(
-      input.password,
-      this.salt,
-    );
+    const password = await this.hashPassword(input.password);
 
     return this.userRepository.save({ ...input, password });
   }
 
+  hashPassword(password: string): Promise<string> {
+    return this.cryptoService.hashPassword(password, this.salt);
+  }
+
   async getBySession(refreshToken: string): Promise<UserEntity> {
     return this.strictFindOne({ session: { refreshToken } });
+  }
+
+  async update(input: UpdateUserInput): Promise<UserEntity | null> {
+    const { id, ...restInput } = input;
+
+    await this.userRepository.update({ id }, restInput);
+
+    return this.findOne({ id });
   }
 }

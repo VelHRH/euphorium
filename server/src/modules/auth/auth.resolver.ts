@@ -1,36 +1,67 @@
 import { Context, Mutation, Resolver } from '@nestjs/graphql';
 import { ZodArgs } from 'nestjs-graphql-zod';
-import { LoginInput, loginSchema, SignUpInput, signUpSchema } from 'shared';
+import {
+  ForgotPasswordInput,
+  forgotPasswordInputSchema,
+  LoginInput,
+  loginInputSchema,
+  SignUpInput,
+  signUpInputSchema,
+  UpdatePasswordInput,
+  updatePasswordInputSchema,
+  User,
+} from 'shared';
 
-import { AuthService } from './auth.service';
 import { Public } from './decorators';
+import { CurrentUser } from './decorators/current-user';
+import { AuthService, PasswordService } from './services';
 
-import { GqlContext } from '$modules/app/types';
+import { GqlContext, UserInGqlContext } from '$modules/app/types';
 import { UserEntity } from '$modules/entities/user/user.entity';
 
 @Resolver()
 export class AuthResolver {
-  constructor(private readonly service: AuthService) {}
+  constructor(
+    private readonly authService: AuthService,
+    private readonly passwordService: PasswordService,
+  ) {}
 
+  @Public()
   @Mutation(() => UserEntity)
   signUp(
-    @ZodArgs(signUpSchema, 'input') input: SignUpInput,
+    @ZodArgs(signUpInputSchema, 'input') input: SignUpInput,
   ): Promise<UserEntity> {
-    return this.service.signUp(input);
+    return this.authService.signUp(input);
   }
 
   @Public()
   @Mutation(() => UserEntity, { nullable: true })
   login(
-    @ZodArgs(loginSchema, 'input') input: LoginInput,
+    @ZodArgs(loginInputSchema, 'input') input: LoginInput,
     @Context() ctx: GqlContext,
   ): Promise<UserEntity | null> {
-    return this.service.login(input, ctx.res);
+    return this.authService.login(input, ctx.res);
   }
 
   @Public()
   @Mutation(() => Boolean)
   logout(@Context() ctx: GqlContext): Promise<boolean> {
-    return this.service.logout(ctx.res);
+    return this.authService.logout(ctx.res);
+  }
+
+  @Mutation(() => Boolean)
+  forgotPassword(
+    @ZodArgs(forgotPasswordInputSchema, 'input') input: ForgotPasswordInput,
+  ): Promise<boolean> {
+    return this.passwordService.forgot(input);
+  }
+
+  @Mutation(() => UserEntity, { nullable: true })
+  updatePassword(
+    @CurrentUser() { userId }: UserInGqlContext,
+    @ZodArgs(updatePasswordInputSchema, 'input')
+    input: UpdatePasswordInput,
+  ): Promise<User | null> {
+    return this.passwordService.update(userId, input);
   }
 }

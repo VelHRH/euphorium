@@ -2,10 +2,31 @@
 # THIS FILE WAS AUTOMATICALLY GENERATED (DO NOT MODIFY)
 # ------------------------------------------------------
 
+type ConfirmationEntity {
+  createdAt: DateTime!
+  expires: DateTime!
+  id: Int!
+  token: String!
+  type: ConfirmationType!
+  updatedAt: DateTime!
+  user: UserEntity!
+}
+
+"""Type of confirmation (e.g., EMAIL, PHONE)"""
+enum ConfirmationType {
+  EMAIL
+  PASSWORD
+}
+
 """
 A date-time string at UTC, such as 2019-12-03T09:54:33Z, compliant with the date-time format.
 """
 scalar DateTime
+
+""""""
+input ForgotPasswordInput {
+  email: String!
+}
 
 """"""
 input GetSongInput {
@@ -28,9 +49,11 @@ input LoginInput {
 }
 
 type Mutation {
+  forgotPassword(input: ForgotPasswordInput!): Boolean!
   login(input: LoginInput!): UserEntity
   logout: Boolean!
   signUp(input: SignUpInput!): UserEntity!
+  updatePassword(input: UpdatePasswordInput!): UserEntity
 }
 
 type Query {
@@ -53,7 +76,14 @@ input SignUpInput {
   password: String!
 }
 
+""""""
+input UpdatePasswordInput {
+  newPassword: String!
+  oldPassword: String!
+}
+
 type UserEntity {
+  confirmation: [ConfirmationEntity!]!
   createdAt: DateTime!
   email: String!
   id: Int!

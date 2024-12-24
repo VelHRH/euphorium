@@ -1,3 +1,5 @@
+import { GqlContext } from '$modules/app/types';
+
 export type SetCookieParamsOptions = {
   expires?: Date;
   isHttpOnly?: boolean;
@@ -5,10 +7,9 @@ export type SetCookieParamsOptions = {
   isSigned?: boolean;
 };
 
-export type SetCookieParams = {
+export type SetParams = {
   name: string;
   options: SetCookieParamsOptions;
+  response: GqlContext['res'];
   value: string | null;
 };
-
-export type ClearCookieParams = Pick<SetCookieParams, 'name'>;

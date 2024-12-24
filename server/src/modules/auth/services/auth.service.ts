@@ -28,7 +28,7 @@ export class AuthService {
 
     const user = await this.userService.findOne(
       { email: inputEmail },
-      { id: true, password: true, email: true },
+      { id: true, email: true, password: true },
     );
 
     if (!user) {
@@ -53,5 +53,9 @@ export class AuthService {
 
   logout(response: GqlContext['res']): Promise<boolean> {
     return this.sessionService.delete(response);
+  }
+
+  refresh(response: GqlContext['res']): Promise<boolean> {
+    return this.sessionService.refresh(response);
   }
 }

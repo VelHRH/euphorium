@@ -11,6 +11,6 @@ export const graphqlConfig: ApolloDriverConfig = {
   autoSchemaFile: join(process.cwd(), GraphqlPath.SCHEMA),
   sortSchema: true,
   playground: false,
-  context: (ctx: GqlContext) => ctx,
+  context: ({ req, res }: GqlContext) => ({ req, res }),
   plugins: [ApolloServerPluginLandingPageLocalDefault()],
 };

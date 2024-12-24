@@ -1,19 +1,19 @@
 import { Injectable } from '@nestjs/common';
 import { ConfigService } from '@nestjs/config';
 import { JwtService } from '@nestjs/jwt';
-import { Response } from 'express';
 
 import {
-  InsertTokensInCookiesParams,
+  InsertInCookiesParams,
   JwtPayload,
   SetTokenInCookiesParams,
   SingedTokens,
-} from './token.types';
+} from './types';
 
 import { Config } from '$config';
+import { GqlContext } from '$modules/app/types';
 import { ONE_SECOND_IN_MS } from '$modules/common';
 import { CookieService } from '$modules/cookie/cookie.service';
-import { SetCookieParamsOptions } from '$modules/cookie/cookie.types';
+import { SetCookieParamsOptions } from '$modules/cookie/types';
 
 @Injectable()
 export class TokenService {
@@ -60,7 +60,8 @@ export class TokenService {
   private setTokenInCookies(params: SetTokenInCookiesParams): void {
     const { expireIn, cookieName, response, token } = params;
 
-    this.cookieService.setCookie(response, {
+    this.cookieService.set({
+      response,
       name: cookieName,
       value: token,
       options: {
@@ -70,7 +71,7 @@ export class TokenService {
     });
   }
 
-  insertTokensInCookies(params: InsertTokensInCookiesParams): void {
+  insertInCookies(params: InsertInCookiesParams): void {
     const { response, ...tokens } = params;
 
     const tokensConfig: Record<
@@ -92,7 +93,7 @@ export class TokenService {
     );
   }
 
-  async decode<
+  async decodeToken<
     T extends keyof Pick<
       typeof this.tokensConfig,
       'accessToken' | 'refreshToken'
@@ -108,11 +109,51 @@ export class TokenService {
     return decodedToken;
   }
 
-  removeTokensFromCookies(response: Response): void {
+  removeFromCookies(response: GqlContext['res']): void {
     const { accessToken, refreshToken } = this.tokensConfig;
 
     Object.values({ accessToken, refreshToken }).forEach((token) =>
-      this.cookieService.clearCookie(response, { name: token.cookieName }),
+      this.cookieService.clear({
+        response,
+        name: token.cookieName,
+      }),
     );
+  }
+
+  getFromCookies(response: GqlContext['res']): SingedTokens {
+    const { refreshToken: refreshTokenConfig, accessToken: accessTokenConfig } =
+      this.configService.getOrThrow('jwt', {
+        infer: true,
+      });
+
+    const signedAccessToken = response.req[
+      accessTokenConfig.cookieName
+    ] as string;
+
+    const signedRefreshToken = response.req[
+      refreshTokenConfig.cookieName
+    ] as string;
+
+    return { signedAccessToken, signedRefreshToken };
+  }
+
+  async decodeFromCookies(response: GqlContext['res']): Promise<JwtPayload> {
+    const { signedAccessToken, signedRefreshToken } =
+      this.getFromCookies(response);
+
+    const decodedRefreshToken = await this.decodeToken(
+      signedRefreshToken,
+      'refreshToken',
+    );
+
+    const decodedAccessToken = await this.decodeToken(
+      signedAccessToken,
+      'accessToken',
+    );
+
+    return {
+      accessToken: decodedAccessToken,
+      refreshToken: decodedRefreshToken,
+    };
   }
 }

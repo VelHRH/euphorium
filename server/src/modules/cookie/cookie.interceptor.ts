@@ -22,7 +22,7 @@ export class SetCookiesInterceptor implements NestInterceptor {
     return next.handle().pipe(
       tap(() => {
         if (req.newTokens) {
-          this.tokenService.insertTokensInCookies({
+          this.tokenService.insertInCookies({
             response,
             ...req.newTokens,
           });
