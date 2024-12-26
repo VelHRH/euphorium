@@ -4,6 +4,6 @@ import { songSchema } from '../song';
 
 export const getSongInputSchema = songSchema
   .pick({ name: true })
-  .describe('SongInput:');
+  .describe('GetSongInput:');
 
 export type GetSongInput = z.infer<typeof getSongInputSchema>;

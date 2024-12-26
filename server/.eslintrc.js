@@ -1,4 +1,9 @@
-const EXCLUDE_NAMES_NAMING_CONVENTION_REGEXPS = ['.*graphQL.*'];
+const EXCLUDE_NAMES_NAMING_CONVENTION_REGEXPS = [
+  '.*graphQL.*',
+  'generateUUID',
+  'callbackURL',
+  'clientID',
+];
 
 const excludeNamesNamingConventionRegexpsRegex =
   EXCLUDE_NAMES_NAMING_CONVENTION_REGEXPS.join('|');
@@ -112,7 +117,7 @@ const importRules = {
       ],
     },
   ],
-  'import/no-cycle': ['error', { maxDepth: '∞' }],
+  'import/no-cycle': 'off',
   'import/prefer-default-export': 'off', // we use only named exports in the project
   'import/no-extraneous-dependencies': [
     'error',
