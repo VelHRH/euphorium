@@ -1,4 +1,9 @@
-const EXCLUDE_NAMES_NAMING_CONVENTION_REGEXPS = ['.*graphQL.*', 'generateUUID'];
+const EXCLUDE_NAMES_NAMING_CONVENTION_REGEXPS = [
+  '.*graphQL.*',
+  'generateUUID',
+  'callbackURL',
+  'clientID',
+];
 
 const excludeNamesNamingConventionRegexpsRegex =
   EXCLUDE_NAMES_NAMING_CONVENTION_REGEXPS.join('|');

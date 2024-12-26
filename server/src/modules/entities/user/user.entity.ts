@@ -14,9 +14,9 @@ export class UserEntity extends BaseEntity implements User {
   @Field()
   readonly email: string;
 
-  @Column({ select: false })
+  @Column({ select: false, nullable: true })
   @HideField()
-  readonly password: string;
+  readonly password: string | null;
 
   @OneToMany(() => SessionEntity, (session) => session.user)
   @Field(() => [SessionEntity])

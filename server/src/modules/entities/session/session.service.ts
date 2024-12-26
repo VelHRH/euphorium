@@ -33,11 +33,24 @@ export class SessionService {
     try {
       const { response, userId, email } = params;
 
-      const tokens = await this.save({ userId, email });
+      const queryRunner = this.dataSource.createQueryRunner();
 
-      this.tokenService.insertInCookies({ response, ...tokens });
+      await queryRunner.connect();
+      await queryRunner.startTransaction();
+
+      // to add both to database and from cookies
+      try {
+        const tokens = await this.save({ userId, email });
+
+        this.tokenService.insertInCookies({ response, ...tokens });
+        await queryRunner.commitTransaction();
+      } catch (error) {
+        await queryRunner.rollbackTransaction();
+      } finally {
+        await queryRunner.release();
+      }
     } catch (error) {
-      throw new UnauthorizedException(); // TODO: proper error handling
+      throw new UnauthorizedException();
     }
   }
 
@@ -155,7 +168,7 @@ export class SessionService {
     const tokens = await this.tokenService.create(createTokensPayload);
 
     await this.sessionRepository.save({
-      id: session?.id,
+      id: session?.id ?? undefined,
       user: { id: userId },
       refreshToken: uuidString,
     });

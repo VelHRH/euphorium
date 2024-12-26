@@ -10,7 +10,10 @@ import { GqlContext, UserInGqlContext } from '$modules/app/types';
 import { SessionService } from '$modules/entities/session/session.service';
 
 @Injectable()
-export class JwtStrategy extends PassportStrategy(Strategy, StrategyName.JWT) {
+export class JwtAuthStrategy extends PassportStrategy(
+  Strategy,
+  StrategyName.JWT,
+) {
   private readonly jwtConfig: Config['jwt'];
 
   constructor(

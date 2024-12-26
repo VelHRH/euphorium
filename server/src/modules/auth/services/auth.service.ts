@@ -1,4 +1,4 @@
-import { Injectable } from '@nestjs/common';
+import { BadRequestException, Injectable } from '@nestjs/common';
 import { Response } from 'express';
 import { LoginInput, SignUpInput } from 'shared';
 
@@ -36,6 +36,10 @@ export class AuthService {
     }
 
     const { id, email, password } = user;
+
+    if (!password) {
+      throw new BadRequestException();
+    }
 
     const isPasswordEqual = await this.cryptoService.comparePasswords(
       inputPassword,

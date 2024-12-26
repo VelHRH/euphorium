@@ -11,7 +11,7 @@ import { IS_PUBLIC_KEY } from '../decorators';
 import { GqlContext } from '$modules/app/types';
 
 @Injectable()
-export class JwtGuard
+export class JwtAuthGuard
   extends AuthGuard(StrategyName.JWT)
   implements CanActivate
 {
