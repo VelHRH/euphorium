@@ -4,6 +4,7 @@ import { APP_GUARD } from '@nestjs/core';
 import { AuthResolver } from './auth.resolver';
 import { JwtGuard } from './guards';
 import { AuthService, PasswordService } from './services';
+import { GoogleService } from './services/google.service';
 import { JwtStrategy } from './strategies';
 
 import { CryptoModule } from '$modules/crypto/crypto.module';
@@ -24,6 +25,7 @@ import { TokenModule } from '$modules/token/token.module';
     AuthResolver,
     AuthService,
     PasswordService,
+    GoogleService,
     JwtStrategy,
     { provide: APP_GUARD, useClass: JwtGuard },
   ],

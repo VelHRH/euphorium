@@ -25,6 +25,12 @@ declare global {
       // * Mail
       MAIL_PASS: string;
       MAIL_USER: string;
+
+      // * Allowed origin
+      ALLOWED_ORIGIN: string;
+
+      // * Google
+      GOOGLE_CLIENT_ID: string;
     }
   }
 }

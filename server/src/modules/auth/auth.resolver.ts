@@ -3,6 +3,7 @@ import { ZodArgs } from 'nestjs-graphql-zod';
 import {
   ForgotPasswordInput,
   forgotPasswordInputSchema,
+  GoogleLoginInput,
   LoginInput,
   loginInputSchema,
   SignUpInput,
@@ -15,6 +16,7 @@ import {
 import { Public } from './decorators';
 import { CurrentUser } from './decorators/current-user';
 import { AuthService, PasswordService } from './services';
+import { GoogleService } from './services/google.service';
 
 import { GqlContext, UserInGqlContext } from '$modules/app/types';
 import { UserEntity } from '$modules/entities/user/user.entity';
@@ -24,6 +26,7 @@ export class AuthResolver {
   constructor(
     private readonly authService: AuthService,
     private readonly passwordService: PasswordService,
+    private readonly googleService: GoogleService,
   ) {}
 
   @Public()
@@ -41,6 +44,15 @@ export class AuthResolver {
     @Context() ctx: GqlContext,
   ): Promise<UserEntity | null> {
     return this.authService.login(input, ctx.res);
+  }
+
+  @Public()
+  @Mutation(() => UserEntity, { nullable: true })
+  googleLogin(
+    @ZodArgs(loginInputSchema, 'input') input: GoogleLoginInput,
+    @Context() ctx: GqlContext,
+  ): Promise<UserEntity | null> {
+    return this.googleService.login(input, ctx.res);
   }
 
   @Public()
