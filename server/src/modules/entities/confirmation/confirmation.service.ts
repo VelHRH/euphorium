@@ -1,8 +1,13 @@
-import { Injectable } from '@nestjs/common';
+import {
+  Injectable,
+  NotFoundException,
+  UnauthorizedException,
+} from '@nestjs/common';
 import { ConfigService } from '@nestjs/config';
 import { InjectRepository } from '@nestjs/typeorm';
-import { add } from 'date-fns';
-import { Repository } from 'typeorm';
+import { add, isBefore } from 'date-fns';
+import { ConfirmationType } from 'shared';
+import { DataSource, FindOptionsWhere, QueryRunner, Repository } from 'typeorm';
 
 import { ConfirmationEntity } from './confirmation.entity';
 import { CreateConfirmationParams, SendConfirmationParams } from './types';
@@ -21,9 +26,30 @@ export class ConfirmationService {
     private readonly confirmationRepository: Repository<ConfirmationEntity>,
     private readonly mailService: MailService,
     private readonly cryptoService: CryptoService,
+    private readonly dataSource: DataSource,
     configService: ConfigService<Config>,
   ) {
     this.appConfig = configService.getOrThrow('app', { infer: true });
+  }
+
+  async validate(token: string): Promise<ConfirmationEntity> {
+    const confirmation = await this.findOne({ token });
+
+    const isTokenExpired = isBefore(new Date(confirmation.expires), new Date());
+
+    if (isTokenExpired) {
+      await this.delete(
+        { token: confirmation.token },
+        {
+          user: confirmation.user,
+          type: ConfirmationType.PASSWORD,
+        },
+      );
+
+      throw new Error('Session time out');
+    }
+
+    return confirmation;
   }
 
   async send(params: SendConfirmationParams): Promise<ConfirmationEntity> {
@@ -33,27 +59,44 @@ export class ConfirmationService {
 
     const { subject, template } = MailTemplateConfig[type];
 
-    const confirmationEmailToken = await this.save({
-      type,
-      userId: id,
-    });
+    const queryRunner = this.dataSource.createQueryRunner();
 
-    const confirmationLink = this.buildConfirmationLink(
-      confirmationEmailToken.token,
-    );
+    await queryRunner.connect();
+    await queryRunner.startTransaction();
 
-    await this.mailService.send({
-      subject,
-      template,
-      email,
-      confirmationLink,
-    });
+    // to add confirmation to DB and send in to the client
+    try {
+      const confirmation = await this.save(
+        {
+          type,
+          userId: id,
+        },
+        queryRunner,
+      );
 
-    return confirmationEmailToken;
+      const confirmationLink = this.buildConfirmationLink(confirmation.token);
+
+      await this.mailService.send({
+        subject,
+        template,
+        email,
+        confirmationLink,
+      });
+      await queryRunner.commitTransaction();
+
+      return confirmation;
+    } catch (error) {
+      await queryRunner.rollbackTransaction();
+
+      throw new UnauthorizedException();
+    } finally {
+      await queryRunner.release();
+    }
   }
 
   private async save(
     params: CreateConfirmationParams,
+    queryRunner: QueryRunner,
   ): Promise<ConfirmationEntity> {
     const { id, userId, type } = params;
 
@@ -63,7 +106,7 @@ export class ConfirmationService {
 
     const uuid = this.cryptoService.generateUUID();
 
-    const token = await this.confirmationRepository.save({
+    const token = await queryRunner.manager.save(ConfirmationEntity, {
       id,
       user: { id: userId },
       token: uuid,
@@ -78,5 +121,30 @@ export class ConfirmationService {
     const { domain, port } = this.appConfig;
 
     return `http://${domain}:${port}/confirmation&token=${token}`;
+  }
+
+  async findOne(
+    where: FindOptionsWhere<ConfirmationEntity>,
+  ): Promise<ConfirmationEntity> {
+    const confirmationToken = await this.confirmationRepository.findOne({
+      where,
+      relations: { user: true },
+    });
+
+    if (!confirmationToken) {
+      throw new NotFoundException();
+    }
+
+    return confirmationToken;
+  }
+
+  async delete(
+    where: FindOptionsWhere<ConfirmationEntity>,
+    sendParams: SendConfirmationParams,
+  ): Promise<ConfirmationEntity> {
+    // Todo: session
+    await this.confirmationRepository.delete(where);
+
+    return this.send(sendParams);
   }
 }

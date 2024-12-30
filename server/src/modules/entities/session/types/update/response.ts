@@ -1,3 +1,3 @@
-import { VerifyResponse } from '../verify';
+import { UserInGqlContext } from '$modules/app/types';
 
-export type UpdateResponse = VerifyResponse;
+export type UpdateResponse = UserInGqlContext;

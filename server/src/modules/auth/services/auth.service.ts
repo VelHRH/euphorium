@@ -1,4 +1,8 @@
-import { BadRequestException, Injectable } from '@nestjs/common';
+import {
+  BadRequestException,
+  Injectable,
+  UnauthorizedException,
+} from '@nestjs/common';
 import { Response } from 'express';
 import { LoginInput, SignUpInput } from 'shared';
 
@@ -20,10 +24,7 @@ export class AuthService {
     return this.userService.create(input);
   }
 
-  async login(
-    input: LoginInput,
-    response: Response,
-  ): Promise<UserEntity | null> {
+  async login(input: LoginInput, response: Response): Promise<UserEntity> {
     const { email: inputEmail, password: inputPassword } = input;
 
     const user = await this.userService.findOne(
@@ -32,7 +33,7 @@ export class AuthService {
     );
 
     if (!user) {
-      return null;
+      throw new UnauthorizedException();
     }
 
     const { id, email, password } = user;
@@ -47,7 +48,7 @@ export class AuthService {
     );
 
     if (!isPasswordEqual) {
-      return null;
+      throw new UnauthorizedException();
     }
 
     await this.sessionService.create({ response, userId: id, email });

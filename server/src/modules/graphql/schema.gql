@@ -16,6 +16,7 @@ type ConfirmationEntity {
 enum ConfirmationType {
   EMAIL
   PASSWORD
+  PASSWORD_CHANGED
 }
 
 """
@@ -50,8 +51,10 @@ input LoginInput {
 
 type Mutation {
   forgotPassword(input: ForgotPasswordInput!): Boolean!
+  googleLogin: UserEntity
   login(input: LoginInput!): UserEntity
   logout: Boolean!
+  revokePassword(input: RevokePasswordInput!): Boolean!
   signUp(input: SignUpInput!): UserEntity!
   updatePassword(input: UpdatePasswordInput!): UserEntity
 }
@@ -60,6 +63,13 @@ type Query {
   song(input: GetSongInput!): GetSongOutputDto!
   user(input: GetUserInput!): UserEntity
   users: [UserEntity!]!
+}
+
+""""""
+input RevokePasswordInput {
+  newPassword: String!
+  repeatPassword: String!
+  token: String!
 }
 
 type SessionEntity {

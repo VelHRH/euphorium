@@ -1,11 +1,9 @@
 import { z } from 'zod';
 
-import { passwordSchema } from '../../user/password';
-import { userSchema } from '../../user/user';
+import { passwordSchema, userSchema } from '../../user/user';
 
-export const signUpInputSchema = userSchema
-  .pick({ email: true })
-  .merge(passwordSchema)
+export const signUpInputSchema = z
+  .object({ email: userSchema.shape.email, password: passwordSchema })
   .describe('SignUpInput:');
 
 export type SignUpInput = z.infer<typeof signUpInputSchema>;

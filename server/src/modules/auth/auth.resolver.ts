@@ -6,6 +6,8 @@ import {
   forgotPasswordInputSchema,
   LoginInput,
   loginInputSchema,
+  RevokePasswordInput,
+  revokePasswordInputSchema,
   SignUpInput,
   signUpInputSchema,
   UpdatePasswordInput,
@@ -43,7 +45,7 @@ export class AuthResolver {
   login(
     @ZodArgs(loginInputSchema, 'input') input: LoginInput,
     @Context() ctx: GqlContext,
-  ): Promise<UserEntity | null> {
+  ): Promise<UserEntity> {
     return this.authService.login(input, ctx.res);
   }
 
@@ -51,7 +53,7 @@ export class AuthResolver {
   @UseGuards(GoogleAuthGuard)
   @Mutation(() => UserEntity, { nullable: true })
   googleLogin(@Context() ctx: GqlContext): Promise<boolean> {
-    return this.googleAuthService.createSession(ctx.req.user, ctx.res);
+    return this.googleAuthService.createSession(ctx.req.user!, ctx.res);
   }
 
   @Public()
@@ -66,6 +68,14 @@ export class AuthResolver {
     @ZodArgs(forgotPasswordInputSchema, 'input') input: ForgotPasswordInput,
   ): Promise<boolean> {
     return this.passwordService.forgot(input);
+  }
+
+  @Public()
+  @Mutation(() => Boolean)
+  revokePassword(
+    @ZodArgs(revokePasswordInputSchema, 'input') input: RevokePasswordInput,
+  ): Promise<User> {
+    return this.passwordService.revoke(input);
   }
 
   @Mutation(() => UserEntity, { nullable: true })

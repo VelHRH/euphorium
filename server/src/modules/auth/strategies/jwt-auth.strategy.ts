@@ -44,13 +44,9 @@ export class JwtAuthStrategy extends PassportStrategy(
       this.jwtConfig.refreshToken.cookieName
     ] as string | undefined;
 
-    const { tokens, user } = await this.sessionService.verify({
+    return this.sessionService.verify({
       signedAccessToken,
       signedRefreshToken,
     });
-
-    req.newTokens = tokens;
-
-    return user;
   }
 }

@@ -10,6 +10,7 @@ export enum EmailSubjectHints {
   PASSWORD_CHANGED = 'Password changed',
 }
 
+// TODO: make dependant on ConfirmationType
 export const MailTemplateConfig = {
   email: {
     subject: EmailSubjectHints.CONFIRM_EMAIL,
