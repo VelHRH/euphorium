@@ -1,8 +1,9 @@
 import { Injectable } from '@nestjs/common';
 
-import { GqlContext, UserInGqlContext } from '$modules/app/types';
+import { GqlContext } from '$modules/app/types';
 import { SessionService } from '$modules/entities/session/session.service';
 import { UserService } from '$modules/entities/user/user.service';
+import { JwtPayload } from '$modules/token/types';
 
 @Injectable()
 export class GoogleAuthService {
@@ -12,7 +13,7 @@ export class GoogleAuthService {
   ) {}
 
   async createSession(
-    user: UserInGqlContext,
+    user: JwtPayload['accessToken'],
     response: GqlContext['res'],
   ): Promise<boolean> {
     await this.sessionService.create({ response, ...user });
@@ -20,7 +21,7 @@ export class GoogleAuthService {
     return true;
   }
 
-  async validateGoogleUser(email: string): Promise<UserInGqlContext> {
+  async validateGoogleUser(email: string): Promise<JwtPayload['accessToken']> {
     const user = await this.userService.findOne({ email });
 
     if (user) {

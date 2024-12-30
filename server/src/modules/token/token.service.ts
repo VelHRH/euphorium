@@ -3,10 +3,11 @@ import { ConfigService } from '@nestjs/config';
 import { JwtService } from '@nestjs/jwt';
 
 import {
+  GetFromCookiesParams,
   InsertInCookiesParams,
   JwtPayload,
   SetTokenInCookiesParams,
-  SingedTokens,
+  SignedTokens,
 } from './types';
 
 import { Config } from '$config';
@@ -34,7 +35,7 @@ export class TokenService {
     };
   }
 
-  async create(payload: JwtPayload): Promise<SingedTokens> {
+  async create(payload: JwtPayload): Promise<SignedTokens> {
     const signedAccessToken = await this.jwtService.signAsync(
       payload.accessToken,
       {
@@ -93,14 +94,14 @@ export class TokenService {
     );
   }
 
-  async decodeToken<
+  async decode<
     T extends keyof Pick<
       typeof this.tokensConfig,
       'accessToken' | 'refreshToken'
     >,
-  >(signedToken: string | undefined, tokenType: T): Promise<JwtPayload[T]> {
+  >(signedToken: string, tokenType: T): Promise<JwtPayload[T]> {
     const decodedToken = await this.jwtService.verifyAsync<JwtPayload[T]>(
-      signedToken ?? '',
+      signedToken,
       {
         secret: this.tokensConfig[tokenType].secret,
       },
@@ -120,40 +121,21 @@ export class TokenService {
     );
   }
 
-  getFromCookies(response: GqlContext['res']): SingedTokens {
+  getFromCookies(response: GqlContext['res']): GetFromCookiesParams {
     const { refreshToken: refreshTokenConfig, accessToken: accessTokenConfig } =
       this.configService.getOrThrow('jwt', {
         infer: true,
       });
 
-    const signedAccessToken = response.req[
-      accessTokenConfig.cookieName
-    ] as string;
+    const signedCookies = response.req.signedCookies as Record<
+      string,
+      string | undefined
+    >;
 
-    const signedRefreshToken = response.req[
-      refreshTokenConfig.cookieName
-    ] as string;
+    const signedAccessToken = signedCookies[accessTokenConfig.cookieName];
+
+    const signedRefreshToken = signedCookies[refreshTokenConfig.cookieName];
 
     return { signedAccessToken, signedRefreshToken };
-  }
-
-  async decodeFromCookies(response: GqlContext['res']): Promise<JwtPayload> {
-    const { signedAccessToken, signedRefreshToken } =
-      this.getFromCookies(response);
-
-    const decodedRefreshToken = await this.decodeToken(
-      signedRefreshToken,
-      'refreshToken',
-    );
-
-    const decodedAccessToken = await this.decodeToken(
-      signedAccessToken,
-      'accessToken',
-    );
-
-    return {
-      accessToken: decodedAccessToken,
-      refreshToken: decodedRefreshToken,
-    };
   }
 }

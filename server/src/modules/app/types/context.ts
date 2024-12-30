@@ -1,13 +1,12 @@
 import { Request, Response } from 'express';
 
-import { JwtPayload, SingedTokens } from '$modules/token/types';
+import { JwtPayload, SignedTokens } from '$modules/token/types';
 
-export type UserInGqlContext = JwtPayload['accessToken'];
+export type UserInGqlContext = JwtPayload['accessToken'] & SignedTokens;
 
 export type GqlContext = {
   req: Request & {
-    user: UserInGqlContext;
-    newTokens?: SingedTokens;
+    user?: UserInGqlContext;
   };
   res: Response;
 };

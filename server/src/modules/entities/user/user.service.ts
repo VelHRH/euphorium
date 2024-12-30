@@ -53,9 +53,7 @@ export class UserService {
   async create(input: CreateUserInput): Promise<UserEntity> {
     const rawPassword = input.password;
 
-    const password = rawPassword
-      ? await this.hashPassword(input.password)
-      : null;
+    const password = rawPassword ? await this.hashPassword(rawPassword) : null;
 
     return this.userRepository.save({ ...input, password });
   }

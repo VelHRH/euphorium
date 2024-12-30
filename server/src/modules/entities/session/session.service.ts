@@ -1,6 +1,6 @@
 import { Injectable, UnauthorizedException } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
-import { DataSource, Repository } from 'typeorm';
+import { DataSource, QueryRunner, Repository } from 'typeorm';
 
 import { SessionEntity } from './session.entity';
 import {
@@ -16,7 +16,7 @@ import { UserService } from '../user/user.service';
 import { GqlContext } from '$modules/app/types';
 import { CryptoService } from '$modules/crypto/crypto.service';
 import { TokenService } from '$modules/token/token.service';
-import { JwtPayload, SingedTokens } from '$modules/token/types';
+import { JwtPayload, SignedTokens } from '$modules/token/types';
 
 @Injectable()
 export class SessionService {
@@ -30,27 +30,25 @@ export class SessionService {
   ) {}
 
   async create(params: CreateParams): Promise<void> {
+    const { response, userId, email } = params;
+
+    const queryRunner = this.dataSource.createQueryRunner();
+
+    await queryRunner.connect();
+    await queryRunner.startTransaction();
+
+    // to add both to database and to cookies
     try {
-      const { response, userId, email } = params;
+      const tokens = await this.save({ userId, email }, queryRunner);
 
-      const queryRunner = this.dataSource.createQueryRunner();
-
-      await queryRunner.connect();
-      await queryRunner.startTransaction();
-
-      // to add both to database and from cookies
-      try {
-        const tokens = await this.save({ userId, email });
-
-        this.tokenService.insertInCookies({ response, ...tokens });
-        await queryRunner.commitTransaction();
-      } catch (error) {
-        await queryRunner.rollbackTransaction();
-      } finally {
-        await queryRunner.release();
-      }
+      this.tokenService.insertInCookies({ response, ...tokens });
+      await queryRunner.commitTransaction();
     } catch (error) {
+      await queryRunner.rollbackTransaction();
+
       throw new UnauthorizedException();
+    } finally {
+      await queryRunner.release();
     }
   }
 
@@ -58,7 +56,11 @@ export class SessionService {
     const { signedAccessToken, signedRefreshToken } = params;
 
     try {
-      const { userId, email } = await this.tokenService.decodeToken(
+      if (!signedAccessToken || !signedRefreshToken) {
+        throw new UnauthorizedException();
+      }
+
+      const { userId, email } = await this.tokenService.decode(
         signedAccessToken,
         'accessToken',
       );
@@ -66,11 +68,10 @@ export class SessionService {
       await this.userService.strictFindOne({ id: userId, email });
 
       return {
-        user: { userId, email },
-        tokens: {
-          signedAccessToken: signedAccessToken!,
-          signedRefreshToken: signedRefreshToken!,
-        },
+        userId,
+        email,
+        signedAccessToken,
+        signedRefreshToken,
       };
     } catch {
       return this.update(signedRefreshToken);
@@ -79,11 +80,17 @@ export class SessionService {
 
   async refresh(response: GqlContext['res']): Promise<boolean> {
     try {
-      const { signedRefreshToken } = this.tokenService.getFromCookies(response);
+      const { signedRefreshToken: inputRefreshToken } =
+        this.tokenService.getFromCookies(response);
 
-      const { tokens } = await this.update(signedRefreshToken);
+      const { signedAccessToken, signedRefreshToken } =
+        await this.update(inputRefreshToken);
 
-      this.tokenService.insertInCookies({ response, ...tokens });
+      this.tokenService.insertInCookies({
+        response,
+        signedAccessToken,
+        signedRefreshToken,
+      });
 
       return true;
     } catch (error) {
@@ -93,7 +100,11 @@ export class SessionService {
 
   async update(signedRefreshToken?: string): Promise<UpdateResponse> {
     try {
-      const { decodedRefreshToken } = await this.tokenService.decodeToken(
+      if (!signedRefreshToken) {
+        throw new UnauthorizedException();
+      }
+
+      const { decodedRefreshToken } = await this.tokenService.decode(
         signedRefreshToken,
         'refreshToken',
       );
@@ -108,8 +119,9 @@ export class SessionService {
       });
 
       return {
-        tokens: newTokens,
-        user: { email, userId },
+        email,
+        userId,
+        ...newTokens,
       };
     } catch {
       throw new UnauthorizedException();
@@ -118,9 +130,14 @@ export class SessionService {
 
   async delete(response: GqlContext['res']): Promise<boolean> {
     try {
-      const {
-        refreshToken: { decodedRefreshToken },
-      } = await this.tokenService.decodeFromCookies(response);
+      const { signedRefreshToken } = this.tokenService.getFromCookies(response);
+
+      const decodedRefreshToken = signedRefreshToken
+        ? (await this.tokenService.decode(signedRefreshToken, 'refreshToken'))
+            .decodedRefreshToken
+        : null;
+
+      console.log({ decodedRefreshToken });
 
       const queryRunner = this.dataSource.createQueryRunner();
 
@@ -129,9 +146,12 @@ export class SessionService {
 
       // to remove both from database and from cookies
       try {
-        const sessionDeleteResult = await this.sessionRepository.delete({
-          refreshToken: decodedRefreshToken,
-        });
+        const sessionDeleteResult = await queryRunner.manager.delete(
+          SessionEntity,
+          {
+            refreshToken: decodedRefreshToken,
+          },
+        );
 
         if (sessionDeleteResult.affected === 0) {
           throw new UnauthorizedException();
@@ -141,6 +161,8 @@ export class SessionService {
         await queryRunner.commitTransaction();
       } catch (error) {
         await queryRunner.rollbackTransaction();
+
+        throw new UnauthorizedException();
       } finally {
         await queryRunner.release();
       }
@@ -151,10 +173,17 @@ export class SessionService {
     }
   }
 
-  private async save(params: SaveParams): Promise<SingedTokens> {
+  private async save(
+    params: SaveParams,
+    queryRunner?: QueryRunner,
+  ): Promise<SignedTokens> {
     const { userId, email, decodedRefreshToken } = params;
 
-    const session = await this.sessionRepository.findOne({
+    const manager = queryRunner
+      ? queryRunner.manager
+      : this.sessionRepository.manager;
+
+    const session = await manager.findOne(SessionEntity, {
       where: { refreshToken: decodedRefreshToken, user: { id: userId } },
     });
 
@@ -167,8 +196,8 @@ export class SessionService {
 
     const tokens = await this.tokenService.create(createTokensPayload);
 
-    await this.sessionRepository.save({
-      id: session?.id ?? undefined,
+    await manager.save(SessionEntity, {
+      id: session?.id,
       user: { id: userId },
       refreshToken: uuidString,
     });

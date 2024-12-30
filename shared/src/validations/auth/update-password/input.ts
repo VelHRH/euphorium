@@ -1,12 +1,11 @@
 import { z } from 'zod';
 
-import { passwordSchema } from '../../user/password';
-import { userSchema } from '../../user/user';
+import { passwordSchema, userSchema } from '../../user/user';
 
 export const updatePasswordInputSchema = z
   .object({
     oldPassword: userSchema.shape.password,
-    newPassword: passwordSchema.shape.password,
+    newPassword: passwordSchema,
   })
   .describe('UpdatePasswordInput:');
 

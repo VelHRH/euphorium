@@ -1,7 +1,12 @@
-import { Injectable, NotAcceptableException } from '@nestjs/common';
+import {
+  Injectable,
+  NotAcceptableException,
+  UnauthorizedException,
+} from '@nestjs/common';
 import {
   ConfirmationType,
   ForgotPasswordInput,
+  RevokePasswordInput,
   UpdatePasswordInput,
   User,
 } from 'shared';
@@ -40,10 +45,12 @@ export class PasswordService {
       { password: true },
     );
 
-    const isPasswordValid = await this.cryptoService.comparePasswords(
-      oldPassword,
-      user.password,
-    );
+    const isPasswordValid = !user.password
+      ? true
+      : await this.cryptoService.comparePasswords(
+          oldPassword ?? '',
+          user.password,
+        );
 
     if (!isPasswordValid) {
       throw new NotAcceptableException('Wrong current password');
@@ -57,5 +64,39 @@ export class PasswordService {
     });
 
     return updatedUser;
+  }
+
+  async revoke(params: RevokePasswordInput): Promise<User> {
+    const { token, newPassword } = params;
+
+    const confirmation = await this.confirmationService.validate(token);
+
+    const updatedUser = await this.updateUserPassword(
+      confirmation.user.id,
+      newPassword,
+    );
+
+    if (!updatedUser) {
+      throw new UnauthorizedException();
+    }
+
+    await this.confirmationService.delete(
+      { token },
+      { user: updatedUser, type: ConfirmationType.PASSWORD_CHANGED },
+    );
+
+    return updatedUser;
+  }
+
+  private async updateUserPassword(
+    id: User['id'],
+    newPassword: UpdatePasswordInput['newPassword'],
+  ): Promise<User | null> {
+    const hashedPassword = await this.userService.hashPassword(newPassword);
+
+    return this.userService.update({
+      id,
+      password: hashedPassword,
+    });
   }
 }

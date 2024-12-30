@@ -21,13 +21,14 @@ export class SetCookiesInterceptor implements NestInterceptor {
 
     return next.handle().pipe(
       tap(() => {
-        if (req.newTokens) {
+        if (req.user) {
+          const { signedAccessToken, signedRefreshToken } = req.user;
+
           this.tokenService.insertInCookies({
             response,
-            ...req.newTokens,
+            signedAccessToken,
+            signedRefreshToken,
           });
-
-          delete req.newTokens;
         }
       }),
     );

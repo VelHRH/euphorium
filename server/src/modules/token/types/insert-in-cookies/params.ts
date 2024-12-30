@@ -1,7 +1,7 @@
 import { Response } from 'express';
 
-import { SingedTokens } from '../signed-tokens';
+import { SignedTokens } from '../signed-tokens';
 
 export type InsertInCookiesParams = {
   response: Response;
-} & SingedTokens;
+} & SignedTokens;

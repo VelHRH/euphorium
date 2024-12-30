@@ -1,4 +1,4 @@
-export type SingedTokens = {
+export type SignedTokens = {
   signedAccessToken: string;
   signedRefreshToken: string;
 };

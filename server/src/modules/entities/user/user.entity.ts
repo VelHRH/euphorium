@@ -14,7 +14,7 @@ export class UserEntity extends BaseEntity implements User {
   @Field()
   readonly email: string;
 
-  @Column({ select: false, nullable: true })
+  @Column({ type: 'varchar', select: false, nullable: true })
   @HideField()
   readonly password: string | null;
 
