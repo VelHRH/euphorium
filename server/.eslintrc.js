@@ -11,6 +11,8 @@ const excludeNamesNamingConventionRegexpsRegex =
 const finalExcludeRegex = `${excludeNamesNamingConventionRegexpsRegex}`;
 
 const initialRules = {
+  '@typescript-eslint/lines-between-class-members': 'off',
+  '@typescript-eslint/no-throw-literal': 'off',
   'eslint-comments/require-description': [
     'warn',
     { ignore: ['eslint-enable'] },

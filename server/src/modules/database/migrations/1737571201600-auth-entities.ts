@@ -1,9 +1,12 @@
 import { MigrationInterface, QueryRunner } from 'typeorm';
 
-export class AuthEntities1735410407247 implements MigrationInterface {
-  name = 'AuthEntities1735410407247';
+export class AuthEntities1737571201600 implements MigrationInterface {
+  name = 'AuthEntities1737571201600';
 
   public async up(queryRunner: QueryRunner): Promise<void> {
+    await queryRunner.query(
+      "CREATE TYPE \"public\".\"confirmations_type_enum\" AS ENUM('email', 'password', 'passwordChanged')",
+    );
     await queryRunner.query(
       'CREATE TABLE "confirmations" ("id" SERIAL NOT NULL, "createdAt" TIMESTAMP NOT NULL DEFAULT now(), "updatedAt" TIMESTAMP NOT NULL DEFAULT now(), "type" "public"."confirmations_type_enum" NOT NULL, "expires" TIMESTAMP NOT NULL, "token" character varying NOT NULL, "userId" integer, CONSTRAINT "UQ_896ed64bde1cef05ea113698a3a" UNIQUE ("token"), CONSTRAINT "PK_8a3991e9a203e6460dcb9048746" PRIMARY KEY ("id"))',
     );
@@ -37,5 +40,6 @@ export class AuthEntities1735410407247 implements MigrationInterface {
       'DROP INDEX "public"."IDX_7d1a1130c8184b69878e356614"',
     );
     await queryRunner.query('DROP TABLE "confirmations"');
+    await queryRunner.query('DROP TYPE "public"."confirmations_type_enum"');
   }
 }
