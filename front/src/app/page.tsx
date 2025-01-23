@@ -1,3 +1,9 @@
+import { Typography } from '@mui/material'
+
 export default function Home() {
-  return <div>New Blood</div>
+  return (
+    <Typography fontWeight="bold" bgcolor="primary">
+      New Blood
+    </Typography>
+  )
 }
