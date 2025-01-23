@@ -13,6 +13,10 @@ async function bootstrap(): Promise<void> {
 
   const port = configService.getOrThrow('app.port', { infer: true });
 
+  const { origin, methods } = configService.getOrThrow('security', {
+    infer: true,
+  });
+
   const cookieSecret = configService.getOrThrow('cookie.cookieSecret', {
     infer: true,
   });
@@ -20,6 +24,12 @@ async function bootstrap(): Promise<void> {
   app.use(cookieParser(cookieSecret));
 
   app.useGlobalInterceptors(new SetCookiesInterceptor(app.get(TokenService)));
+
+  app.enableCors({
+    origin,
+    credentials: true,
+    methods,
+  });
 
   await app.listen(port);
 }
