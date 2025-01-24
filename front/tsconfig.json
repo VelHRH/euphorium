@@ -19,11 +19,14 @@
       }
     ],
     "paths": {
-      "$/*": ["./src/*"],
-      "$providers": ["./src/providers/index"],
-      "$providers/*": ["./src/providers/*"],
-      "$theme": ["./src/theme/index"],
-      "$theme/*": ["./src/theme/*"]
+      "$modules/*": ["./src/modules/*"],
+      "$graphql": ["./src/modules/graphql/index"],
+      "$graphql/*": ["./src/modules/graphql/*"],
+      "$providers": ["./src/modules/providers/index"],
+      "$providers/*": ["./src/modules/providers/*"],
+      "$theme": ["./src/modules/theme/index"],
+      "$theme/*": ["./src/modules/theme/*"],
+      "$/*": ["./src/*"]
     }
   },
   "include": ["next-env.d.ts", "**/*.ts", "**/*.tsx", ".next/types/**/*.ts"],

@@ -1,3 +1,5 @@
+'use client '
+
 import { AppProvider } from '$providers'
 
 export default function RootLayout({
