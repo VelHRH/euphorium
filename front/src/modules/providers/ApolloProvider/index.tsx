@@ -1,14 +1,57 @@
 'use client'
 
-import { ApolloProvider as DefaultApolloProvider } from '@apollo/client'
-import { FC, PropsWithChildren } from 'react'
+import { ApolloLink, HttpLink } from '@apollo/client'
+import { setContext } from '@apollo/client/link/context'
+import {
+  ApolloClient,
+  ApolloNextAppProvider,
+  InMemoryCache,
+  SSRMultipartLink,
+} from '@apollo/experimental-nextjs-app-support'
 
-import { client } from '$graphql'
+const forwardCookieLink = setContext(async () => {
+  return import('next/headers').then(async ({ cookies }) => {
+    const browserCookies = await cookies()
 
-export const ApolloProvider: FC<PropsWithChildren> = (props) => {
-  const { children } = props
+    const cookie = browserCookies
+      .getAll()
+      .map(({ name, value }) => `${name}=${value}`)
+      .join(';')
 
+    return {
+      headers: {
+        cookie,
+      },
+    }
+  })
+})
+
+function makeClient() {
+  const httpLink = new HttpLink({
+    uri: process.env.NEXT_PUBLIC_API_URL, // TODO: move to src/config
+    credentials: 'include',
+    fetchOptions: { cache: 'no-store' },
+  })
+
+  return new ApolloClient({
+    cache: new InMemoryCache(),
+    link:
+      typeof window === 'undefined'
+        ? ApolloLink.from([
+            new SSRMultipartLink({
+              stripDefer: true,
+            }),
+            forwardCookieLink,
+            httpLink,
+          ])
+        : httpLink,
+  })
+}
+
+export function ApolloProvider({ children }: React.PropsWithChildren) {
   return (
-    <DefaultApolloProvider client={client}>{children}</DefaultApolloProvider>
+    <ApolloNextAppProvider makeClient={makeClient}>
+      {children}
+    </ApolloNextAppProvider>
   )
 }

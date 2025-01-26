@@ -2,6 +2,7 @@
 
 import { useQuery } from '@apollo/client'
 import { Typography } from '@mui/material'
+import Link from 'next/link'
 
 import { GET_SONG } from '$graphql'
 
@@ -19,8 +20,11 @@ export default function Home() {
   }
 
   return (
-    <Typography fontWeight="bold" bgcolor="primary">
-      {data.song.name}
-    </Typography>
+    <>
+      <Link href="/user">Users</Link>
+      <Typography fontWeight="bold" bgcolor="primary">
+        {data.song.name}
+      </Typography>
+    </>
   )
 }
