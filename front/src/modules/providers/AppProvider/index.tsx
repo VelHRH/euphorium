@@ -1,3 +1,4 @@
+import { CssBaseline } from '@mui/material'
 import { FC, PropsWithChildren } from 'react'
 
 import { ApolloProvider } from '../ApolloProvider'
@@ -7,8 +8,11 @@ export const AppProvider: FC<PropsWithChildren> = async (props) => {
   const { children } = props
 
   return (
-    <ThemeProvider>
-      <ApolloProvider>{children}</ApolloProvider>
-    </ThemeProvider>
+    <ApolloProvider>
+      <ThemeProvider>
+        <CssBaseline />
+        {children}
+      </ThemeProvider>
+    </ApolloProvider>
   )
 }

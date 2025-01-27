@@ -9,6 +9,8 @@ import {
   SSRMultipartLink,
 } from '@apollo/experimental-nextjs-app-support'
 
+import { Env } from '$config'
+
 const forwardCookieLink = setContext(async () => {
   return import('next/headers').then(async ({ cookies }) => {
     const browserCookies = await cookies()
@@ -28,7 +30,7 @@ const forwardCookieLink = setContext(async () => {
 
 function makeClient() {
   const httpLink = new HttpLink({
-    uri: process.env.NEXT_PUBLIC_API_URL, // TODO: move to src/config
+    uri: Env.app.NEXT_PUBLIC_API_URL,
     credentials: 'include',
     fetchOptions: { cache: 'no-store' },
   })

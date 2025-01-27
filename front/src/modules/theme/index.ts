@@ -2,10 +2,16 @@
 
 import { createTheme } from '@mui/material'
 
-import { palette } from './palette'
+import { generateComponents } from './components'
+import { ThemeMode } from './constants'
+import { generatePalette } from './palette'
 import { typography } from './typography'
 
-export const theme = createTheme({
-  palette,
-  typography,
-})
+export const generateTheme = (mode: ThemeMode) =>
+  createTheme({
+    components: generateComponents(mode),
+    palette: generatePalette(mode),
+    typography,
+  })
+
+export * from './constants'

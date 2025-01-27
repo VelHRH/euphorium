@@ -7,7 +7,14 @@ interface Props {
 
 export const UserListItem: FC<Props> = ({ email }) => {
   return (
-    <Card sx={{ display: 'flex', alignItems: 'center', padding: 1, gap: 2 }}>
+    <Card
+      sx={{
+        display: 'flex',
+        alignItems: 'center',
+        padding: 1,
+        gap: 2,
+      }}
+    >
       <CardContent sx={{ flex: 1 }}>
         <Typography>{email}</Typography>
       </CardContent>

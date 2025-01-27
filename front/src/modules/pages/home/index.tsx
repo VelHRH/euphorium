@@ -2,11 +2,11 @@
 
 import { useQuery } from '@apollo/client'
 import { Typography } from '@mui/material'
-import Link from 'next/link'
+import { FC } from 'react'
 
 import { GET_SONG } from '$graphql'
 
-export default function Home() {
+export const HomePage: FC = () => {
   const { loading, data, error } = useQuery(GET_SONG, {
     variables: { input: { name: 'La Noia' } },
   })
@@ -21,10 +21,7 @@ export default function Home() {
 
   return (
     <>
-      <Link href="/user">Users</Link>
-      <Typography fontWeight="bold" bgcolor="primary">
-        {data.song.name}
-      </Typography>
+      <Typography height={11111}>{data.song.name}</Typography>
     </>
   )
 }
