@@ -9,7 +9,7 @@ interface HeaderProps extends StackProps {
 export const Header: FC<HeaderProps> = ({
   children,
   sx,
-  fontWeight = 'fontWeightBold',
+  fontWeight = 'bold',
   variant = 'h5',
   ...props
 }) => (

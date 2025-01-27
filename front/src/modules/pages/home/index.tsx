@@ -21,7 +21,7 @@ export const HomePage: FC = () => {
 
   return (
     <>
-      <Typography height={11111}>{data.song.name}</Typography>
+      <Typography>{data.song.name}</Typography>
     </>
   )
 }
