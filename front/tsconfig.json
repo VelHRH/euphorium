@@ -19,11 +19,26 @@
       }
     ],
     "paths": {
-      "$/*": ["./src/*"],
-      "$providers": ["./src/providers/index"],
-      "$providers/*": ["./src/providers/*"],
-      "$theme": ["./src/theme/index"],
-      "$theme/*": ["./src/theme/*"]
+      "$modules/*": ["./src/modules/*"],
+      "$config": ["./src/config/index"],
+      "$config/*": ["./src/config/*"],
+      "$constants": ["./src/modules/constants/index"],
+      "$constants/*": ["./src/modules/constants/*"],
+      "$components": ["./src/modules/components/index"],
+      "$components/*": ["./src/modules/components/*"],
+      "$validation": ["./src/modules/validation/index"],
+      "$validation/*": ["./src/modules/validation/*"],
+      "$graphql": ["./src/modules/graphql/index"],
+      "$graphql/*": ["./src/modules/graphql/*"],
+      "$pages": ["./src/modules/pages/index"],
+      "$pages/*": ["./src/modules/pages/*"],
+      "$providers": ["./src/modules/providers/index"],
+      "$providers/*": ["./src/modules/providers/*"],
+      "$store": ["./src/modules/store/index"],
+      "$store/*": ["./src/modules/store/*"],
+      "$theme": ["./src/modules/theme/index"],
+      "$theme/*": ["./src/modules/theme/*"],
+      "$/*": ["./src/*"]
     }
   },
   "include": ["next-env.d.ts", "**/*.ts", "**/*.tsx", ".next/types/**/*.ts"],

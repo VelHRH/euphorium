@@ -1,36 +1,24 @@
-This is a [Next.js](https://nextjs.org) project bootstrapped with [`create-next-app`](https://nextjs.org/docs/app/api-reference/cli/create-next-app).
+## Apollo Client
 
-## Getting Started
+There are 3 fundamentally different ways to use Apollo Client in Next.js applications:
 
-First, run the development server:
+### 1. useQuery and client components
 
-```bash
-npm run dev
-# or
-yarn dev
-# or
-pnpm dev
-# or
-bun dev
+It enables all caching capabilities, but it is not the most optimal way, because all fetching will take place on the user's machine. JS-bundle must first be loaded to browser, and only then fetching happens. Even though it's not the fastest way, it still pretty robust and easy to implement:
+
+```typescript
+const client = new ApolloClient({
+  uri: API_URL,
+  cache: new InMemoryCache(),
+})
 ```
 
-Open [http://localhost:3000](http://localhost:3000) with your browser to see the result.
+### 2. Promises and server сomponents
 
-You can start editing the page by modifying `app/page.tsx`. The page auto-updates as you edit the file.
+`await client.query()` enables fetching on the server, but has obvious disadvantages like the impossibility of caching queries by Apollo and the fact that fetching on the server does not necessarily mean faster. [More about caveats](https://github.com/reactwg/react-18/discussions/37).
 
-This project uses [`next/font`](https://nextjs.org/docs/app/building-your-application/optimizing/fonts) to automatically optimize and load [Geist](https://vercel.com/font), a new font family for Vercel.
+### 3. Suspense
 
-## Learn More
-
-To learn more about Next.js, take a look at the following resources:
-
-- [Next.js Documentation](https://nextjs.org/docs) - learn about Next.js features and API.
-- [Learn Next.js](https://nextjs.org/learn) - an interactive Next.js tutorial.
-
-You can check out [the Next.js GitHub repository](https://github.com/vercel/next.js) - your feedback and contributions are welcome!
-
-## Deploy on Vercel
-
-The easiest way to deploy your Next.js app is to use the [Vercel Platform](https://vercel.com/new?utm_medium=default-template&filter=next.js&utm_source=create-next-app&utm_campaign=create-next-app-readme) from the creators of Next.js.
-
-Check out our [Next.js deployment documentation](https://nextjs.org/docs/app/building-your-application/deploying) for more details.
+Suspense component allows to fetch on server in a really optimal way. You definitely want to use it for server components. Moreover, Suspense can be used for client components as well thanks to the `useSuspenceQuey` hook. But this is the tricky part! The problem is that even when in a client component, useSuspenceQuery will fetch data on the server (that's the whole point of Suspence). So if you try to make a query that requires a cookie, the browser won't be able to do it for you. If you just try to use useSuspenceQuery instead of useQuery in a client component, the data will still be fetched, but you'll see a nasty error in the console:
+![useSuspense error](image.png)
+This means that fetching failed on the server due to an authorization error, but Next.js automatically repeated the request on the client, so the data is there. Still, the whole point of Suspense and its optimizations is lost! The only workaround is to add cookies manually on the server. This way, the perfect balance is achieved by combining SSR, Apollo cashing and Suspense. Therefore, this is the approach we use in the project.
