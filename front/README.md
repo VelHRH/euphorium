@@ -20,5 +20,7 @@ const client = new ApolloClient({
 ### 3. Suspense
 
 Suspense component allows to fetch on server in a really optimal way. You definitely want to use it for server components. Moreover, Suspense can be used for client components as well thanks to the `useSuspenceQuey` hook. But this is the tricky part! The problem is that even when in a client component, useSuspenceQuery will fetch data on the server (that's the whole point of Suspence). So if you try to make a query that requires a cookie, the browser won't be able to do it for you. If you just try to use useSuspenceQuery instead of useQuery in a client component, the data will still be fetched, but you'll see a nasty error in the console:
-![useSuspense error](image.png)
+
+![image_2025-01-26_13-40-14](https://github.com/user-attachments/assets/5e296da3-71ff-44c5-93ac-9efbdbf8dac6)
+
 This means that fetching failed on the server due to an authorization error, but Next.js automatically repeated the request on the client, so the data is there. Still, the whole point of Suspense and its optimizations is lost! The only workaround is to add cookies manually on the server. This way, the perfect balance is achieved by combining SSR, Apollo cashing and Suspense. Therefore, this is the approach we use in the project.
