@@ -137,8 +137,6 @@ export class SessionService {
             .decodedRefreshToken
         : null;
 
-      console.log({ decodedRefreshToken });
-
       const queryRunner = this.dataSource.createQueryRunner();
 
       await queryRunner.connect();

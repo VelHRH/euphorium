@@ -1,6 +1,7 @@
 import { z } from 'zod';
 
-import { passwordSchema, userSchema } from '../../user/user';
+import { passwordSchema } from '../../common';
+import { userSchema } from '../../user/user';
 
 export const updatePasswordInputSchema = z
   .object({

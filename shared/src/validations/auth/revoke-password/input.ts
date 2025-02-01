@@ -1,6 +1,6 @@
 import { z } from 'zod';
 
-import { passwordSchema } from '../../user/user';
+import { passwordSchema } from '../../common';
 
 export const revokePasswordInputSchema = z
   .object({

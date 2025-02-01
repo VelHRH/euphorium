@@ -1,35 +1,79 @@
-import { Injectable } from '@nestjs/common';
+import { Injectable, NotAcceptableException } from '@nestjs/common';
+import { ConfigService } from '@nestjs/config';
+import { Response } from 'express';
+import { OAuth2Client } from 'google-auth-library';
+import {
+  GoogleLoginInput,
+  GoogleTokenPayload,
+  googleTokenPayloadSchema,
+} from 'shared';
 
-import { GqlContext } from '$modules/app/types';
+import { Config } from '$config';
 import { SessionService } from '$modules/entities/session/session.service';
+import { UserEntity } from '$modules/entities/user/user.entity';
 import { UserService } from '$modules/entities/user/user.service';
-import { JwtPayload } from '$modules/token/types';
 
 @Injectable()
 export class GoogleAuthService {
+  private readonly googleClient: OAuth2Client;
+  private readonly googleConfig: Config['google'];
+
   constructor(
     private readonly userService: UserService,
+    private readonly configService: ConfigService<Config>,
     private readonly sessionService: SessionService,
-  ) {}
-
-  async createSession(
-    user: JwtPayload['accessToken'],
-    response: GqlContext['res'],
-  ): Promise<boolean> {
-    await this.sessionService.create({ response, ...user });
-
-    return true;
+  ) {
+    this.googleClient = new OAuth2Client();
+    this.googleConfig = this.configService.getOrThrow('google');
   }
 
-  async validateGoogleUser(email: string): Promise<JwtPayload['accessToken']> {
-    const user = await this.userService.findOne({ email });
+  async login(
+    input: GoogleLoginInput,
+    response: Response,
+  ): Promise<UserEntity> {
+    const { idToken } = input;
+    const { email } = await this.parseGoogleUser(idToken);
+    const candidate = await this.userService.findOne({ email });
 
-    if (user) {
-      return { userId: user.id, email };
+    if (candidate) {
+      return this.createSession(response, candidate);
     }
 
-    const newUser = await this.userService.create({ email, password: null });
+    const user = await this.userService.create({
+      email,
+      password: null,
+    });
 
-    return { userId: newUser.id, email };
+    return this.createSession(response, user);
+  }
+
+  private async createSession(
+    response: Response,
+    user: UserEntity,
+  ): Promise<UserEntity> {
+    const { id, email } = user;
+
+    await this.sessionService.create({ response, userId: id, email });
+
+    return user;
+  }
+
+  private async parseGoogleUser(idToken: string): Promise<GoogleTokenPayload> {
+    const { googleClientId: audience } = this.googleConfig;
+
+    try {
+      const ticket = await this.googleClient.verifyIdToken({
+        idToken,
+        audience,
+      });
+
+      const validatedPayload = googleTokenPayloadSchema.parse(
+        ticket.getPayload(),
+      );
+
+      return validatedPayload;
+    } catch (e) {
+      throw new NotAcceptableException('Wrong parameters');
+    }
   }
 }

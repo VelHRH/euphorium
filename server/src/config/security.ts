@@ -7,9 +7,4 @@ export const securityValidationSchema = joi.object({
 export const securityConfig = () => ({
   origin: process.env.ALLOWED_ORIGIN,
   methods: ['GET', 'HEAD', 'PUT', 'PATCH', 'POST', 'DELETE', 'OPTIONS'],
-  password: {
-    length: 12,
-    numbers: true,
-    symbols: true,
-  },
 });

@@ -10,6 +10,7 @@ import { tap } from 'rxjs/operators';
 import { GqlContext } from '$modules/app/types';
 import { TokenService } from '$modules/token/token.service';
 
+// This in needed instead of handleRequest in jwt-guard (since we can't use it in GQL)
 @Injectable()
 export class SetCookiesInterceptor implements NestInterceptor {
   constructor(private readonly tokenService: TokenService) {}
@@ -24,11 +25,13 @@ export class SetCookiesInterceptor implements NestInterceptor {
         if (req.user) {
           const { signedAccessToken, signedRefreshToken } = req.user;
 
-          this.tokenService.insertInCookies({
-            response,
-            signedAccessToken,
-            signedRefreshToken,
-          });
+          if (response) {
+            this.tokenService.insertInCookies({
+              response,
+              signedAccessToken,
+              signedRefreshToken,
+            });
+          }
         }
       }),
     );

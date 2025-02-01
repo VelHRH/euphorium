@@ -1,6 +1,7 @@
 import { z } from 'zod';
 
-import { passwordSchema, userSchema } from '../user';
+import { passwordSchema } from '../../common';
+import { userSchema } from '../user';
 
 export const updateUserInputSchema = userSchema
   .omit({ createdAt: true, updatedAt: true })
