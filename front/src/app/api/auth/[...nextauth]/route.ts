@@ -1,1 +1,1 @@
-export { GET, POST } from '$api/auth/next-auth'
+export { GET, POST } from '$api/auth'

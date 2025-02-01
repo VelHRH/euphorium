@@ -1,5 +1,6 @@
 import { yupResolver } from '@hookform/resolvers/yup'
 import {
+  DefaultValues,
   FieldValues,
   FormSubmitHandler,
   Resolver,
@@ -9,9 +10,13 @@ import {
 import { AuthFormProps } from './types'
 
 export const useLogic = <FormType extends FieldValues>(
-  params: Pick<AuthFormProps<FormType>, 'onSubmit' | 'schema'>,
+  params: AuthFormProps<FormType>,
 ) => {
-  const { onSubmit, schema } = params
+  const { onSubmit, schema, inputFields } = params
+
+  const defaultValues = Object.fromEntries(
+    Object.values(inputFields).map(({ name }) => [name, '']),
+  ) as DefaultValues<FormType>
 
   const {
     control,
@@ -20,6 +25,7 @@ export const useLogic = <FormType extends FieldValues>(
     resolver: yupResolver(schema) as unknown as Resolver<FormType>,
     mode: 'onChange',
     reValidateMode: 'onChange',
+    defaultValues,
   })
 
   const onFormSubmit: FormSubmitHandler<FormType> = ({ event, data }) => {

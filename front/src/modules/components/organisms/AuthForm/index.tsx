@@ -11,8 +11,8 @@ import { useLogic } from './useLogic'
 export const AuthForm = <FormType extends FieldValues>(
   props: AuthFormProps<FormType>,
 ) => {
-  const { inputFields, ...restProps } = props
-  const { control, onFormSubmit, isValid } = useLogic(restProps)
+  const { inputFields } = props
+  const { control, onFormSubmit, isValid } = useLogic(props)
 
   return (
     <Form

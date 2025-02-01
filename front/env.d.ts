@@ -9,6 +9,11 @@ declare global {
       //AUTH
       NEXTAUTH_URL: string
       NEXTAUTH_SECRET: string
+
+      // GOOGLE
+      GOOGLE_CLIENT_ID: string
+      GOOGLE_CLIENT_SECRET: string
+      GOOGLE_CALLBACK_URL: string
     }
   }
 }
