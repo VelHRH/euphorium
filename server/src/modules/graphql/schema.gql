@@ -29,12 +29,17 @@ input ForgotPasswordInput {
   email: String!
 }
 
-""""""
 input GetSongInput {
   name: String!
 }
 
-type GetSongOutputDto {
+""""""
+type GetSongOutput {
+  error: String
+  success: GetSongOutput_Success
+}
+
+type GetSongOutput_Success {
   name: String!
 }
 
@@ -65,7 +70,7 @@ type Mutation {
 }
 
 type Query {
-  song(input: GetSongInput!): GetSongOutputDto!
+  song(input: GetSongInput!): GetSongOutput!
   user(input: GetUserInput!): UserEntity
   users: [UserEntity!]!
 }

@@ -1809,6 +1809,18 @@
   resolved "https://registry.yarnpkg.com/@sqltools/formatter/-/formatter-1.2.5.tgz#3abc203c79b8c3e90fd6c156a0c62d5403520e12"
   integrity sha512-Uy0+khmZqUrUGm5dmMqVlnvufZRSK0FbYzVgp0UMstm+F5+W2/jnEEQyc9vo1ZR/E5ZI/B1WjjoTqBqwJL6Krw==
 
+"@sweet-monads/either@^3.3.1":
+  version "3.3.1"
+  resolved "https://registry.yarnpkg.com/@sweet-monads/either/-/either-3.3.1.tgz#79e174a41af925d84f334ac2702fb99fde0c0002"
+  integrity sha512-9Yi6KITRWJ1dIiO2XD5HTa3P2KSYIuZBMOHNqpDetpFTjwe5WJJqjCIIc0Bw1mkTfAbqhLhDov6BGK8MEGrLXQ==
+  dependencies:
+    "@sweet-monads/interfaces" "^3.3.0"
+
+"@sweet-monads/interfaces@^3.3.0":
+  version "3.3.0"
+  resolved "https://registry.yarnpkg.com/@sweet-monads/interfaces/-/interfaces-3.3.0.tgz#7ec79b5ec02c513488abb9be268f15dc371c56cd"
+  integrity sha512-66akGvjPD4lizQy+w4JSltJilc2w/QPdw8lPAniLJGHwyjmrw9xMJLx76Q/GDnbCU59Werses4aZJLWOlJrL5A==
+
 "@tsconfig/node10@^1.0.7":
   version "1.0.11"
   resolved "https://registry.yarnpkg.com/@tsconfig/node10/-/node10-1.0.11.tgz#6ee46400685f130e278128c7b38b7e031ff5b2f2"

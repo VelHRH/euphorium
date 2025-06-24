@@ -1,19 +1,31 @@
-import { Query, Resolver } from '@nestjs/graphql';
-import { ZodArgs } from 'nestjs-graphql-zod';
-import { GetSongInput, getSongInputSchema } from 'shared';
+import { Resolver } from '@nestjs/graphql';
+import { QueryWithZod } from 'nestjs-graphql-zod';
+import {
+  GetSongInput,
+  getSongInputSchema,
+  GetSongOutput,
+  getSongOutputSchema,
+} from 'shared';
 
-import { GetSongOutputDto } from './dto';
 import { SongEntity } from './song.entity';
 import { SongService } from './song.service';
 
+import { CommonService } from '$modules/common/common.service';
+import { GqlInputSchema } from '$modules/graphql/graphql-input-schema.decorator';
+
 @Resolver(() => SongEntity)
 export class SongResolver {
-  constructor(private readonly songService: SongService) {}
+  constructor(
+    private readonly songService: SongService,
+    private readonly commonService: CommonService,
+  ) {}
 
-  @Query(() => GetSongOutputDto)
-  song(
-    @ZodArgs(getSongInputSchema, 'input') input: GetSongInput,
-  ): GetSongOutputDto {
-    return this.songService.get(input);
+  @QueryWithZod(getSongOutputSchema)
+  async song(
+    @GqlInputSchema(getSongInputSchema) input: GetSongInput,
+  ): Promise<GetSongOutput> {
+    const result = await this.songService.get(input);
+
+    return this.commonService.handleEitherResponse(result);
   }
 }
