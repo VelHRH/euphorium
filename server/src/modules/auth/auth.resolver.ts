@@ -1,9 +1,10 @@
-import { UseGuards } from '@nestjs/common';
 import { Context, Mutation, Resolver } from '@nestjs/graphql';
 import { ZodArgs } from 'nestjs-graphql-zod';
 import {
   ForgotPasswordInput,
   forgotPasswordInputSchema,
+  GoogleLoginInput,
+  googleLoginInputSchema,
   LoginInput,
   loginInputSchema,
   RevokePasswordInput,
@@ -17,9 +18,7 @@ import {
 
 import { Public } from './decorators';
 import { CurrentUser } from './decorators/current-user';
-import { GoogleAuthGuard } from './guards';
-import { AuthService, PasswordService } from './services';
-import { GoogleAuthService } from './services/google-auth.service';
+import { AuthService, GoogleAuthService, PasswordService } from './services';
 
 import { GqlContext, UserInGqlContext } from '$modules/app/types';
 import { UserEntity } from '$modules/entities/user/user.entity';
@@ -50,10 +49,12 @@ export class AuthResolver {
   }
 
   @Public()
-  @UseGuards(GoogleAuthGuard)
   @Mutation(() => UserEntity, { nullable: true })
-  googleLogin(@Context() ctx: GqlContext): Promise<boolean> {
-    return this.googleAuthService.createSession(ctx.req.user!, ctx.res);
+  googleLogin(
+    @ZodArgs(googleLoginInputSchema, 'input') input: GoogleLoginInput,
+    @Context() ctx: GqlContext,
+  ): Promise<UserEntity | null> {
+    return this.googleAuthService.login(input, ctx.res);
   }
 
   @Public()

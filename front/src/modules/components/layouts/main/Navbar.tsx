@@ -4,16 +4,23 @@ import DarkMode from '@mui/icons-material/DarkMode'
 import WbSunny from '@mui/icons-material/WbSunny'
 import { Box, Button, IconButton, Toolbar, useTheme } from '@mui/material'
 import Link from 'next/link'
+import { signOut, useSession } from 'next-auth/react'
+import { FC } from 'react'
 
 import { Routes } from '$config'
 import { ThemeMode } from '$modules/theme'
 import { useStore } from '$store'
 
-export default function Navbar() {
+export const Navbar: FC = () => {
   const theme = useTheme()
+  const { data: session } = useSession()
 
   const themeMode = useStore((state) => state.themeMode)
   const toggleThemeMode = useStore((state) => state.toggleThemeMode)
+
+  const logoutHandler = () => {
+    signOut({ redirect: true, callbackUrl: Routes.LOGIN.url })
+  }
 
   return (
     <Box
@@ -36,18 +43,24 @@ export default function Navbar() {
           </Link>
         </Box>
 
-        <Box>
+        <Box display="flex">
           <IconButton onClick={toggleThemeMode} color="primary">
             {themeMode === ThemeMode.DARK ? <DarkMode /> : <WbSunny />}
           </IconButton>
-          <Link href={Routes.LOGIN.url}>
-            <Button>Login</Button>
-          </Link>
-          <Link href={Routes.SIGN_UP.url}>
-            <Button variant="outlined" sx={{ ml: 1 }}>
-              Sign Up
-            </Button>
-          </Link>
+          {session ? (
+            <Button onClick={logoutHandler}>Logout</Button>
+          ) : (
+            <>
+              <Link href={Routes.LOGIN.url}>
+                <Button>Login</Button>
+              </Link>
+              <Link href={Routes.SIGN_UP.url}>
+                <Button variant="outlined" sx={{ ml: 1 }}>
+                  Sign Up
+                </Button>
+              </Link>
+            </>
+          )}
         </Box>
       </Toolbar>
     </Box>

@@ -38,7 +38,7 @@ export class AuthService {
 
     const { id, email, password } = user;
 
-    if (!password) {
+    if (password === undefined || password === null) {
       throw new BadRequestException();
     }
 

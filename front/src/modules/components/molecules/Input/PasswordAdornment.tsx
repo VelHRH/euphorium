@@ -1,3 +1,5 @@
+import Visibility from '@mui/icons-material/Visibility'
+import VisibilityOff from '@mui/icons-material/VisibilityOff'
 import { IconButton, InputAdornment } from '@mui/material'
 import { FC } from 'react'
 
@@ -19,7 +21,9 @@ export const PasswordAdornment: FC<Props> = (props) => {
           aria-label="toggle password visibility"
           onClick={togglePassword}
           edge="end"
-        ></IconButton>
+        >
+          {showPassword ? <VisibilityOff /> : <Visibility />}
+        </IconButton>
       </InputAdornment>
     )
   )

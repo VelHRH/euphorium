@@ -1,6 +1,6 @@
 import { FC } from 'react'
 
-import { AppProvider } from '$providers'
+import { AppProvider } from '$components/providers'
 
 import { LayoutProps } from '../types'
 
@@ -8,13 +8,15 @@ export const RootLayout: FC<LayoutProps> = ({ children }) => {
   return (
     <html>
       <head></head>
-      <body
-        style={{
-          height: '100vh',
-        }}
-      >
-        <AppProvider>{children}</AppProvider>
-      </body>
+      <AppProvider>
+        <body
+          style={{
+            height: '100vh',
+          }}
+        >
+          {children}
+        </body>
+      </AppProvider>
     </html>
   )
 }

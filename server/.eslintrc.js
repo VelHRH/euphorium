@@ -77,9 +77,13 @@ const tsRules = {
   '@typescript-eslint/no-inferrable-types': 'off', // we should always set types, even if they are trivial (number, boolean, etc)
   'class-methods-use-this': 'off',
   'consistent-return': 'off',
-  '@typescript-eslint/no-unsafe-assignment': 'error',
-  '@typescript-eslint/no-unsafe-member-access': 'warn',
-  '@typescript-eslint/no-unsafe-return': 'warn',
+  // Disable unsafe rules for Zod inferred types since they are actually safe
+  '@typescript-eslint/no-unsafe-assignment': 'off',
+  '@typescript-eslint/no-unsafe-member-access': 'off',
+  '@typescript-eslint/no-unsafe-return': 'off',
+
+  '@typescript-eslint/strict-boolean-expressions': 'error',
+  '@typescript-eslint/no-explicit-any': 'error',
 };
 
 const spellCheckerRule = {

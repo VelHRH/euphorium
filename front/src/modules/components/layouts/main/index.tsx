@@ -1,7 +1,7 @@
 import { Box } from '@mui/material'
 import { FC } from 'react'
 
-import Navbar from './Navbar'
+import { Navbar } from './Navbar'
 
 import { LayoutProps } from '../types'
 

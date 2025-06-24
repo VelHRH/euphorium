@@ -1,22 +1,22 @@
 import { yupResolver } from '@hookform/resolvers/yup'
-import { useRouter } from 'next/navigation'
 import {
+  DefaultValues,
   FieldValues,
   FormSubmitHandler,
   Resolver,
   useForm,
 } from 'react-hook-form'
 
-import { Routes } from '$config'
-
 import { AuthFormProps } from './types'
 
 export const useLogic = <FormType extends FieldValues>(
-  params: Pick<AuthFormProps<FormType>, 'onSubmit' | 'schema'>,
+  params: AuthFormProps<FormType>,
 ) => {
-  const { onSubmit, schema } = params
-  const router = useRouter()
-  const redirectToRegister = () => router.push(Routes.SIGN_UP.url)
+  const { onSubmit, schema, inputFields } = params
+
+  const defaultValues = Object.fromEntries(
+    Object.values(inputFields).map(({ name }) => [name, '']),
+  ) as DefaultValues<FormType>
 
   const {
     control,
@@ -25,18 +25,17 @@ export const useLogic = <FormType extends FieldValues>(
     resolver: yupResolver(schema) as unknown as Resolver<FormType>,
     mode: 'onChange',
     reValidateMode: 'onChange',
+    defaultValues,
   })
 
   const onFormSubmit: FormSubmitHandler<FormType> = ({ event, data }) => {
     event?.preventDefault()
-
-    onSubmit({ ...data, email: data.email.trim() })
+    onSubmit(data)
   }
 
   return {
     control,
     onFormSubmit,
-    redirectToRegister,
     isValid,
   }
 }

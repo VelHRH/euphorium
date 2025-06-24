@@ -45,12 +45,13 @@ export class PasswordService {
       { password: true },
     );
 
-    const isPasswordValid = !user.password
-      ? true
-      : await this.cryptoService.comparePasswords(
-          oldPassword ?? '',
-          user.password,
-        );
+    const isPasswordValid =
+      user.password === null
+        ? true
+        : await this.cryptoService.comparePasswords(
+            oldPassword ?? '',
+            user.password,
+          );
 
     if (!isPasswordValid) {
       throw new NotAcceptableException('Wrong current password');

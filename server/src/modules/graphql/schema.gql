@@ -44,6 +44,11 @@ input GetUserInput {
 }
 
 """"""
+input GoogleLoginInput {
+  idToken: String!
+}
+
+""""""
 input LoginInput {
   email: String!
   password: String!
@@ -51,7 +56,7 @@ input LoginInput {
 
 type Mutation {
   forgotPassword(input: ForgotPasswordInput!): Boolean!
-  googleLogin: UserEntity
+  googleLogin(input: GoogleLoginInput!): UserEntity
   login(input: LoginInput!): UserEntity
   logout: Boolean!
   revokePassword(input: RevokePasswordInput!): Boolean!

@@ -7,7 +7,7 @@ export const googleValidationSchema = joi.object({
 });
 
 export const googleConfig = () => ({
-  oauthId: process.env.GOOGLE_CLIENT_ID,
-  oauthSecret: process.env.GOOGLE_CLIENT_SECRET,
-  callbackUrl: process.env.GOOGLE_CALLBACK_URL,
+  googleClientId: process.env.GOOGLE_CLIENT_ID,
+  googleClientSecret: process.env.GOOGLE_CLIENT_SECRET,
+  googleCallbackUrl: process.env.GOOGLE_CALLBACK_URL,
 });
