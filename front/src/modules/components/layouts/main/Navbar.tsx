@@ -4,7 +4,7 @@ import DarkMode from '@mui/icons-material/DarkMode'
 import WbSunny from '@mui/icons-material/WbSunny'
 import { Box, Button, IconButton, Toolbar, useTheme } from '@mui/material'
 import Link from 'next/link'
-import { signOut } from 'next-auth/react'
+import { signOut, useSession } from 'next-auth/react'
 import { FC } from 'react'
 
 import { Routes } from '$config'
@@ -13,6 +13,7 @@ import { useStore } from '$store'
 
 export const Navbar: FC = () => {
   const theme = useTheme()
+  const { data: session } = useSession()
 
   const themeMode = useStore((state) => state.themeMode)
   const toggleThemeMode = useStore((state) => state.toggleThemeMode)
@@ -46,15 +47,20 @@ export const Navbar: FC = () => {
           <IconButton onClick={toggleThemeMode} color="primary">
             {themeMode === ThemeMode.DARK ? <DarkMode /> : <WbSunny />}
           </IconButton>
-          <Link href={Routes.LOGIN.url}>
-            <Button>Login</Button>
-          </Link>
-          <Link href={Routes.SIGN_UP.url}>
-            <Button variant="outlined" sx={{ ml: 1 }}>
-              Sign Up
-            </Button>
-          </Link>
-          <Button onClick={logoutHandler}>Logout</Button>
+          {session ? (
+            <Button onClick={logoutHandler}>Logout</Button>
+          ) : (
+            <>
+              <Link href={Routes.LOGIN.url}>
+                <Button>Login</Button>
+              </Link>
+              <Link href={Routes.SIGN_UP.url}>
+                <Button variant="outlined" sx={{ ml: 1 }}>
+                  Sign Up
+                </Button>
+              </Link>
+            </>
+          )}
         </Box>
       </Toolbar>
     </Box>

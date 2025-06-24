@@ -35,7 +35,7 @@ export default async function authMiddleware(
     const user = await getSessionUser()
 
     if (!user?.email) {
-      header.set('redirect', Routes.SIGN_UP.url)
+      header.set('redirect', Routes.LOGIN.url)
     }
   }
 

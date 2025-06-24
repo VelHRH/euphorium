@@ -56,7 +56,7 @@ export class SessionService {
     const { signedAccessToken, signedRefreshToken } = params;
 
     try {
-      if (!signedAccessToken || !signedRefreshToken) {
+      if (signedAccessToken === undefined || signedRefreshToken === undefined) {
         throw new UnauthorizedException();
       }
 
@@ -100,7 +100,7 @@ export class SessionService {
 
   async update(signedRefreshToken?: string): Promise<UpdateResponse> {
     try {
-      if (!signedRefreshToken) {
+      if (signedRefreshToken === undefined) {
         throw new UnauthorizedException();
       }
 
@@ -132,10 +132,11 @@ export class SessionService {
     try {
       const { signedRefreshToken } = this.tokenService.getFromCookies(response);
 
-      const decodedRefreshToken = signedRefreshToken
-        ? (await this.tokenService.decode(signedRefreshToken, 'refreshToken'))
-            .decodedRefreshToken
-        : null;
+      const decodedRefreshToken =
+        signedRefreshToken !== undefined
+          ? (await this.tokenService.decode(signedRefreshToken, 'refreshToken'))
+              .decodedRefreshToken
+          : undefined;
 
       const queryRunner = this.dataSource.createQueryRunner();
 

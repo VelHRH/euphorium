@@ -25,7 +25,7 @@ export class SetCookiesInterceptor implements NestInterceptor {
         if (req.user) {
           const { signedAccessToken, signedRefreshToken } = req.user;
 
-          if (response) {
+          if (response !== undefined) {
             this.tokenService.insertInCookies({
               response,
               signedAccessToken,
