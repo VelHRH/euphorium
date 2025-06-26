@@ -1,17 +1,19 @@
 import { Resolver } from '@nestjs/graphql';
-import { QueryWithZod } from 'nestjs-graphql-zod';
 import {
   GetSongInput,
   getSongInputSchema,
-  GetSongOutput,
-  getSongOutputSchema,
+  GetSongResponse,
+  getSongResponseSchema,
 } from 'shared';
 
 import { SongEntity } from './song.entity';
 import { SongService } from './song.service';
 
 import { CommonService } from '$modules/common/common.service';
-import { GqlInputSchema } from '$modules/graphql/graphql-input-schema.decorator';
+import {
+  QueryInputSchema,
+  QueryOutputSchema,
+} from '$modules/graphql/graphql-query-schema.decorator';
 
 @Resolver(() => SongEntity)
 export class SongResolver {
@@ -20,12 +22,12 @@ export class SongResolver {
     private readonly commonService: CommonService,
   ) {}
 
-  @QueryWithZod(getSongOutputSchema)
+  @QueryOutputSchema(getSongResponseSchema)
   async song(
-    @GqlInputSchema(getSongInputSchema) input: GetSongInput,
-  ): Promise<GetSongOutput> {
-    const result = await this.songService.get(input);
-
-    return this.commonService.handleEitherResponse(result);
+    @QueryInputSchema(getSongInputSchema) input: GetSongInput,
+  ): Promise<GetSongResponse> {
+    return this.songService
+      .get(input)
+      .then(this.commonService.handleEitherResponse);
   }
 }

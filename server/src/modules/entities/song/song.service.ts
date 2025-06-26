@@ -1,43 +1,76 @@
+import { ValidationError } from '@nestjs/apollo';
 import { Injectable, NotFoundException } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { Either, left, right } from '@sweet-monads/either';
-import { GetSongInput, getSongInputSchema } from 'shared';
+import { GetSongInput, getSongInputSchema, GetSongOutput } from 'shared';
 import { Repository } from 'typeorm';
 
 import { SongEntity } from './song.entity';
+
+import { CommonService } from '../../common/common.service';
 
 @Injectable()
 export class SongService {
   constructor(
     @InjectRepository(SongEntity)
     private readonly songRepository: Repository<SongEntity>,
+    private readonly commonService: CommonService,
   ) {}
 
-  async get(input: GetSongInput): Promise<Either<Error, { name: string }>> {
-    // TODO: create wrapper for validation part, so all the services can use it
-    try {
-      const validatedInput = getSongInputSchema.parse(input);
+  get = (
+    input: GetSongInput,
+  ): Promise<Either<ValidationError | NotFoundException, GetSongOutput>> =>
+    this.commonService.withValidation(
+      getSongInputSchema,
+      input,
+      async (validatedInput) => {
+        const song = await this.songRepository.findOne({
+          where: { name: validatedInput.name },
+        });
 
-      const song = await this.songRepository.findOne({
-        where: { name: validatedInput.name },
-      });
+        if (!song) {
+          return left(new NotFoundException());
+        }
 
-      if (!song) {
-        return left(new NotFoundException());
-      }
+        return right({ name: song.name });
+      },
+    );
 
-      return right({ name: song.name });
-    } catch (error) {
-      // eslint-disable-next-line @typescript-eslint/strict-boolean-expressions
-      if (error.errors) {
-        const errors = error.errors as { message: string }[];
+  // get = (input: GetSongInput): Promise<Either<Error, GetSongOutput>> =>
+  //   this.commonService
+  //     .validateWithSchema(getSongInputSchema, input)
+  //     .asyncChain(async (validatedInput) => {
+  //       const song = await this.songRepository.findOne({
+  //         where: { name: validatedInput.name },
+  //       });
 
-        const errorMessage = errors[0].message;
+  //       if (!song) {
+  //         return left(new NotFoundException());
+  //       }
 
-        return left(new Error(errorMessage));
-      }
+  //       return right({ name: song.name });
+  //     });
 
-      return left(error);
-    }
-  }
+  // async get(
+  //   input: GetSongInput,
+  // ): Promise<Either<NotFoundException | ValidationError, GetSongOutput>> {
+  //   const validationResult = this.commonService.validateWithSchema(
+  //     getSongInputSchema,
+  //     input,
+  //   );
+
+  //   if (validationResult.isLeft()) {
+  //     return validationResult;
+  //   }
+
+  //   const song = await this.songRepository.findOne({
+  //     where: { name: validationResult.value.name },
+  //   });
+
+  //   if (!song) {
+  //     return left(new NotFoundException());
+  //   }
+
+  //   return right({ name: song.name });
+  // }
 }

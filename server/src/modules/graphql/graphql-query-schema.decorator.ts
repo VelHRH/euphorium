@@ -1,9 +1,9 @@
 import { Args } from '@nestjs/graphql';
-import { inputFromZod } from 'nestjs-graphql-zod';
+import { inputFromZod, QueryWithZod } from 'nestjs-graphql-zod';
 import { extractNameAndDescription } from 'nestjs-graphql-zod/dist/helpers';
-import { type ZodObject, type ZodRawShape } from 'zod';
+import type { AnyZodObject, ZodObject, ZodRawShape } from 'zod';
 
-export function GqlInputSchema<T extends ZodObject<ZodRawShape>>(
+export function QueryInputSchema<T extends ZodObject<ZodRawShape>>(
   schema: T,
 ): ParameterDecorator {
   const { name } = extractNameAndDescription(schema, {});
@@ -14,4 +14,10 @@ export function GqlInputSchema<T extends ZodObject<ZodRawShape>>(
   });
 
   return Args('input', { type: () => inputClass });
+}
+
+export function QueryOutputSchema<T extends AnyZodObject>(
+  input: T,
+): MethodDecorator {
+  return QueryWithZod(input);
 }
