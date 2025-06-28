@@ -1,10 +1,12 @@
+import { ValidationError } from '@nestjs/apollo';
 import {
   BadRequestException,
   Injectable,
   UnauthorizedException,
 } from '@nestjs/common';
+import { Either } from '@sweet-monads/either';
 import { Response } from 'express';
-import { LoginInput, SignUpInput } from 'shared';
+import { LoginInput, SignUpInput, SignUpOutput } from 'shared';
 
 import { GqlContext } from '$modules/app/types';
 import { CryptoService } from '$modules/crypto/crypto.service';
@@ -20,7 +22,9 @@ export class AuthService {
     private readonly sessionService: SessionService,
   ) {}
 
-  signUp(input: SignUpInput): Promise<UserEntity> {
+  signUp(
+    input: SignUpInput,
+  ): Promise<Either<ValidationError | BadRequestException, SignUpOutput>> {
     return this.userService.create(input);
   }
 

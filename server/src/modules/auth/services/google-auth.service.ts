@@ -44,7 +44,15 @@ export class GoogleAuthService {
       password: null,
     });
 
-    return this.createSession(response, user);
+    return this.createSession(response, {
+      id: 0,
+      email,
+      password: null,
+      createdAt: new Date(),
+      updatedAt: new Date(),
+      session: [],
+      confirmation: [],
+    });
   }
 
   private async createSession(

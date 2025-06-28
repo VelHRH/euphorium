@@ -11,6 +11,8 @@ import {
   revokePasswordInputSchema,
   SignUpInput,
   signUpInputSchema,
+  SignUpResponse,
+  signUpResponseSchema,
   UpdatePasswordInput,
   updatePasswordInputSchema,
   User,
@@ -20,8 +22,13 @@ import { Public } from './decorators';
 import { CurrentUser } from './decorators/current-user';
 import { AuthService, GoogleAuthService, PasswordService } from './services';
 
+import { handleEitherResponse } from '$helpers';
 import { GqlContext, UserInGqlContext } from '$modules/app/types';
 import { UserEntity } from '$modules/entities/user/user.entity';
+import {
+  InputSchema,
+  MutationOutputSchema,
+} from '$modules/graphql/graphql-schema.decorator';
 
 @Resolver()
 export class AuthResolver {
@@ -32,11 +39,11 @@ export class AuthResolver {
   ) {}
 
   @Public()
-  @Mutation(() => UserEntity)
-  signUp(
-    @ZodArgs(signUpInputSchema, 'input') input: SignUpInput,
-  ): Promise<UserEntity> {
-    return this.authService.signUp(input);
+  @MutationOutputSchema(signUpResponseSchema)
+  async signUp(
+    @InputSchema(signUpInputSchema) input: SignUpInput,
+  ): Promise<SignUpResponse> {
+    return this.authService.signUp(input).then(handleEitherResponse);
   }
 
   @Public()

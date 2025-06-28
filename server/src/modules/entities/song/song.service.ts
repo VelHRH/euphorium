@@ -7,38 +7,32 @@ import { Repository } from 'typeorm';
 
 import { SongEntity } from './song.entity';
 
-import { CommonService } from '../../common/common.service';
+import { withValidation } from '$helpers';
 
 @Injectable()
 export class SongService {
   constructor(
     @InjectRepository(SongEntity)
     private readonly songRepository: Repository<SongEntity>,
-    private readonly commonService: CommonService,
   ) {}
 
   get = (
     input: GetSongInput,
   ): Promise<Either<ValidationError | NotFoundException, GetSongOutput>> =>
-    this.commonService.withValidation(
-      getSongInputSchema,
-      input,
-      async (validatedInput) => {
-        const song = await this.songRepository.findOne({
-          where: { name: validatedInput.name },
-        });
+    withValidation(getSongInputSchema, input, async (validatedInput) => {
+      const song = await this.songRepository.findOne({
+        where: { name: validatedInput.name },
+      });
 
-        if (!song) {
-          return left(new NotFoundException());
-        }
+      if (!song) {
+        return left(new NotFoundException());
+      }
 
-        return right({ name: song.name });
-      },
-    );
+      return right({ name: song.name });
+    });
 
   // get = (input: GetSongInput): Promise<Either<Error, GetSongOutput>> =>
-  //   this.commonService
-  //     .validateWithSchema(getSongInputSchema, input)
+  //   validateWithSchema(getSongInputSchema, input)
   //     .asyncChain(async (validatedInput) => {
   //       const song = await this.songRepository.findOne({
   //         where: { name: validatedInput.name },
@@ -54,7 +48,7 @@ export class SongService {
   // async get(
   //   input: GetSongInput,
   // ): Promise<Either<NotFoundException | ValidationError, GetSongOutput>> {
-  //   const validationResult = this.commonService.validateWithSchema(
+  //   const validationResult = validateWithSchema(
   //     getSongInputSchema,
   //     input,
   //   );

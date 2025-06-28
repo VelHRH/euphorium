@@ -2,6 +2,21 @@
 # THIS FILE WAS AUTOMATICALLY GENERATED (DO NOT MODIFY)
 # ------------------------------------------------------
 
+"""Response"""
+type ClassFromZod_1 {
+  error: String
+
+  """SignUpOutput:"""
+  success: ClassFromZod_2_Success
+}
+
+"""SignUpOutput:"""
+type ClassFromZod_2_Success {
+  email: String!
+  id: Int!
+  password: String!
+}
+
 type ConfirmationEntity {
   createdAt: DateTime!
   expires: DateTime!
@@ -43,7 +58,6 @@ type GetSongOutput_Success {
   name: String!
 }
 
-""""""
 input GetUserInput {
   id: Int!
 }
@@ -65,7 +79,7 @@ type Mutation {
   login(input: LoginInput!): UserEntity
   logout: Boolean!
   revokePassword(input: RevokePasswordInput!): Boolean!
-  signUp(input: SignUpInput!): UserEntity!
+  signUp(input: SignUpInput!): ClassFromZod_1!
   updatePassword(input: UpdatePasswordInput!): UserEntity
 }
 
@@ -90,7 +104,6 @@ type SessionEntity {
   user: UserEntity!
 }
 
-""""""
 input SignUpInput {
   email: String!
   password: String!

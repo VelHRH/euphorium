@@ -1,12 +1,21 @@
-import { Injectable } from '@nestjs/common';
+import { ValidationError } from '@nestjs/apollo';
+import { BadRequestException, Injectable } from '@nestjs/common';
 import { ConfigService } from '@nestjs/config';
 import { InjectRepository } from '@nestjs/typeorm';
-import { CreateUserInput, GetUserInput, UpdateUserInput } from 'shared';
+import { Either, left, right } from '@sweet-monads/either';
+import {
+  CreateUserInput,
+  createUserInputSchema,
+  CreateUserOutput,
+  GetUserInput,
+  UpdateUserInput,
+} from 'shared';
 import { FindOptionsSelect, FindOptionsWhere, Repository } from 'typeorm';
 
 import { UserEntity } from './user.entity';
 
 import { Config } from '$config';
+import { withValidation } from '$helpers';
 import { CryptoService } from '$modules/crypto/crypto.service';
 
 @Injectable()
@@ -50,13 +59,30 @@ export class UserService {
     return this.userRepository.find();
   }
 
-  async create(input: CreateUserInput): Promise<UserEntity> {
-    const rawPassword = input.password;
+  async create(
+    input: CreateUserInput,
+  ): Promise<Either<BadRequestException | ValidationError, CreateUserOutput>> {
+    return withValidation(
+      createUserInputSchema,
+      input,
+      async (validatedInput) => {
+        try {
+          const rawPassword = input.password;
 
-    const password =
-      rawPassword !== null ? await this.hashPassword(rawPassword) : null;
+          const password =
+            rawPassword !== null ? await this.hashPassword(rawPassword) : null;
 
-    return this.userRepository.save({ ...input, password });
+          const savedUser = await this.userRepository.save({
+            ...validatedInput,
+            password,
+          });
+
+          return right(savedUser);
+        } catch {
+          return left(new BadRequestException());
+        }
+      },
+    );
   }
 
   hashPassword(password: string): Promise<string> {

@@ -11,8 +11,8 @@ import {
 } from './types';
 
 import { Config } from '$config';
+import { ONE_SECOND_IN_MS } from '$constants';
 import { GqlContext } from '$modules/app/types';
-import { ONE_SECOND_IN_MS } from '$modules/common';
 import { CookieService } from '$modules/cookie/cookie.service';
 import { SetCookieParamsOptions } from '$modules/cookie/types';
 

@@ -9,25 +9,20 @@ import {
 import { SongEntity } from './song.entity';
 import { SongService } from './song.service';
 
-import { CommonService } from '$modules/common/common.service';
+import { handleEitherResponse } from '$helpers';
 import {
-  QueryInputSchema,
+  InputSchema,
   QueryOutputSchema,
-} from '$modules/graphql/graphql-query-schema.decorator';
+} from '$modules/graphql/graphql-schema.decorator';
 
 @Resolver(() => SongEntity)
 export class SongResolver {
-  constructor(
-    private readonly songService: SongService,
-    private readonly commonService: CommonService,
-  ) {}
+  constructor(private readonly songService: SongService) {}
 
   @QueryOutputSchema(getSongResponseSchema)
   async song(
-    @QueryInputSchema(getSongInputSchema) input: GetSongInput,
+    @InputSchema(getSongInputSchema) input: GetSongInput,
   ): Promise<GetSongResponse> {
-    return this.songService
-      .get(input)
-      .then(this.commonService.handleEitherResponse);
+    return this.songService.get(input).then(handleEitherResponse);
   }
 }

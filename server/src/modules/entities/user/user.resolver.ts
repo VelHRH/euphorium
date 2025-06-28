@@ -4,7 +4,7 @@ import { GetUserInput, getUserInputSchema } from 'shared';
 import { UserEntity } from './user.entity';
 import { UserService } from './user.service';
 
-import { QueryInputSchema } from '$modules/graphql/graphql-query-schema.decorator';
+import { InputSchema } from '$modules/graphql/graphql-schema.decorator';
 
 @Resolver(() => UserEntity)
 export class UserResolver {
@@ -12,7 +12,7 @@ export class UserResolver {
 
   @Query(() => UserEntity, { nullable: true })
   user(
-    @QueryInputSchema(getUserInputSchema) input: GetUserInput,
+    @InputSchema(getUserInputSchema) input: GetUserInput,
   ): Promise<UserEntity | null> {
     return this.service.get(input);
   }
