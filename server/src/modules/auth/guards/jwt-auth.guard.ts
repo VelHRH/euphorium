@@ -5,6 +5,7 @@ import { GqlExecutionContext } from '@nestjs/graphql';
 import { AuthGuard } from '@nestjs/passport';
 import { Observable } from 'rxjs';
 
+import { UnauthorizedException } from '../../../common/exceptions/unauthorized.exception';
 import { StrategyName } from '../constants';
 import { IS_PUBLIC_KEY } from '../decorators';
 
@@ -32,9 +33,24 @@ export class JwtAuthGuard
     }
 
     const ctx = GqlExecutionContext.create(context);
-
     const { req } = ctx.getContext<GqlContext>();
 
-    return super.canActivate(new ExecutionContextHost([req]));
+    try {
+      return super.canActivate(new ExecutionContextHost([req]));
+    } catch (error) {
+      throw new UnauthorizedException();
+    }
+  }
+
+  handleRequest<UserType extends Record<string, unknown>>(
+    err: Error | null,
+    user: UserType | false,
+    _info: unknown,
+  ): UserType {
+    if (err !== null || user === false) {
+      throw new UnauthorizedException();
+    }
+
+    return user;
   }
 }

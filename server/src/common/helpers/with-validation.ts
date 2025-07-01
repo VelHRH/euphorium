@@ -1,10 +1,11 @@
-import { ValidationError } from '@nestjs/apollo';
 import { Either, left, right } from '@sweet-monads/either';
+
+import { ValidationException } from '$exceptions';
 
 const validateWithSchema = <T>(
   schema: { parse: (input: unknown) => T },
   input: unknown,
-): Either<ValidationError, T> => {
+): Either<ValidationException, T> => {
   try {
     const validatedInput = schema.parse(input);
 
@@ -15,7 +16,7 @@ const validateWithSchema = <T>(
       const errors = error.errors as { message: string }[];
       const errorMessage = errors[0].message;
 
-      return left(new ValidationError(errorMessage));
+      return left(new ValidationException(errorMessage));
     }
 
     throw error; // if it's not validation error, throw it
@@ -26,6 +27,6 @@ export const withValidation = <T, R, E extends Error>(
   schema: { parse: (input: unknown) => T },
   input: unknown,
   businessLogic: (validatedInput: T) => Promise<Either<E, R>>,
-): Promise<Either<ValidationError | E, R>> => {
+): Promise<Either<ValidationException | E, R>> => {
   return validateWithSchema(schema, input).asyncChain(businessLogic);
 };

@@ -1,13 +1,13 @@
-import { ValidationError } from '@nestjs/apollo';
-import { Injectable, NotFoundException } from '@nestjs/common';
+import { Injectable } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { Either, left, right } from '@sweet-monads/either';
+import { withValidation } from 'common/helpers';
 import { GetSongInput, getSongInputSchema, GetSongOutput } from 'shared';
 import { Repository } from 'typeorm';
 
 import { SongEntity } from './song.entity';
 
-import { withValidation } from '$helpers';
+import { BaseException, NotFoundException } from '$exceptions';
 
 @Injectable()
 export class SongService {
@@ -16,9 +16,7 @@ export class SongService {
     private readonly songRepository: Repository<SongEntity>,
   ) {}
 
-  get = (
-    input: GetSongInput,
-  ): Promise<Either<ValidationError | NotFoundException, GetSongOutput>> =>
+  get = (input: GetSongInput): Promise<Either<BaseException, GetSongOutput>> =>
     withValidation(getSongInputSchema, input, async (validatedInput) => {
       const song = await this.songRepository.findOne({
         where: { name: validatedInput.name },

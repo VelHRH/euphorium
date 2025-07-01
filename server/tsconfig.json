@@ -15,8 +15,9 @@
       "$modules/*": ["modules/*"],
       "$config": ["config"],
       "$config/*": ["config/*"],
-      "$constants": ["constants"],
-      "$helpers": ["helpers"],
+      "$constants": ["common/constants"],
+      "$helpers": ["common/helpers"],
+      "$exceptions": ["common/exceptions"],
       "shared": ["node_modules/shared"]
     },
     "incremental": true,

@@ -1,4 +1,3 @@
-import { ValidationError } from '@nestjs/apollo';
 import {
   BadRequestException,
   Injectable,
@@ -8,6 +7,7 @@ import { Either } from '@sweet-monads/either';
 import { Response } from 'express';
 import { LoginInput, SignUpInput, SignUpOutput } from 'shared';
 
+import { BaseException } from '$exceptions';
 import { GqlContext } from '$modules/app/types';
 import { CryptoService } from '$modules/crypto/crypto.service';
 import { SessionService } from '$modules/entities/session/session.service';
@@ -22,9 +22,7 @@ export class AuthService {
     private readonly sessionService: SessionService,
   ) {}
 
-  signUp(
-    input: SignUpInput,
-  ): Promise<Either<ValidationError | BadRequestException, SignUpOutput>> {
+  signUp(input: SignUpInput): Promise<Either<BaseException, SignUpOutput>> {
     return this.userService.create(input);
   }
 

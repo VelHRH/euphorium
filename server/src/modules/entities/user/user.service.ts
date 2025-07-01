@@ -1,8 +1,8 @@
-import { ValidationError } from '@nestjs/apollo';
-import { BadRequestException, Injectable } from '@nestjs/common';
+import { Injectable } from '@nestjs/common';
 import { ConfigService } from '@nestjs/config';
 import { InjectRepository } from '@nestjs/typeorm';
 import { Either, left, right } from '@sweet-monads/either';
+import { withValidation } from 'common/helpers';
 import {
   CreateUserInput,
   createUserInputSchema,
@@ -15,7 +15,7 @@ import { FindOptionsSelect, FindOptionsWhere, Repository } from 'typeorm';
 import { UserEntity } from './user.entity';
 
 import { Config } from '$config';
-import { withValidation } from '$helpers';
+import { BadRequestException, BaseException } from '$exceptions';
 import { CryptoService } from '$modules/crypto/crypto.service';
 
 @Injectable()
@@ -61,7 +61,7 @@ export class UserService {
 
   async create(
     input: CreateUserInput,
-  ): Promise<Either<BadRequestException | ValidationError, CreateUserOutput>> {
+  ): Promise<Either<BaseException, CreateUserOutput>> {
     return withValidation(
       createUserInputSchema,
       input,
