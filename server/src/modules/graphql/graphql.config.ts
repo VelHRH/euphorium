@@ -2,11 +2,12 @@ import { ApolloServerPluginLandingPageLocalDefault } from '@apollo/server/plugin
 import { ApolloDriver, ApolloDriverConfig } from '@nestjs/apollo';
 import { GraphQLError } from 'graphql';
 import { join } from 'node:path';
+import { ZodError } from 'zod';
 
 import { GraphqlPath } from './graphql.constants';
 import { ErrorType } from './types';
 
-import { BaseException } from '../../common/exceptions/base.exception';
+import { BaseException, ValidationException } from '../../common/exceptions';
 
 import { GqlContext } from '$modules/app/types';
 
@@ -39,6 +40,26 @@ export const graphqlConfig: ApolloDriverConfig = {
         message: formattedError.message,
         stacktrace: undefined,
         type: ErrorType.ERROR,
+      };
+    }
+
+    // Handle Zod validation errors
+    if (originalError instanceof ZodError) {
+      // Get the first error issue for the main error message
+      const firstIssue = originalError.issues[0];
+      const errorMessage = firstIssue?.message || 'Validation failed';
+
+      const exception = new ValidationException(errorMessage);
+
+      // Preserve original stack if available
+      if (originalError.stack !== undefined && originalError.stack.length > 0) {
+        exception.stack = originalError.stack;
+      }
+
+      return {
+        message: exception.message,
+        stacktrace: exception.stack?.split('\n'),
+        type: ErrorType.EXCEPTION,
       };
     }
 

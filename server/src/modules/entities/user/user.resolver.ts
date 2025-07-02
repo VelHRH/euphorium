@@ -4,7 +4,7 @@ import { GetUserInput, getUserInputSchema } from 'shared';
 import { UserEntity } from './user.entity';
 import { UserService } from './user.service';
 
-import { InputSchema } from '$modules/graphql/graphql-schema.decorator';
+import { InputSchema } from '$lib/nestjs-graphql-zod';
 
 @Resolver(() => UserEntity)
 export class UserResolver {

@@ -2,10 +2,8 @@ import { Injectable } from '@nestjs/common';
 import { ConfigService } from '@nestjs/config';
 import { InjectRepository } from '@nestjs/typeorm';
 import { Either, left, right } from '@sweet-monads/either';
-import { withValidation } from 'common/helpers';
 import {
   CreateUserInput,
-  createUserInputSchema,
   CreateUserOutput,
   GetUserInput,
   UpdateUserInput,
@@ -62,27 +60,21 @@ export class UserService {
   async create(
     input: CreateUserInput,
   ): Promise<Either<BaseException, CreateUserOutput>> {
-    return withValidation(
-      createUserInputSchema,
-      input,
-      async (validatedInput) => {
-        try {
-          const rawPassword = input.password;
+    const rawPassword = input.password;
 
-          const password =
-            rawPassword !== null ? await this.hashPassword(rawPassword) : null;
+    const password =
+      rawPassword !== null ? await this.hashPassword(rawPassword) : null;
 
-          const savedUser = await this.userRepository.save({
-            ...validatedInput,
-            password,
-          });
+    try {
+      const savedUser = await this.userRepository.save({
+        ...input,
+        password,
+      });
 
-          return right(savedUser);
-        } catch {
-          return left(new BadRequestException());
-        }
-      },
-    );
+      return right(savedUser);
+    } catch {
+      return left(new BadRequestException("Can't create this user"));
+    }
   }
 
   hashPassword(password: string): Promise<string> {

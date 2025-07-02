@@ -18,7 +18,9 @@
       "$constants": ["common/constants"],
       "$helpers": ["common/helpers"],
       "$exceptions": ["common/exceptions"],
+      "$lib/*": ["lib/*"],
       "shared": ["node_modules/shared"]
+      
     },
     "incremental": true,
     "skipLibCheck": true,

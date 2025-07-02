@@ -1,6 +1,5 @@
 import { Context, Mutation, Resolver } from '@nestjs/graphql';
 import { handleEitherResponse } from 'common/helpers';
-import { ZodArgs } from 'nestjs-graphql-zod';
 import {
   ForgotPasswordInput,
   forgotPasswordInputSchema,
@@ -12,8 +11,8 @@ import {
   revokePasswordInputSchema,
   SignUpInput,
   signUpInputSchema,
-  SignUpResponse,
-  signUpResponseSchema,
+  SignUpOutput,
+  signUpOutputSchema,
   UpdatePasswordInput,
   updatePasswordInputSchema,
   User,
@@ -23,12 +22,9 @@ import { Public } from './decorators';
 import { CurrentUser } from './decorators/current-user';
 import { AuthService, GoogleAuthService, PasswordService } from './services';
 
+import { InputSchema, MutationOutputSchema } from '$lib/nestjs-graphql-zod';
 import { GqlContext, UserInGqlContext } from '$modules/app/types';
 import { UserEntity } from '$modules/entities/user/user.entity';
-import {
-  InputSchema,
-  MutationOutputSchema,
-} from '$modules/graphql/graphql-schema.decorator';
 
 @Resolver()
 export class AuthResolver {
@@ -39,17 +35,17 @@ export class AuthResolver {
   ) {}
 
   @Public()
-  @MutationOutputSchema(signUpResponseSchema)
+  @MutationOutputSchema(signUpOutputSchema)
   async signUp(
     @InputSchema(signUpInputSchema) input: SignUpInput,
-  ): Promise<SignUpResponse> {
+  ): Promise<SignUpOutput> {
     return this.authService.signUp(input).then(handleEitherResponse);
   }
 
   @Public()
   @Mutation(() => UserEntity, { nullable: true })
   login(
-    @ZodArgs(loginInputSchema, 'input') input: LoginInput,
+    @InputSchema(loginInputSchema, 'input') input: LoginInput,
     @Context() ctx: GqlContext,
   ): Promise<UserEntity> {
     return this.authService.login(input, ctx.res);
@@ -58,7 +54,7 @@ export class AuthResolver {
   @Public()
   @Mutation(() => UserEntity, { nullable: true })
   googleLogin(
-    @ZodArgs(googleLoginInputSchema, 'input') input: GoogleLoginInput,
+    @InputSchema(googleLoginInputSchema, 'input') input: GoogleLoginInput,
     @Context() ctx: GqlContext,
   ): Promise<UserEntity | null> {
     return this.googleAuthService.login(input, ctx.res);
@@ -73,7 +69,7 @@ export class AuthResolver {
   @Public()
   @Mutation(() => Boolean)
   forgotPassword(
-    @ZodArgs(forgotPasswordInputSchema, 'input') input: ForgotPasswordInput,
+    @InputSchema(forgotPasswordInputSchema, 'input') input: ForgotPasswordInput,
   ): Promise<boolean> {
     return this.passwordService.forgot(input);
   }
@@ -81,7 +77,7 @@ export class AuthResolver {
   @Public()
   @Mutation(() => Boolean)
   revokePassword(
-    @ZodArgs(revokePasswordInputSchema, 'input') input: RevokePasswordInput,
+    @InputSchema(revokePasswordInputSchema, 'input') input: RevokePasswordInput,
   ): Promise<User> {
     return this.passwordService.revoke(input);
   }
@@ -89,7 +85,7 @@ export class AuthResolver {
   @Mutation(() => UserEntity, { nullable: true })
   updatePassword(
     @CurrentUser() { userId }: UserInGqlContext,
-    @ZodArgs(updatePasswordInputSchema, 'input')
+    @InputSchema(updatePasswordInputSchema, 'input')
     input: UpdatePasswordInput,
   ): Promise<User | null> {
     return this.passwordService.update(userId, input);

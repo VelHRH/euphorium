@@ -1,0 +1,48 @@
+import type { ZodType } from 'zod';
+
+import { getAndIncreaseRegisterCount } from './constants';
+import { getDescription } from './get-description';
+
+import type { IModelFromZodOptions } from '../model-from-zod';
+
+/**
+ * Extracts the name and description from a zod object input.
+ *
+ * @export
+ * @template T The zod object input type.
+ * @param {T} zodInput The zod object input.
+ * @param {IModelFromZodOptions<T>} options The options for the operation.
+ * @return {{ name: string, description: string }} An object containing
+ * normalized name and description info.
+ */
+export function extractNameAndDescription<T extends ZodType>(
+  zodInput: T,
+  options: IModelFromZodOptions<T>,
+) {
+  let { name } = options;
+  let description = getDescription(zodInput);
+
+  if (name === null || name === undefined || name === '') {
+    if (
+      description !== null &&
+      description !== undefined &&
+      description !== ''
+    ) {
+      const match = description.match(/(\w+):\s*?(.*)+/);
+
+      if (match) {
+        // eslint-disable-next-line @typescript-eslint/no-unused-vars
+        const [, className, actualDescription] = match;
+
+        name = className;
+        description = actualDescription.trim();
+
+        return { name, description };
+      }
+    }
+
+    name = `ClassFromZod_${getAndIncreaseRegisterCount()}`;
+  }
+
+  return { name, description };
+}

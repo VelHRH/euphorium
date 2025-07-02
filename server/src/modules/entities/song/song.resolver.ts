@@ -5,17 +5,12 @@ import {
   getSongInputSchema,
   GetSongOutput,
   getSongOutputSchema,
-  GetSongResponse,
-  getSongResponseSchema,
 } from 'shared';
 
 import { SongEntity } from './song.entity';
 import { SongService } from './song.service';
 
-import {
-  InputSchema,
-  QueryOutputSchema,
-} from '$modules/graphql/graphql-schema.decorator';
+import { InputSchema, QueryOutputSchema } from '$lib/nestjs-graphql-zod';
 
 @Resolver(() => SongEntity)
 export class SongResolver {

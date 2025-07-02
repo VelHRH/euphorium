@@ -2,19 +2,8 @@
 # THIS FILE WAS AUTOMATICALLY GENERATED (DO NOT MODIFY)
 # ------------------------------------------------------
 
-"""Response"""
 type ClassFromZod_1 {
-  error: String
-
-  """SignUpOutput:"""
-  success: ClassFromZod_2_Success
-}
-
-"""SignUpOutput:"""
-type ClassFromZod_2_Success {
-  email: String!
-  id: Int!
-  password: String!
+  name: String!
 }
 
 type ConfirmationEntity {
@@ -44,20 +33,12 @@ input ForgotPasswordInput {
   email: String!
 }
 
+""""""
 input GetSongInput {
   name: String!
 }
 
 """"""
-type GetSongOutput {
-  error: String
-  success: GetSongOutput_Success
-}
-
-type GetSongOutput_Success {
-  name: String!
-}
-
 input GetUserInput {
   id: Int!
 }
@@ -79,13 +60,13 @@ type Mutation {
   login(input: LoginInput!): UserEntity
   logout: Boolean!
   revokePassword(input: RevokePasswordInput!): Boolean!
-  signUp(input: SignUpInput!): ClassFromZod_1!
+  signUp(arg_0: SignUpInput!): SignUpOutput!
   updatePassword(input: UpdatePasswordInput!): UserEntity
 }
 
 type Query {
-  song(input: GetSongInput!): GetSongOutput!
-  user(input: GetUserInput!): UserEntity
+  song(arg_0: GetSongInput!): ClassFromZod_1!
+  user(arg_0: GetUserInput!): UserEntity
   users: [UserEntity!]!
 }
 
@@ -104,9 +85,19 @@ type SessionEntity {
   user: UserEntity!
 }
 
+""""""
 input SignUpInput {
   email: String!
   password: String!
+}
+
+""""""
+type SignUpOutput {
+  createdAt: DateTime!
+  email: String!
+  id: Int!
+  password: String!
+  updatedAt: DateTime!
 }
 
 """"""
