@@ -2,8 +2,9 @@
 # THIS FILE WAS AUTOMATICALLY GENERATED (DO NOT MODIFY)
 # ------------------------------------------------------
 
+"""LogoutOutput"""
 type ClassFromZod_1 {
-  name: String!
+  success: Boolean!
 }
 
 type ConfirmationEntity {
@@ -34,7 +35,17 @@ input ForgotPasswordInput {
 }
 
 """"""
+type ForgotPasswordOutput {
+  success: Boolean!
+}
+
+""""""
 input GetSongInput {
+  name: String!
+}
+
+""""""
+type GetSongOutput {
   name: String!
 }
 
@@ -44,8 +55,39 @@ input GetUserInput {
 }
 
 """"""
+type GetUserOutput {
+  createdAt: DateTime!
+  email: String!
+  id: Int!
+  password: String!
+  updatedAt: DateTime!
+}
+
+""""""
 input GoogleLoginInput {
   idToken: String!
+}
+
+""""""
+type GoogleLoginOutput {
+  createdAt: DateTime!
+  email: String!
+  id: Int!
+  password: String!
+  updatedAt: DateTime!
+}
+
+""""""
+type ListUsersOutput {
+  list: [ListUsersOutput_List!]!
+}
+
+type ListUsersOutput_List {
+  createdAt: DateTime!
+  email: String!
+  id: Int!
+  password: String!
+  updatedAt: DateTime!
 }
 
 """"""
@@ -54,20 +96,29 @@ input LoginInput {
   password: String!
 }
 
+""""""
+type LoginOutput {
+  createdAt: DateTime!
+  email: String!
+  id: Int!
+  password: String!
+  updatedAt: DateTime!
+}
+
 type Mutation {
-  forgotPassword(input: ForgotPasswordInput!): Boolean!
-  googleLogin(input: GoogleLoginInput!): UserEntity
-  login(input: LoginInput!): UserEntity
-  logout: Boolean!
-  revokePassword(input: RevokePasswordInput!): Boolean!
+  forgotPassword(input: ForgotPasswordInput!): ForgotPasswordOutput!
+  googleLogin(input: GoogleLoginInput!): GoogleLoginOutput!
+  login(input: LoginInput!): LoginOutput!
+  logout: ClassFromZod_1!
+  revokePassword(input: RevokePasswordInput!): RevokePasswordOutput!
   signUp(arg_0: SignUpInput!): SignUpOutput!
-  updatePassword(input: UpdatePasswordInput!): UserEntity
+  updatePassword(input: UpdatePasswordInput!): UpdatePasswordOutput!
 }
 
 type Query {
-  song(arg_0: GetSongInput!): ClassFromZod_1!
-  user(arg_0: GetUserInput!): UserEntity
-  users: [UserEntity!]!
+  song(arg_0: GetSongInput!): GetSongOutput!
+  user(arg_0: GetUserInput!): GetUserOutput!
+  users: ListUsersOutput!
 }
 
 """"""
@@ -75,6 +126,15 @@ input RevokePasswordInput {
   newPassword: String!
   repeatPassword: String!
   token: String!
+}
+
+""""""
+type RevokePasswordOutput {
+  createdAt: DateTime!
+  email: String!
+  id: Int!
+  password: String!
+  updatedAt: DateTime!
 }
 
 type SessionEntity {
@@ -104,6 +164,15 @@ type SignUpOutput {
 input UpdatePasswordInput {
   newPassword: String!
   oldPassword: String!
+}
+
+""""""
+type UpdatePasswordOutput {
+  createdAt: DateTime!
+  email: String!
+  id: Int!
+  password: String!
+  updatedAt: DateTime!
 }
 
 type UserEntity {

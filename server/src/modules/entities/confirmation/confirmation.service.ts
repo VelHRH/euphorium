@@ -5,6 +5,8 @@ import {
 } from '@nestjs/common';
 import { ConfigService } from '@nestjs/config';
 import { InjectRepository } from '@nestjs/typeorm';
+import { Either, left, right } from '@sweet-monads/either';
+import { AuthExceptionMessage } from 'common/exceptions/constants/auth';
 import { add, isBefore } from 'date-fns';
 import { ConfirmationType } from 'shared';
 import { DataSource, FindOptionsWhere, QueryRunner, Repository } from 'typeorm';
@@ -32,8 +34,16 @@ export class ConfirmationService {
     this.appConfig = configService.getOrThrow('app', { infer: true });
   }
 
-  async validate(token: string): Promise<ConfirmationEntity> {
-    const confirmation = await this.findOne({ token });
+  async validate(
+    token: string,
+  ): Promise<Either<UnauthorizedException, ConfirmationEntity>> {
+    const confirmationResult = await this.findOne({ token });
+
+    if (confirmationResult.isLeft()) {
+      return left(confirmationResult.value);
+    }
+
+    const confirmation = confirmationResult.value;
 
     const isTokenExpired = isBefore(new Date(confirmation.expires), new Date());
 
@@ -46,10 +56,12 @@ export class ConfirmationService {
         },
       );
 
-      throw new Error('Session time out');
+      return left(
+        new UnauthorizedException(AuthExceptionMessage.SESSION_EXPIRED),
+      );
     }
 
-    return confirmation;
+    return confirmationResult;
   }
 
   async send(params: SendConfirmationParams): Promise<ConfirmationEntity> {
@@ -88,7 +100,7 @@ export class ConfirmationService {
     } catch (error) {
       await queryRunner.rollbackTransaction();
 
-      throw new UnauthorizedException();
+      throw error;
     } finally {
       await queryRunner.release();
     }
@@ -125,17 +137,17 @@ export class ConfirmationService {
 
   async findOne(
     where: FindOptionsWhere<ConfirmationEntity>,
-  ): Promise<ConfirmationEntity> {
+  ): Promise<Either<NotFoundException, ConfirmationEntity>> {
     const confirmationToken = await this.confirmationRepository.findOne({
       where,
       relations: { user: true },
     });
 
     if (!confirmationToken) {
-      throw new NotFoundException();
+      return left(new NotFoundException());
     }
 
-    return confirmationToken;
+    return right(confirmationToken);
   }
 
   async delete(

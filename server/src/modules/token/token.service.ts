@@ -1,6 +1,7 @@
-import { Injectable } from '@nestjs/common';
+import { Injectable, UnauthorizedException } from '@nestjs/common';
 import { ConfigService } from '@nestjs/config';
 import { JwtService } from '@nestjs/jwt';
+import { Either, left, right } from '@sweet-monads/either';
 
 import {
   GetFromCookiesParams,
@@ -99,15 +100,22 @@ export class TokenService {
       typeof this.tokensConfig,
       'accessToken' | 'refreshToken'
     >,
-  >(signedToken: string, tokenType: T): Promise<JwtPayload[T]> {
-    const decodedToken = await this.jwtService.verifyAsync<JwtPayload[T]>(
-      signedToken,
-      {
-        secret: this.tokensConfig[tokenType].secret,
-      },
-    );
+  >(
+    signedToken: string,
+    tokenType: T,
+  ): Promise<Either<UnauthorizedException, JwtPayload[T]>> {
+    try {
+      const decodedToken = await this.jwtService.verifyAsync<JwtPayload[T]>(
+        signedToken,
+        {
+          secret: this.tokensConfig[tokenType].secret,
+        },
+      );
 
-    return decodedToken;
+      return right(decodedToken);
+    } catch {
+      return left(new UnauthorizedException('Invalid token'));
+    }
   }
 
   removeFromCookies(response: GqlContext['res']): void {

@@ -1,16 +1,18 @@
-import {
-  Injectable,
-  NotAcceptableException,
-  UnauthorizedException,
-} from '@nestjs/common';
+import { Injectable, UnauthorizedException } from '@nestjs/common';
+import { Either, left, right } from '@sweet-monads/either';
+import { AuthExceptionMessage } from 'common/exceptions/constants/auth';
 import {
   ConfirmationType,
   ForgotPasswordInput,
+  ForgotPasswordOutput,
   RevokePasswordInput,
+  RevokePasswordOutput,
   UpdatePasswordInput,
+  UpdatePasswordOutput,
   User,
 } from 'shared';
 
+import { BadRequestException, NotFoundException } from '$exceptions';
 import { CryptoService } from '$modules/crypto/crypto.service';
 import { ConfirmationService } from '$modules/entities/confirmation/confirmation.service';
 import { UserService } from '$modules/entities/user/user.service';
@@ -23,27 +25,43 @@ export class PasswordService {
     private readonly confirmationService: ConfirmationService,
   ) {}
 
-  async forgot(input: ForgotPasswordInput): Promise<boolean> {
-    const user = await this.userService.strictFindOne(input);
+  async forgot(
+    input: ForgotPasswordInput,
+  ): Promise<Either<NotFoundException, ForgotPasswordOutput>> {
+    const userResult = await this.userService.findOne(input);
+
+    if (userResult.isLeft()) {
+      return left(userResult.value);
+    }
 
     await this.confirmationService.send({
       type: ConfirmationType.PASSWORD,
-      user,
+      user: userResult.value,
     });
 
-    return true;
+    return right({
+      success: true,
+    });
   }
 
   async update(
     id: User['id'],
     input: UpdatePasswordInput,
-  ): Promise<User | null> {
+  ): Promise<
+    Either<NotFoundException | BadRequestException, UpdatePasswordOutput>
+  > {
     const { oldPassword, newPassword } = input;
 
-    const user = await this.userService.strictFindOne(
+    const userResult = await this.userService.findOne(
       { id },
       { password: true },
     );
+
+    if (userResult.isLeft()) {
+      return left(userResult.value);
+    }
+
+    const user = userResult.value;
 
     const isPasswordValid =
       user.password === null
@@ -54,45 +72,58 @@ export class PasswordService {
           );
 
     if (!isPasswordValid) {
-      throw new NotAcceptableException('Wrong current password');
+      return left(
+        new BadRequestException(AuthExceptionMessage.WRONG_CURRENT_PASSWORD),
+      );
     }
 
     const hashedPassword = await this.userService.hashPassword(newPassword);
 
-    const updatedUser = await this.userService.update({
+    return this.userService.update({
       id,
       password: hashedPassword,
     });
-
-    return updatedUser;
   }
 
-  async revoke(params: RevokePasswordInput): Promise<User> {
+  async revoke(
+    params: RevokePasswordInput,
+  ): Promise<
+    Either<UnauthorizedException | NotFoundException, RevokePasswordOutput>
+  > {
     const { token, newPassword } = params;
 
-    const confirmation = await this.confirmationService.validate(token);
+    const confirmationResult = await this.confirmationService.validate(token);
 
-    const updatedUser = await this.updateUserPassword(
+    if (confirmationResult.isLeft()) {
+      return left(confirmationResult.value);
+    }
+
+    const confirmation = confirmationResult.value;
+
+    const updatedUserResult = await this.updateUserPassword(
       confirmation.user.id,
       newPassword,
     );
 
-    if (!updatedUser) {
-      throw new UnauthorizedException();
+    if (updatedUserResult.isLeft()) {
+      return left(updatedUserResult.value);
     }
 
     await this.confirmationService.delete(
       { token },
-      { user: updatedUser, type: ConfirmationType.PASSWORD_CHANGED },
+      {
+        user: updatedUserResult.value,
+        type: ConfirmationType.PASSWORD_CHANGED,
+      },
     );
 
-    return updatedUser;
+    return updatedUserResult;
   }
 
   private async updateUserPassword(
     id: User['id'],
     newPassword: UpdatePasswordInput['newPassword'],
-  ): Promise<User | null> {
+  ): Promise<Either<NotFoundException, User>> {
     const hashedPassword = await this.userService.hashPassword(newPassword);
 
     return this.userService.update({

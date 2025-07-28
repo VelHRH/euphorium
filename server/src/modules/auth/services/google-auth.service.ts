@@ -1,16 +1,23 @@
-import { Injectable, NotAcceptableException } from '@nestjs/common';
+import { Injectable } from '@nestjs/common';
 import { ConfigService } from '@nestjs/config';
+import { Either, left, right } from '@sweet-monads/either';
+import { AuthExceptionMessage } from 'common/exceptions/constants/auth';
 import { Response } from 'express';
 import { OAuth2Client } from 'google-auth-library';
 import {
   GoogleLoginInput,
   GoogleTokenPayload,
   googleTokenPayloadSchema,
+  User,
 } from 'shared';
 
 import { Config } from '$config';
+import {
+  BadRequestException,
+  NotFoundException,
+  UnauthorizedException,
+} from '$exceptions';
 import { SessionService } from '$modules/entities/session/session.service';
-import { UserEntity } from '$modules/entities/user/user.entity';
 import { UserService } from '$modules/entities/user/user.service';
 
 @Injectable()
@@ -30,58 +37,74 @@ export class GoogleAuthService {
   async login(
     input: GoogleLoginInput,
     response: Response,
-  ): Promise<UserEntity> {
+  ): Promise<Either<NotFoundException | BadRequestException, User>> {
     const { idToken } = input;
-    const { email } = await this.parseGoogleUser(idToken);
-    const candidate = await this.userService.findOne({ email });
+    const googleUserResult = await this.parseGoogleUser(idToken);
 
-    if (candidate) {
-      return this.createSession(response, candidate);
+    if (googleUserResult.isLeft()) {
+      return left(googleUserResult.value);
     }
 
-    const user = await this.userService.create({
+    const { email } = googleUserResult.value;
+    const candidate = await this.userService.findOne({ email });
+
+    if (candidate.isRight()) {
+      return this.createSession(response, candidate.value);
+    }
+
+    const userResult = await this.userService.create({
       email,
       password: null,
     });
 
-    return this.createSession(response, {
-      id: 0,
-      email,
-      password: null,
-      createdAt: new Date(),
-      updatedAt: new Date(),
-      session: [],
-      confirmation: [],
-    });
+    if (userResult.isLeft()) {
+      return left(userResult.value);
+    }
+
+    const user = userResult.value;
+
+    return this.createSession(response, user);
   }
 
   private async createSession(
     response: Response,
-    user: UserEntity,
-  ): Promise<UserEntity> {
+    user: User,
+  ): Promise<Either<UnauthorizedException, User>> {
     const { id, email } = user;
 
-    await this.sessionService.create({ response, userId: id, email });
+    const sessionResult = await this.sessionService.create({
+      response,
+      userId: id,
+      email,
+    });
 
-    return user;
+    if (sessionResult.isLeft()) {
+      return left(sessionResult.value);
+    }
+
+    return right(user);
   }
 
-  private async parseGoogleUser(idToken: string): Promise<GoogleTokenPayload> {
+  private async parseGoogleUser(
+    idToken: string,
+  ): Promise<Either<BadRequestException, GoogleTokenPayload>> {
     const { googleClientId: audience } = this.googleConfig;
 
-    try {
-      const ticket = await this.googleClient.verifyIdToken({
-        idToken,
-        audience,
-      });
+    const ticket = await this.googleClient.verifyIdToken({
+      idToken,
+      audience,
+    });
 
+    try {
       const validatedPayload = googleTokenPayloadSchema.parse(
         ticket.getPayload(),
       );
 
-      return validatedPayload;
+      return right(validatedPayload);
     } catch (e) {
-      throw new NotAcceptableException('Wrong parameters');
+      return left(
+        new BadRequestException(AuthExceptionMessage.WRONG_GOOGLE_CREDENTIALS),
+      );
     }
   }
 }

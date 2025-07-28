@@ -1,24 +1,32 @@
-import { Query, Resolver } from '@nestjs/graphql';
-import { GetUserInput, getUserInputSchema } from 'shared';
+import { Resolver } from '@nestjs/graphql';
+import { handleEitherResponse } from 'common/helpers/handle-either-response';
+import {
+  GetUserInput,
+  getUserInputSchema,
+  GetUserOutput,
+  getUserOutputSchema,
+  ListUsersOutput,
+  listUsersOutputSchema,
+} from 'shared';
 
 import { UserEntity } from './user.entity';
 import { UserService } from './user.service';
 
-import { InputSchema } from '$lib/nestjs-graphql-zod';
+import { InputSchema, QueryOutputSchema } from '$lib/nestjs-graphql-zod';
 
 @Resolver(() => UserEntity)
 export class UserResolver {
   constructor(private readonly service: UserService) {}
 
-  @Query(() => UserEntity, { nullable: true })
-  user(
+  @QueryOutputSchema(getUserOutputSchema)
+  async user(
     @InputSchema(getUserInputSchema) input: GetUserInput,
-  ): Promise<UserEntity | null> {
-    return this.service.get(input);
+  ): Promise<GetUserOutput> {
+    return this.service.get(input).then(handleEitherResponse);
   }
 
-  @Query(() => [UserEntity])
-  users(): Promise<UserEntity[]> {
+  @QueryOutputSchema(listUsersOutputSchema)
+  async users(): Promise<ListUsersOutput> {
     return this.service.list();
   }
 }

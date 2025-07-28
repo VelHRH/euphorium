@@ -7219,11 +7219,6 @@ neo-async@^2.6.2:
   resolved "https://registry.yarnpkg.com/neo-async/-/neo-async-2.6.2.tgz#b4aafb93e3aeb2d8174ca53cf163ab7d7308305f"
   integrity sha512-Yd3UES5mWCSqR+qNT93S3UoYUkqAZ9lLg8a7g9rimsWmYGK8cVToA4/sF3RrshdyV3sAGMXVUmpMYOw+dLpOuw==
 
-nestjs-graphql-zod@^3.4.1:
-  version "3.4.1"
-  resolved "https://registry.yarnpkg.com/nestjs-graphql-zod/-/nestjs-graphql-zod-3.4.1.tgz#2f168a21d09518e749bb36cc4778c7332268d461"
-  integrity sha512-awO9D5gSPaWwDuUGqMRLoLdzbsfVKPDk374xt5bjOEU8LzMnuMqnANxqAPavSn/uWXZZCjeugs8r+3mmdPv4LQ==
-
 nice-try@^1.0.4:
   version "1.0.5"
   resolved "https://registry.yarnpkg.com/nice-try/-/nice-try-1.0.5.tgz#a3378a7696ce7d223e88fc9b764bd7ef1089e366"
@@ -8381,7 +8376,7 @@ sha.js@^2.4.11:
     inherits "^2.0.1"
     safe-buffer "^5.0.1"
 
-"shared@file:../shared":
+shared@../shared:
   version "1.0.0"
   dependencies:
     zod "3.23.8"

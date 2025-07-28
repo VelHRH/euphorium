@@ -2,18 +2,23 @@ import { Injectable } from '@nestjs/common';
 import { ConfigService } from '@nestjs/config';
 import { InjectRepository } from '@nestjs/typeorm';
 import { Either, left, right } from '@sweet-monads/either';
+import { UserExceptionMessage } from 'common/exceptions/constants';
 import {
   CreateUserInput,
   CreateUserOutput,
+  FindOneUserOutput,
   GetUserInput,
+  GetUserOutput,
+  ListUsersOutput,
   UpdateUserInput,
+  UpdateUserOutput,
 } from 'shared';
 import { FindOptionsSelect, FindOptionsWhere, Repository } from 'typeorm';
 
 import { UserEntity } from './user.entity';
 
 import { Config } from '$config';
-import { BadRequestException, BaseException } from '$exceptions';
+import { BadRequestException, NotFoundException } from '$exceptions';
 import { CryptoService } from '$modules/crypto/crypto.service';
 
 @Injectable()
@@ -29,37 +34,35 @@ export class UserService {
     this.salt = this.configService.getOrThrow('jwt.salt', { infer: true });
   }
 
-  findOne(
+  async findOne(
     where: FindOptionsWhere<UserEntity>,
     select?: FindOptionsSelect<UserEntity>,
-  ): Promise<UserEntity | null> {
-    return this.userRepository.findOne({
+  ): Promise<Either<NotFoundException, FindOneUserOutput>> {
+    const user = await this.userRepository.findOne({
       where,
       select,
     });
+
+    if (!user) {
+      return left(new NotFoundException(UserExceptionMessage.USER_NOT_FOUND));
+    }
+
+    return right(user);
   }
 
-  strictFindOne(
-    where: FindOptionsWhere<UserEntity>,
-    select?: FindOptionsSelect<UserEntity>,
-  ): Promise<UserEntity> {
-    return this.userRepository.findOneOrFail({
-      where,
-      select,
-    });
-  }
-
-  get(input: GetUserInput): Promise<UserEntity | null> {
+  get(input: GetUserInput): Promise<Either<NotFoundException, GetUserOutput>> {
     return this.findOne({ id: input.id });
   }
 
-  list(): Promise<UserEntity[]> {
-    return this.userRepository.find();
+  async list(): Promise<ListUsersOutput> {
+    const list = await this.userRepository.find();
+
+    return { list };
   }
 
   async create(
     input: CreateUserInput,
-  ): Promise<Either<BaseException, CreateUserOutput>> {
+  ): Promise<Either<BadRequestException, CreateUserOutput>> {
     const rawPassword = input.password;
 
     const password =
@@ -73,7 +76,9 @@ export class UserService {
 
       return right(savedUser);
     } catch {
-      return left(new BadRequestException("Can't create this user"));
+      return left(
+        new BadRequestException(UserExceptionMessage.CANNOT_CREATE_USER),
+      );
     }
   }
 
@@ -81,15 +86,23 @@ export class UserService {
     return this.cryptoService.hashPassword(password, this.salt);
   }
 
-  async getBySession(refreshToken: string): Promise<UserEntity> {
-    return this.strictFindOne({ session: { refreshToken } });
+  async getBySession(
+    refreshToken: string,
+  ): Promise<Either<NotFoundException, FindOneUserOutput>> {
+    return this.findOne({ session: { refreshToken } });
   }
 
-  async update(input: UpdateUserInput): Promise<UserEntity | null> {
+  async update(
+    input: UpdateUserInput,
+  ): Promise<Either<NotFoundException, UpdateUserOutput>> {
     const { id, ...restInput } = input;
 
-    await this.userRepository.update({ id }, restInput);
+    try {
+      await this.userRepository.update({ id }, restInput);
 
-    return this.findOne({ id });
+      return await this.findOne({ id });
+    } catch {
+      return left(new NotFoundException(UserExceptionMessage.USER_NOT_FOUND));
+    }
   }
 }
