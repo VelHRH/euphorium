@@ -1,4 +1,5 @@
 export * from './create';
 export * from './get';
-export * from './getAll';
+export * from './list';
 export * from './update';
+export * from './findOne';
