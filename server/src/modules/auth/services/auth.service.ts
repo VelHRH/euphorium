@@ -1,8 +1,4 @@
-import {
-  BadRequestException,
-  Injectable,
-  UnauthorizedException,
-} from '@nestjs/common';
+import { Injectable } from '@nestjs/common';
 import { Either, left } from '@sweet-monads/either';
 import { Response } from 'express';
 import {
@@ -13,7 +9,12 @@ import {
   SignUpOutput,
 } from 'shared';
 
-import { BaseException, NotFoundException } from '$exceptions';
+import {
+  BadRequestException,
+  BaseException,
+  NotFoundException,
+  UnauthorizedException,
+} from '$exceptions';
 import { AuthExceptionMessage } from '$exceptions/constants/auth';
 import { GqlContext } from '$modules/app/types';
 import { CryptoService } from '$modules/crypto/crypto.service';
@@ -38,7 +39,16 @@ export class AuthService {
   ): Promise<Either<BaseException, LoginOutput>> {
     const { email: inputEmail, password: inputPassword } = input;
 
-    const userResult = await this.userService.findOne({ email: inputEmail });
+    const userResult = await this.userService.findOne(
+      { email: inputEmail },
+      {
+        id: true,
+        email: true,
+        password: true,
+        createdAt: true,
+        updatedAt: true,
+      },
+    );
 
     if (userResult.isLeft()) {
       return left(userResult.value);

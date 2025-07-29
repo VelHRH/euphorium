@@ -19,9 +19,7 @@
       "$helpers": ["src/common/helpers"],
       "$exceptions": ["src/common/exceptions"],
       "$exceptions/*": ["src/common/exceptions/*"],
-      "$lib/*": ["src/lib/*"],
-      "shared": ["node_modules/@velhrh/new-blood-shared"],
-      "shared/*": ["node_modules/@velhrh/new-blood-shared/*"]
+      "$lib/*": ["src/lib/*"]
     },
     "incremental": true,
     "skipLibCheck": true,

@@ -1,20 +1,29 @@
 'use client'
 
 import { signIn } from 'next-auth/react'
+import { FC } from 'react'
+import { loginInputSchema } from 'shared'
+import { toast } from 'sonner'
 
 import { AuthForm, Button } from '$components'
 import { loginFields } from '$constants'
 import { Provider } from '$modules/api/auth/next-auth'
-import { loginSchema } from '$validation'
 
-export const LoginForm = () => {
+export const LoginForm: FC = () => {
   return (
     <>
       <AuthForm
         inputFields={loginFields}
-        schema={loginSchema}
+        schema={loginInputSchema}
         onSubmit={async (credentials) => {
-          await signIn(Provider.CREDENTIALS_LOGIN, credentials)
+          const result = await signIn(Provider.CREDENTIALS_LOGIN, {
+            ...credentials,
+            redirect: false,
+          })
+
+          if (result?.error) {
+            toast.error('Invalid email or password')
+          }
         }}
       />
       <Button
