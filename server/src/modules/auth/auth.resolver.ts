@@ -1,4 +1,4 @@
-import { Context, Resolver } from '@nestjs/graphql';
+import { Context, Mutation, Resolver } from '@nestjs/graphql';
 import {
   ForgotPasswordInput,
   forgotPasswordInputSchema,
@@ -76,6 +76,12 @@ export class AuthResolver {
   @MutationOutputSchema(logoutOutputSchema)
   async logout(@Context() ctx: GqlContext): Promise<LogoutOutput> {
     return this.authService.logout(ctx.res).then(handleEitherResponse);
+  }
+
+  @Public()
+  @Mutation(() => Boolean)
+  async refresh(@Context() ctx: GqlContext): Promise<boolean> {
+    return this.authService.refresh(ctx.res).then(handleEitherResponse);
   }
 
   @Public()

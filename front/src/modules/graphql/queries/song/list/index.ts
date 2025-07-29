@@ -1,9 +1,12 @@
 import { graphql } from '$graphql'
 
-export const GET_SONG = graphql(`
-  query GetSong($input: GetSongInput!) {
-    song(input: $input) {
+export const LIST_SONGS = graphql(`
+  query ListSongs {
+    songs {
+      id
       name
+      createdAt
+      updatedAt
     }
   }
 `)

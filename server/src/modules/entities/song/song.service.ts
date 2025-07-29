@@ -1,7 +1,14 @@
 import { Injectable } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { Either, left, right } from '@sweet-monads/either';
-import { GetSongInput, GetSongOutput } from 'shared';
+import {
+  CreateSongInput,
+  CreateSongOutput,
+  DeleteSongInput,
+  DeleteSongOutput,
+  GetSongInput,
+  GetSongOutput,
+} from 'shared';
 import { Repository } from 'typeorm';
 
 import { SongEntity } from './song.entity';
@@ -14,6 +21,12 @@ export class SongService {
     @InjectRepository(SongEntity)
     private readonly songRepository: Repository<SongEntity>,
   ) {}
+
+  async list(): Promise<SongEntity[]> {
+    return this.songRepository.find({
+      order: { createdAt: 'DESC' },
+    });
+  }
 
   async get(
     input: GetSongInput,
@@ -65,4 +78,45 @@ export class SongService {
 
   //   return right({ name: song.name });
   // }
+
+  async create(
+    input: CreateSongInput,
+  ): Promise<Either<BaseException, CreateSongOutput>> {
+    try {
+      const song = this.songRepository.create({
+        name: input.name,
+      });
+
+      const savedSong = await this.songRepository.save(song);
+
+      return right({
+        id: savedSong.id,
+        name: savedSong.name,
+        createdAt: savedSong.createdAt,
+        updatedAt: savedSong.updatedAt,
+      });
+    } catch (error) {
+      return left(new BaseException('Failed to create song'));
+    }
+  }
+
+  async delete(
+    input: DeleteSongInput,
+  ): Promise<Either<BaseException, DeleteSongOutput>> {
+    const song = await this.songRepository.findOne({
+      where: { name: input.name },
+    });
+
+    if (!song) {
+      return left(new NotFoundException());
+    }
+
+    try {
+      await this.songRepository.remove(song);
+
+      return right({ success: true });
+    } catch (error) {
+      return left(new BaseException('Failed to delete song'));
+    }
+  }
 }

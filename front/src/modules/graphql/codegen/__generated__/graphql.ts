@@ -36,6 +36,27 @@ export enum ConfirmationType {
   PasswordChanged = 'PASSWORD_CHANGED'
 }
 
+export type CreateSongInput = {
+  name: Scalars['String']['input'];
+};
+
+export type CreateSongOutput = {
+  __typename?: 'CreateSongOutput';
+  createdAt: Scalars['DateTime']['output'];
+  id: Scalars['Int']['output'];
+  name: Scalars['String']['output'];
+  updatedAt: Scalars['DateTime']['output'];
+};
+
+export type DeleteSongInput = {
+  name: Scalars['String']['input'];
+};
+
+export type DeleteSongOutput = {
+  __typename?: 'DeleteSongOutput';
+  success: Scalars['Boolean']['output'];
+};
+
 export type ForgotPasswordInput = {
   email: Scalars['String']['input'];
 };
@@ -63,7 +84,6 @@ export type GetUserOutput = {
   createdAt: Scalars['DateTime']['output'];
   email: Scalars['String']['output'];
   id: Scalars['Int']['output'];
-  password: Scalars['String']['output'];
   updatedAt: Scalars['DateTime']['output'];
 };
 
@@ -76,7 +96,6 @@ export type GoogleLoginOutput = {
   createdAt: Scalars['DateTime']['output'];
   email: Scalars['String']['output'];
   id: Scalars['Int']['output'];
-  password: Scalars['String']['output'];
   updatedAt: Scalars['DateTime']['output'];
 };
 
@@ -90,7 +109,6 @@ export type ListUsersOutput_List = {
   createdAt: Scalars['DateTime']['output'];
   email: Scalars['String']['output'];
   id: Scalars['Int']['output'];
-  password: Scalars['String']['output'];
   updatedAt: Scalars['DateTime']['output'];
 };
 
@@ -104,7 +122,6 @@ export type LoginOutput = {
   createdAt: Scalars['DateTime']['output'];
   email: Scalars['String']['output'];
   id: Scalars['Int']['output'];
-  password: Scalars['String']['output'];
   updatedAt: Scalars['DateTime']['output'];
 };
 
@@ -115,13 +132,26 @@ export type LogoutOutput = {
 
 export type Mutation = {
   __typename?: 'Mutation';
+  createSong: CreateSongOutput;
+  deleteSong: DeleteSongOutput;
   forgotPassword: ForgotPasswordOutput;
   googleLogin: GoogleLoginOutput;
   login: LoginOutput;
   logout: LogoutOutput;
+  refresh: Scalars['Boolean']['output'];
   revokePassword: RevokePasswordOutput;
   signUp: SignUpOutput;
   updatePassword: UpdatePasswordOutput;
+};
+
+
+export type MutationCreateSongArgs = {
+  input: CreateSongInput;
+};
+
+
+export type MutationDeleteSongArgs = {
+  input: DeleteSongInput;
 };
 
 
@@ -157,6 +187,7 @@ export type MutationUpdatePasswordArgs = {
 export type Query = {
   __typename?: 'Query';
   song: GetSongOutput;
+  songs: Array<SongEntity>;
   user: GetUserOutput;
   users: ListUsersOutput;
 };
@@ -182,7 +213,6 @@ export type RevokePasswordOutput = {
   createdAt: Scalars['DateTime']['output'];
   email: Scalars['String']['output'];
   id: Scalars['Int']['output'];
-  password: Scalars['String']['output'];
   updatedAt: Scalars['DateTime']['output'];
 };
 
@@ -205,7 +235,14 @@ export type SignUpOutput = {
   createdAt: Scalars['DateTime']['output'];
   email: Scalars['String']['output'];
   id: Scalars['Int']['output'];
-  password: Scalars['String']['output'];
+  updatedAt: Scalars['DateTime']['output'];
+};
+
+export type SongEntity = {
+  __typename?: 'SongEntity';
+  createdAt: Scalars['DateTime']['output'];
+  id: Scalars['Int']['output'];
+  name: Scalars['String']['output'];
   updatedAt: Scalars['DateTime']['output'];
 };
 
@@ -219,7 +256,6 @@ export type UpdatePasswordOutput = {
   createdAt: Scalars['DateTime']['output'];
   email: Scalars['String']['output'];
   id: Scalars['Int']['output'];
-  password: Scalars['String']['output'];
   updatedAt: Scalars['DateTime']['output'];
 };
 
@@ -259,12 +295,31 @@ export type SignUpMutationVariables = Exact<{
 
 export type SignUpMutation = { __typename?: 'Mutation', signUp: { __typename?: 'SignUpOutput', id: number, email: string } };
 
+export type CreateSongMutationVariables = Exact<{
+  input: CreateSongInput;
+}>;
+
+
+export type CreateSongMutation = { __typename?: 'Mutation', createSong: { __typename?: 'CreateSongOutput', id: number, name: string, createdAt: any, updatedAt: any } };
+
+export type DeleteSongMutationVariables = Exact<{
+  input: DeleteSongInput;
+}>;
+
+
+export type DeleteSongMutation = { __typename?: 'Mutation', deleteSong: { __typename?: 'DeleteSongOutput', success: boolean } };
+
 export type GetSongQueryVariables = Exact<{
   input: GetSongInput;
 }>;
 
 
 export type GetSongQuery = { __typename?: 'Query', song: { __typename?: 'GetSongOutput', name: string } };
+
+export type ListSongsQueryVariables = Exact<{ [key: string]: never; }>;
+
+
+export type ListSongsQuery = { __typename?: 'Query', songs: Array<{ __typename?: 'SongEntity', id: number, name: string, createdAt: any, updatedAt: any }> };
 
 export type UserFieldsFragment = { __typename?: 'ListUsersOutput', list: Array<{ __typename?: 'ListUsersOutput_List', id: number, email: string }> };
 
@@ -278,5 +333,8 @@ export const GoogleLoginDocument = {"kind":"Document","definitions":[{"kind":"Op
 export const LoginDocument = {"kind":"Document","definitions":[{"kind":"OperationDefinition","operation":"mutation","name":{"kind":"Name","value":"Login"},"variableDefinitions":[{"kind":"VariableDefinition","variable":{"kind":"Variable","name":{"kind":"Name","value":"input"}},"type":{"kind":"NonNullType","type":{"kind":"NamedType","name":{"kind":"Name","value":"LoginInput"}}}}],"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"login"},"arguments":[{"kind":"Argument","name":{"kind":"Name","value":"input"},"value":{"kind":"Variable","name":{"kind":"Name","value":"input"}}}],"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"id"}},{"kind":"Field","name":{"kind":"Name","value":"email"}}]}}]}}]} as unknown as DocumentNode<LoginMutation, LoginMutationVariables>;
 export const LogoutDocument = {"kind":"Document","definitions":[{"kind":"OperationDefinition","operation":"mutation","name":{"kind":"Name","value":"Logout"},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"logout"},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"success"}}]}}]}}]} as unknown as DocumentNode<LogoutMutation, LogoutMutationVariables>;
 export const SignUpDocument = {"kind":"Document","definitions":[{"kind":"OperationDefinition","operation":"mutation","name":{"kind":"Name","value":"SignUp"},"variableDefinitions":[{"kind":"VariableDefinition","variable":{"kind":"Variable","name":{"kind":"Name","value":"input"}},"type":{"kind":"NonNullType","type":{"kind":"NamedType","name":{"kind":"Name","value":"SignUpInput"}}}}],"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"signUp"},"arguments":[{"kind":"Argument","name":{"kind":"Name","value":"input"},"value":{"kind":"Variable","name":{"kind":"Name","value":"input"}}}],"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"id"}},{"kind":"Field","name":{"kind":"Name","value":"email"}}]}}]}}]} as unknown as DocumentNode<SignUpMutation, SignUpMutationVariables>;
+export const CreateSongDocument = {"kind":"Document","definitions":[{"kind":"OperationDefinition","operation":"mutation","name":{"kind":"Name","value":"CreateSong"},"variableDefinitions":[{"kind":"VariableDefinition","variable":{"kind":"Variable","name":{"kind":"Name","value":"input"}},"type":{"kind":"NonNullType","type":{"kind":"NamedType","name":{"kind":"Name","value":"CreateSongInput"}}}}],"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"createSong"},"arguments":[{"kind":"Argument","name":{"kind":"Name","value":"input"},"value":{"kind":"Variable","name":{"kind":"Name","value":"input"}}}],"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"id"}},{"kind":"Field","name":{"kind":"Name","value":"name"}},{"kind":"Field","name":{"kind":"Name","value":"createdAt"}},{"kind":"Field","name":{"kind":"Name","value":"updatedAt"}}]}}]}}]} as unknown as DocumentNode<CreateSongMutation, CreateSongMutationVariables>;
+export const DeleteSongDocument = {"kind":"Document","definitions":[{"kind":"OperationDefinition","operation":"mutation","name":{"kind":"Name","value":"DeleteSong"},"variableDefinitions":[{"kind":"VariableDefinition","variable":{"kind":"Variable","name":{"kind":"Name","value":"input"}},"type":{"kind":"NonNullType","type":{"kind":"NamedType","name":{"kind":"Name","value":"DeleteSongInput"}}}}],"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"deleteSong"},"arguments":[{"kind":"Argument","name":{"kind":"Name","value":"input"},"value":{"kind":"Variable","name":{"kind":"Name","value":"input"}}}],"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"success"}}]}}]}}]} as unknown as DocumentNode<DeleteSongMutation, DeleteSongMutationVariables>;
 export const GetSongDocument = {"kind":"Document","definitions":[{"kind":"OperationDefinition","operation":"query","name":{"kind":"Name","value":"GetSong"},"variableDefinitions":[{"kind":"VariableDefinition","variable":{"kind":"Variable","name":{"kind":"Name","value":"input"}},"type":{"kind":"NonNullType","type":{"kind":"NamedType","name":{"kind":"Name","value":"GetSongInput"}}}}],"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"song"},"arguments":[{"kind":"Argument","name":{"kind":"Name","value":"input"},"value":{"kind":"Variable","name":{"kind":"Name","value":"input"}}}],"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"name"}}]}}]}}]} as unknown as DocumentNode<GetSongQuery, GetSongQueryVariables>;
+export const ListSongsDocument = {"kind":"Document","definitions":[{"kind":"OperationDefinition","operation":"query","name":{"kind":"Name","value":"ListSongs"},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"songs"},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"id"}},{"kind":"Field","name":{"kind":"Name","value":"name"}},{"kind":"Field","name":{"kind":"Name","value":"createdAt"}},{"kind":"Field","name":{"kind":"Name","value":"updatedAt"}}]}}]}}]} as unknown as DocumentNode<ListSongsQuery, ListSongsQueryVariables>;
 export const ListUsersDocument = {"kind":"Document","definitions":[{"kind":"OperationDefinition","operation":"query","name":{"kind":"Name","value":"ListUsers"},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"users"},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"FragmentSpread","name":{"kind":"Name","value":"UserFields"}}]}}]}},{"kind":"FragmentDefinition","name":{"kind":"Name","value":"UserFields"},"typeCondition":{"kind":"NamedType","name":{"kind":"Name","value":"ListUsersOutput"}},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"list"},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"id"}},{"kind":"Field","name":{"kind":"Name","value":"email"}}]}}]}}]} as unknown as DocumentNode<ListUsersQuery, ListUsersQueryVariables>;

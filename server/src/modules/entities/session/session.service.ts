@@ -64,39 +64,35 @@ export class SessionService {
   ): Promise<
     Either<UnauthorizedException | NotFoundException, VerifyResponse>
   > {
-    const { signedAccessToken, signedRefreshToken } = params;
+    const { signedAccessToken, signedRefreshToken, response } = params;
 
     if (signedAccessToken === undefined || signedRefreshToken === undefined) {
-      return left(new UnauthorizedException());
+      return this.update(signedRefreshToken, response);
     }
 
-    try {
-      const decodedResult = await this.tokenService.decode(
-        signedAccessToken,
-        'accessToken',
-      );
+    const decodedResult = await this.tokenService.decode(
+      signedAccessToken,
+      'accessToken',
+    );
 
-      if (decodedResult.isLeft()) {
-        return await this.update(signedRefreshToken);
-      }
-
-      const { userId, email } = decodedResult.value;
-
-      const userResult = await this.userService.findOne({ id: userId, email });
-
-      if (userResult.isLeft()) {
-        return await this.update(signedRefreshToken);
-      }
-
-      return right({
-        userId,
-        email,
-        signedAccessToken,
-        signedRefreshToken,
-      });
-    } catch {
-      return this.update(signedRefreshToken);
+    if (decodedResult.isLeft()) {
+      return this.update(signedRefreshToken, response);
     }
+
+    const { userId, email } = decodedResult.value;
+
+    const userResult = await this.userService.findOne({ id: userId, email });
+
+    if (userResult.isLeft()) {
+      return this.update(signedRefreshToken, response);
+    }
+
+    return right({
+      userId,
+      email,
+      signedAccessToken,
+      signedRefreshToken,
+    });
   }
 
   async refresh(
@@ -105,7 +101,7 @@ export class SessionService {
     try {
       const { signedRefreshToken } = this.tokenService.getFromCookies(response);
 
-      const updateResult = await this.update(signedRefreshToken);
+      const updateResult = await this.update(signedRefreshToken, response);
 
       if (updateResult.isLeft()) {
         return left(updateResult.value);
@@ -130,6 +126,7 @@ export class SessionService {
 
   async update(
     signedRefreshToken?: string,
+    response?: GqlContext['res'],
   ): Promise<
     Either<UnauthorizedException | NotFoundException, UpdateResponse>
   > {
@@ -163,6 +160,11 @@ export class SessionService {
       email,
       decodedRefreshToken: signedRefreshToken,
     });
+
+    // Set new tokens in cookies if response is provided
+    if (response) {
+      this.tokenService.insertInCookies({ response, ...tokensResult });
+    }
 
     return right({
       email,

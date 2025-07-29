@@ -47,6 +47,7 @@ export class JwtAuthStrategy extends PassportStrategy(
     const verifyResult = await this.sessionService.verify({
       signedAccessToken,
       signedRefreshToken,
+      response: req.res,
     });
 
     if (verifyResult.isLeft()) {
