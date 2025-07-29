@@ -1,6 +1,6 @@
-import { ConfirmationType, User } from 'shared';
+import { ConfirmationType, UserNoPassword } from 'shared';
 
 export type SendConfirmationParams = {
   type: ConfirmationType;
-  user: User;
+  user: UserNoPassword;
 };

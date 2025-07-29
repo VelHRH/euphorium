@@ -1,15 +1,24 @@
+import { Injectable } from '@nestjs/common';
+import { Either, left } from '@sweet-monads/either';
+import { Response } from 'express';
+import {
+  LoginInput,
+  LoginOutput,
+  LogoutOutput,
+  SignUpInput,
+  SignUpOutput,
+} from 'shared';
+
 import {
   BadRequestException,
-  Injectable,
+  BaseException,
+  NotFoundException,
   UnauthorizedException,
-} from '@nestjs/common';
-import { Response } from 'express';
-import { LoginInput, SignUpInput } from 'shared';
-
+} from '$exceptions';
+import { AuthExceptionMessage } from '$exceptions/constants/auth';
 import { GqlContext } from '$modules/app/types';
 import { CryptoService } from '$modules/crypto/crypto.service';
 import { SessionService } from '$modules/entities/session/session.service';
-import { UserEntity } from '$modules/entities/user/user.entity';
 import { UserService } from '$modules/entities/user/user.service';
 
 @Injectable()
@@ -20,26 +29,35 @@ export class AuthService {
     private readonly sessionService: SessionService,
   ) {}
 
-  signUp(input: SignUpInput): Promise<UserEntity> {
+  signUp(input: SignUpInput): Promise<Either<BaseException, SignUpOutput>> {
     return this.userService.create(input);
   }
 
-  async login(input: LoginInput, response: Response): Promise<UserEntity> {
+  async login(
+    input: LoginInput,
+    response: Response,
+  ): Promise<Either<BaseException, LoginOutput>> {
     const { email: inputEmail, password: inputPassword } = input;
 
-    const user = await this.userService.findOne(
+    const userResult = await this.userService.findOne(
       { email: inputEmail },
-      { id: true, email: true, password: true },
+      {
+        id: true,
+        email: true,
+        password: true,
+        createdAt: true,
+        updatedAt: true,
+      },
     );
 
-    if (!user) {
-      throw new UnauthorizedException();
+    if (userResult.isLeft()) {
+      return left(userResult.value);
     }
 
-    const { id, email, password } = user;
+    const { id, email, password } = userResult.value;
 
     if (password === undefined || password === null) {
-      throw new BadRequestException();
+      return left(new BadRequestException());
     }
 
     const isPasswordEqual = await this.cryptoService.comparePasswords(
@@ -48,19 +66,36 @@ export class AuthService {
     );
 
     if (!isPasswordEqual) {
-      throw new UnauthorizedException();
+      return left(
+        new UnauthorizedException(AuthExceptionMessage.WRONG_LOGIN_OR_PASSWORD),
+      );
     }
 
-    await this.sessionService.create({ response, userId: id, email });
+    const sessionResult = await this.sessionService.create({
+      response,
+      userId: id,
+      email,
+    });
 
-    return user;
+    if (sessionResult.isLeft()) {
+      return left(sessionResult.value);
+    }
+
+    return userResult.map((user) => ({
+      ...user,
+      password: undefined,
+    }));
   }
 
-  logout(response: GqlContext['res']): Promise<boolean> {
+  logout(
+    response: GqlContext['res'],
+  ): Promise<Either<UnauthorizedException, LogoutOutput>> {
     return this.sessionService.delete(response);
   }
 
-  refresh(response: GqlContext['res']): Promise<boolean> {
+  refresh(
+    response: GqlContext['res'],
+  ): Promise<Either<UnauthorizedException | NotFoundException, boolean>> {
     return this.sessionService.refresh(response);
   }
 }

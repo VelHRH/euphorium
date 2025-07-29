@@ -1809,6 +1809,18 @@
   resolved "https://registry.yarnpkg.com/@sqltools/formatter/-/formatter-1.2.5.tgz#3abc203c79b8c3e90fd6c156a0c62d5403520e12"
   integrity sha512-Uy0+khmZqUrUGm5dmMqVlnvufZRSK0FbYzVgp0UMstm+F5+W2/jnEEQyc9vo1ZR/E5ZI/B1WjjoTqBqwJL6Krw==
 
+"@sweet-monads/either@^3.3.1":
+  version "3.3.1"
+  resolved "https://registry.yarnpkg.com/@sweet-monads/either/-/either-3.3.1.tgz#79e174a41af925d84f334ac2702fb99fde0c0002"
+  integrity sha512-9Yi6KITRWJ1dIiO2XD5HTa3P2KSYIuZBMOHNqpDetpFTjwe5WJJqjCIIc0Bw1mkTfAbqhLhDov6BGK8MEGrLXQ==
+  dependencies:
+    "@sweet-monads/interfaces" "^3.3.0"
+
+"@sweet-monads/interfaces@^3.3.0":
+  version "3.3.0"
+  resolved "https://registry.yarnpkg.com/@sweet-monads/interfaces/-/interfaces-3.3.0.tgz#7ec79b5ec02c513488abb9be268f15dc371c56cd"
+  integrity sha512-66akGvjPD4lizQy+w4JSltJilc2w/QPdw8lPAniLJGHwyjmrw9xMJLx76Q/GDnbCU59Werses4aZJLWOlJrL5A==
+
 "@tsconfig/node10@^1.0.7":
   version "1.0.11"
   resolved "https://registry.yarnpkg.com/@tsconfig/node10/-/node10-1.0.11.tgz#6ee46400685f130e278128c7b38b7e031ff5b2f2"
@@ -7207,11 +7219,6 @@ neo-async@^2.6.2:
   resolved "https://registry.yarnpkg.com/neo-async/-/neo-async-2.6.2.tgz#b4aafb93e3aeb2d8174ca53cf163ab7d7308305f"
   integrity sha512-Yd3UES5mWCSqR+qNT93S3UoYUkqAZ9lLg8a7g9rimsWmYGK8cVToA4/sF3RrshdyV3sAGMXVUmpMYOw+dLpOuw==
 
-nestjs-graphql-zod@^3.4.1:
-  version "3.4.1"
-  resolved "https://registry.yarnpkg.com/nestjs-graphql-zod/-/nestjs-graphql-zod-3.4.1.tgz#2f168a21d09518e749bb36cc4778c7332268d461"
-  integrity sha512-awO9D5gSPaWwDuUGqMRLoLdzbsfVKPDk374xt5bjOEU8LzMnuMqnANxqAPavSn/uWXZZCjeugs8r+3mmdPv4LQ==
-
 nice-try@^1.0.4:
   version "1.0.5"
   resolved "https://registry.yarnpkg.com/nice-try/-/nice-try-1.0.5.tgz#a3378a7696ce7d223e88fc9b764bd7ef1089e366"
@@ -8369,8 +8376,10 @@ sha.js@^2.4.11:
     inherits "^2.0.1"
     safe-buffer "^5.0.1"
 
-"shared@file:../shared":
-  version "1.0.0"
+"shared@npm:@velhrh/new-blood-shared@^1.0.0":
+  version "1.0.1"
+  resolved "https://registry.yarnpkg.com/@velhrh/new-blood-shared/-/new-blood-shared-1.0.1.tgz#6f528a645d9166de7f145025eca79fbc57f08c67"
+  integrity sha512-aySDtLIqN6+24QtQdb9vb9prDzrvigNcahtBG1nu6OwSHgCsFfqDzpw/35QO4mt3hjXrqm3GfjSkIHKwb/9J/w==
   dependencies:
     zod "3.23.8"
 

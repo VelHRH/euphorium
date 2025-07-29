@@ -1,4 +1,5 @@
 import { FC } from 'react'
+import { Toaster } from 'sonner'
 
 import { AppProvider } from '$components/providers'
 
@@ -15,6 +16,7 @@ export const RootLayout: FC<LayoutProps> = ({ children }) => {
           }}
         >
           {children}
+          <Toaster richColors position="bottom-right" />
         </body>
       </AppProvider>
     </html>

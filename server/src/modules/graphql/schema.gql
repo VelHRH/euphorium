@@ -19,10 +19,33 @@ enum ConfirmationType {
   PASSWORD_CHANGED
 }
 
+""""""
+input CreateSongInput {
+  name: String!
+}
+
+""""""
+type CreateSongOutput {
+  createdAt: DateTime!
+  id: Int!
+  name: String!
+  updatedAt: DateTime!
+}
+
 """
 A date-time string at UTC, such as 2019-12-03T09:54:33Z, compliant with the date-time format.
 """
 scalar DateTime
+
+""""""
+input DeleteSongInput {
+  name: String!
+}
+
+""""""
+type DeleteSongOutput {
+  success: Boolean!
+}
 
 """"""
 input ForgotPasswordInput {
@@ -30,11 +53,17 @@ input ForgotPasswordInput {
 }
 
 """"""
+type ForgotPasswordOutput {
+  success: Boolean!
+}
+
+""""""
 input GetSongInput {
   name: String!
 }
 
-type GetSongOutputDto {
+""""""
+type GetSongOutput {
   name: String!
 }
 
@@ -44,8 +73,36 @@ input GetUserInput {
 }
 
 """"""
+type GetUserOutput {
+  createdAt: DateTime!
+  email: String!
+  id: Int!
+  updatedAt: DateTime!
+}
+
+""""""
 input GoogleLoginInput {
   idToken: String!
+}
+
+""""""
+type GoogleLoginOutput {
+  createdAt: DateTime!
+  email: String!
+  id: Int!
+  updatedAt: DateTime!
+}
+
+""""""
+type ListUsersOutput {
+  list: [ListUsersOutput_List!]!
+}
+
+type ListUsersOutput_List {
+  createdAt: DateTime!
+  email: String!
+  id: Int!
+  updatedAt: DateTime!
 }
 
 """"""
@@ -54,20 +111,37 @@ input LoginInput {
   password: String!
 }
 
+""""""
+type LoginOutput {
+  createdAt: DateTime!
+  email: String!
+  id: Int!
+  updatedAt: DateTime!
+}
+
+""""""
+type LogoutOutput {
+  success: Boolean!
+}
+
 type Mutation {
-  forgotPassword(input: ForgotPasswordInput!): Boolean!
-  googleLogin(input: GoogleLoginInput!): UserEntity
-  login(input: LoginInput!): UserEntity
-  logout: Boolean!
-  revokePassword(input: RevokePasswordInput!): Boolean!
-  signUp(input: SignUpInput!): UserEntity!
-  updatePassword(input: UpdatePasswordInput!): UserEntity
+  createSong(input: CreateSongInput!): CreateSongOutput!
+  deleteSong(input: DeleteSongInput!): DeleteSongOutput!
+  forgotPassword(input: ForgotPasswordInput!): ForgotPasswordOutput!
+  googleLogin(input: GoogleLoginInput!): GoogleLoginOutput!
+  login(input: LoginInput!): LoginOutput!
+  logout: LogoutOutput!
+  refresh: Boolean!
+  revokePassword(input: RevokePasswordInput!): RevokePasswordOutput!
+  signUp(input: SignUpInput!): SignUpOutput!
+  updatePassword(input: UpdatePasswordInput!): UpdatePasswordOutput!
 }
 
 type Query {
-  song(input: GetSongInput!): GetSongOutputDto!
-  user(input: GetUserInput!): UserEntity
-  users: [UserEntity!]!
+  song(input: GetSongInput!): GetSongOutput!
+  songs: [SongEntity!]!
+  user(input: GetUserInput!): GetUserOutput!
+  users: ListUsersOutput!
 }
 
 """"""
@@ -75,6 +149,14 @@ input RevokePasswordInput {
   newPassword: String!
   repeatPassword: String!
   token: String!
+}
+
+""""""
+type RevokePasswordOutput {
+  createdAt: DateTime!
+  email: String!
+  id: Int!
+  updatedAt: DateTime!
 }
 
 type SessionEntity {
@@ -92,9 +174,32 @@ input SignUpInput {
 }
 
 """"""
+type SignUpOutput {
+  createdAt: DateTime!
+  email: String!
+  id: Int!
+  updatedAt: DateTime!
+}
+
+type SongEntity {
+  createdAt: DateTime!
+  id: Int!
+  name: String!
+  updatedAt: DateTime!
+}
+
+""""""
 input UpdatePasswordInput {
   newPassword: String!
   oldPassword: String!
+}
+
+""""""
+type UpdatePasswordOutput {
+  createdAt: DateTime!
+  email: String!
+  id: Int!
+  updatedAt: DateTime!
 }
 
 type UserEntity {

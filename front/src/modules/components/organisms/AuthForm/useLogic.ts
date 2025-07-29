@@ -1,9 +1,8 @@
-import { yupResolver } from '@hookform/resolvers/yup'
+import { zodResolver } from '@hookform/resolvers/zod'
 import {
   DefaultValues,
   FieldValues,
   FormSubmitHandler,
-  Resolver,
   useForm,
 } from 'react-hook-form'
 
@@ -22,7 +21,7 @@ export const useLogic = <FormType extends FieldValues>(
     control,
     formState: { isValid },
   } = useForm<FormType>({
-    resolver: yupResolver(schema) as unknown as Resolver<FormType>,
+    resolver: zodResolver(schema),
     mode: 'onChange',
     reValidateMode: 'onChange',
     defaultValues,

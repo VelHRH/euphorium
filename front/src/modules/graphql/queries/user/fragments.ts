@@ -1,8 +1,10 @@
 import { graphql } from '$modules/graphql'
 
 graphql(`
-  fragment UserFields on UserEntity {
-    id
-    email
+  fragment UserFields on ListUsersOutput {
+    list {
+      id
+      email
+    }
   }
 `)

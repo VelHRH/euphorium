@@ -3,27 +3,23 @@ const path = require('path')
 const { Env } = require('../envValidation/index')
 const { schema } = require('../envValidation/schema')
 
-const getErrorMessages = ({ path, message, inner }) => {
-  if (inner && inner.length) {
-    return inner.reduce((acc, { path, message }) => {
-      acc[path] = message
+const getErrorMessages = (error) => {
+  if (error.errors) {
+    return error.errors.reduce((acc, err) => {
+      acc[err.path.join('.')] = err.message
 
       return acc
     }, {})
   }
 
-  return { [path]: message }
+  return { [error.path]: error.message }
 }
 
 const getEnvSamples = (examples, [key, keyObject]) => {
   let value = `<${key}>`
 
-  if (keyObject?.flags?.default) {
-    value = keyObject.flags.default
-  }
-
-  if (keyObject?.allow) {
-    value = `<${keyObject.allow.join(' | ')}>`
+  if (keyObject?._def?.defaultValue) {
+    value = keyObject._def.defaultValue
   }
 
   return examples.concat(`${key}=${value}\n`)
@@ -34,8 +30,8 @@ const sampleEnvDocumentation = () => {
   const description = '# NOTE: This file should not be edited\n\n'
 
   const body = Object.entries(schema).reduce((output, [section, schema]) => {
-    const { fields } = schema.describe()
-    const sectionEnvExamples = Object.entries(fields).reduce(getEnvSamples, '')
+    const shape = schema._def.shape()
+    const sectionEnvExamples = Object.entries(shape).reduce(getEnvSamples, '')
     const sectionName = `# ${section.toUpperCase()}\n`
 
     return output.concat(sectionName).concat(sectionEnvExamples).concat('\n')
@@ -51,10 +47,7 @@ sampleEnvDocumentation()
 const errors = Object.entries(Env)
   .map(([key, envs]) => {
     try {
-      schema[key].validateSync(envs, {
-        abortEarly: false,
-        allowUnknown: true,
-      })
+      schema[key].parse(envs)
 
       return null
     } catch (error) {

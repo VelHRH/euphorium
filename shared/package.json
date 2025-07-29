@@ -1,6 +1,10 @@
 {
-  "name": "shared",
-  "version": "1.0.0",
+  "name": "@velhrh/new-blood-shared",
+  "version": "1.0.1",
+  "private": false,
+  "publishConfig": {
+    "access": "public"
+  },
   "main": "./build/index.js",
   "types": "./build/index.d.ts",
   "exports": {

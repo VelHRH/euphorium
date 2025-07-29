@@ -10,12 +10,16 @@
     "target": "ES2021",
     "sourceMap": true,
     "outDir": "./dist",
-    "baseUrl": "./src",
+    "baseUrl": "./",
     "paths": {
-      "$modules/*": ["modules/*"],
-      "$config": ["config"],
-      "$config/*": ["config/*"],
-      "shared": ["node_modules/shared"]
+      "$modules/*": ["src/modules/*"],
+      "$config": ["src/config"],
+      "$config/*": ["src/config/*"],
+      "$constants": ["src/common/constants"],
+      "$helpers": ["src/common/helpers"],
+      "$exceptions": ["src/common/exceptions"],
+      "$exceptions/*": ["src/common/exceptions/*"],
+      "$lib/*": ["src/lib/*"]
     },
     "incremental": true,
     "skipLibCheck": true,

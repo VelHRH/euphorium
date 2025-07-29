@@ -13,4 +13,15 @@ export const getApolloClient = () =>
       typeof window === 'undefined'
         ? ApolloLink.from([ssrMultipartLink, forwardCookieLink, httpLink])
         : httpLink,
+    defaultOptions: {
+      mutate: {
+        errorPolicy: 'all',
+      },
+      query: {
+        errorPolicy: 'all',
+      },
+      watchQuery: {
+        errorPolicy: 'all',
+      },
+    },
   })

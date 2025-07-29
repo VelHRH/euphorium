@@ -84,6 +84,7 @@ const tsRules = {
 
   '@typescript-eslint/strict-boolean-expressions': 'error',
   '@typescript-eslint/no-explicit-any': 'error',
+  '@typescript-eslint/unbound-method': 'off',
 };
 
 const spellCheckerRule = {

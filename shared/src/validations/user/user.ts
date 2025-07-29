@@ -2,10 +2,13 @@ import { z } from 'zod';
 
 import { User } from '../../types';
 import { emailSchema } from '../common';
-import { passwordSchema } from '../common/password';
 import { baseSchema } from '../database';
 
 export const userSchema = baseSchema.extend({
   email: emailSchema,
-  password: passwordSchema.nullable(),
+  password: z.string().nullable(),
 }) satisfies z.ZodType<User>;
+
+export const userNoPasswordSchema = userSchema.omit({ password: true });
+
+export type UserNoPassword = z.infer<typeof userNoPasswordSchema>;

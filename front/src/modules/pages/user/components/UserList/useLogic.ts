@@ -7,5 +7,5 @@ export const useLogic = () => {
     data: { users },
   } = useSuspenseQuery(LIST_USERS)
 
-  return { users }
+  return { users: users.list }
 }
