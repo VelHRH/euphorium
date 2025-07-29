@@ -8,3 +8,7 @@ export const userSchema = baseSchema.extend({
   email: emailSchema,
   password: z.string().nullable(),
 }) satisfies z.ZodType<User>;
+
+export const userNoPasswordSchema = userSchema.omit({ password: true });
+
+export type UserNoPassword = z.infer<typeof userNoPasswordSchema>;

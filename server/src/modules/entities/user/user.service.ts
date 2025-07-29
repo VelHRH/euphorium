@@ -2,16 +2,15 @@ import { Injectable } from '@nestjs/common';
 import { ConfigService } from '@nestjs/config';
 import { InjectRepository } from '@nestjs/typeorm';
 import { Either, left, right } from '@sweet-monads/either';
-import { UserExceptionMessage } from 'common/exceptions/constants';
 import {
   CreateUserInput,
   CreateUserOutput,
-  FindOneUserOutput,
   GetUserInput,
   GetUserOutput,
   ListUsersOutput,
   UpdateUserInput,
   UpdateUserOutput,
+  User,
 } from 'shared';
 import { FindOptionsSelect, FindOptionsWhere, Repository } from 'typeorm';
 
@@ -19,6 +18,7 @@ import { UserEntity } from './user.entity';
 
 import { Config } from '$config';
 import { BadRequestException, NotFoundException } from '$exceptions';
+import { UserExceptionMessage } from '$exceptions/constants';
 import { CryptoService } from '$modules/crypto/crypto.service';
 
 @Injectable()
@@ -37,7 +37,7 @@ export class UserService {
   async findOne(
     where: FindOptionsWhere<UserEntity>,
     select?: FindOptionsSelect<UserEntity>,
-  ): Promise<Either<NotFoundException, FindOneUserOutput>> {
+  ): Promise<Either<NotFoundException, User>> {
     const user = await this.userRepository.findOne({
       where,
       select,
@@ -88,7 +88,7 @@ export class UserService {
 
   async getBySession(
     refreshToken: string,
-  ): Promise<Either<NotFoundException, FindOneUserOutput>> {
+  ): Promise<Either<NotFoundException, User>> {
     return this.findOne({ session: { refreshToken } });
   }
 

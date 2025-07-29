@@ -229,8 +229,8 @@ export function InputSchema<T extends ZodTypeAny>(
 
 export function InputSchema<T extends ZodTypeAny>(
   input: T,
-  propertyOrOptions?: string | DecoratorOptions | PT,
-  optionsOrPipe?: DecoratorOptions | PT,
+  propertyOrOptions: string | DecoratorOptions | PT = 'input',
+  optionsOrPipe: DecoratorOptions | PT = {},
   ...pipes: PT[]
 ): ParameterDecorator {
   let property: string | undefined;

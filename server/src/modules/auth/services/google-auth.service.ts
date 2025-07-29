@@ -1,14 +1,13 @@
 import { Injectable } from '@nestjs/common';
 import { ConfigService } from '@nestjs/config';
 import { Either, left, right } from '@sweet-monads/either';
-import { AuthExceptionMessage } from 'common/exceptions/constants/auth';
 import { Response } from 'express';
 import { OAuth2Client } from 'google-auth-library';
 import {
   GoogleLoginInput,
   GoogleTokenPayload,
   googleTokenPayloadSchema,
-  User,
+  UserNoPassword,
 } from 'shared';
 
 import { Config } from '$config';
@@ -17,6 +16,7 @@ import {
   NotFoundException,
   UnauthorizedException,
 } from '$exceptions';
+import { AuthExceptionMessage } from '$exceptions/constants/auth';
 import { SessionService } from '$modules/entities/session/session.service';
 import { UserService } from '$modules/entities/user/user.service';
 
@@ -37,7 +37,7 @@ export class GoogleAuthService {
   async login(
     input: GoogleLoginInput,
     response: Response,
-  ): Promise<Either<NotFoundException | BadRequestException, User>> {
+  ): Promise<Either<NotFoundException | BadRequestException, UserNoPassword>> {
     const { idToken } = input;
     const googleUserResult = await this.parseGoogleUser(idToken);
 
@@ -46,7 +46,11 @@ export class GoogleAuthService {
     }
 
     const { email } = googleUserResult.value;
-    const candidate = await this.userService.findOne({ email });
+
+    const candidate = await this.userService.findOne(
+      { email },
+      { id: true, email: true, createdAt: true, updatedAt: true },
+    );
 
     if (candidate.isRight()) {
       return this.createSession(response, candidate.value);
@@ -68,8 +72,8 @@ export class GoogleAuthService {
 
   private async createSession(
     response: Response,
-    user: User,
-  ): Promise<Either<UnauthorizedException, User>> {
+    user: UserNoPassword,
+  ): Promise<Either<UnauthorizedException, UserNoPassword>> {
     const { id, email } = user;
 
     const sessionResult = await this.sessionService.create({

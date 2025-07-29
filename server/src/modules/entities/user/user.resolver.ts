@@ -1,5 +1,4 @@
 import { Resolver } from '@nestjs/graphql';
-import { handleEitherResponse } from 'common/helpers/handle-either-response';
 import {
   GetUserInput,
   getUserInputSchema,
@@ -12,6 +11,7 @@ import {
 import { UserEntity } from './user.entity';
 import { UserService } from './user.service';
 
+import { handleEitherResponse } from '$helpers';
 import { InputSchema, QueryOutputSchema } from '$lib/nestjs-graphql-zod';
 
 @Resolver(() => UserEntity)

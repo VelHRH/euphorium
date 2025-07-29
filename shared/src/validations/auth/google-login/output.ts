@@ -1,8 +1,8 @@
 import { z } from 'zod';
 
-import { userSchema } from '../../user/user';
+import { userNoPasswordSchema } from '../../user/user';
 
 export const googleLoginOutputSchema =
-  userSchema.describe('GoogleLoginOutput:');
+  userNoPasswordSchema.describe('GoogleLoginOutput:');
 
 export type GoogleLoginOutput = z.infer<typeof googleLoginOutputSchema>;

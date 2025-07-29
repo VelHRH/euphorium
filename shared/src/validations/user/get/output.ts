@@ -1,7 +1,8 @@
 import { z } from 'zod';
 
-import { userSchema } from '../user';
+import { userNoPasswordSchema } from '../user';
 
-export const getUserOutputSchema = userSchema.describe('GetUserOutput:');
+export const getUserOutputSchema =
+  userNoPasswordSchema.describe('GetUserOutput:');
 
 export type GetUserOutput = z.infer<typeof getUserOutputSchema>;

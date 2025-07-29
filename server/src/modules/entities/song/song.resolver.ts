@@ -1,5 +1,4 @@
 import { Resolver } from '@nestjs/graphql';
-import { handleEitherResponse } from 'common/helpers';
 import {
   GetSongInput,
   getSongInputSchema,
@@ -10,6 +9,7 @@ import {
 import { SongEntity } from './song.entity';
 import { SongService } from './song.service';
 
+import { handleEitherResponse } from '$helpers';
 import { InputSchema, QueryOutputSchema } from '$lib/nestjs-graphql-zod';
 
 @Resolver(() => SongEntity)

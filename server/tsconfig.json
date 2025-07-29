@@ -10,17 +10,18 @@
     "target": "ES2021",
     "sourceMap": true,
     "outDir": "./dist",
-    "baseUrl": "./src",
+    "baseUrl": "./",
     "paths": {
-      "$modules/*": ["modules/*"],
-      "$config": ["config"],
-      "$config/*": ["config/*"],
-      "$constants": ["common/constants"],
-      "$helpers": ["common/helpers"],
-      "$exceptions": ["common/exceptions"],
-      "$lib/*": ["lib/*"],
-      "shared": ["node_modules/shared"]
-      
+      "$modules/*": ["src/modules/*"],
+      "$config": ["src/config"],
+      "$config/*": ["src/config/*"],
+      "$constants": ["src/common/constants"],
+      "$helpers": ["src/common/helpers"],
+      "$exceptions": ["src/common/exceptions"],
+      "$exceptions/*": ["src/common/exceptions/*"],
+      "$lib/*": ["src/lib/*"],
+      "shared": ["node_modules/@velhrh/new-blood-shared"],
+      "shared/*": ["node_modules/@velhrh/new-blood-shared/*"]
     },
     "incremental": true,
     "skipLibCheck": true,

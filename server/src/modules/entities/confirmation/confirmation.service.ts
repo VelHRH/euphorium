@@ -6,7 +6,6 @@ import {
 import { ConfigService } from '@nestjs/config';
 import { InjectRepository } from '@nestjs/typeorm';
 import { Either, left, right } from '@sweet-monads/either';
-import { AuthExceptionMessage } from 'common/exceptions/constants/auth';
 import { add, isBefore } from 'date-fns';
 import { ConfirmationType } from 'shared';
 import { DataSource, FindOptionsWhere, QueryRunner, Repository } from 'typeorm';
@@ -15,6 +14,7 @@ import { ConfirmationEntity } from './confirmation.entity';
 import { CreateConfirmationParams, SendConfirmationParams } from './types';
 
 import { Config } from '$config';
+import { AuthExceptionMessage } from '$exceptions/constants/auth';
 import { CryptoService } from '$modules/crypto/crypto.service';
 import { MailTemplateConfig } from '$modules/mail/constants';
 import { MailService } from '$modules/mail/mail.service';

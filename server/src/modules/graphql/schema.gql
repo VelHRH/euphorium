@@ -2,11 +2,6 @@
 # THIS FILE WAS AUTOMATICALLY GENERATED (DO NOT MODIFY)
 # ------------------------------------------------------
 
-"""LogoutOutput"""
-type ClassFromZod_1 {
-  success: Boolean!
-}
-
 type ConfirmationEntity {
   createdAt: DateTime!
   expires: DateTime!
@@ -59,7 +54,6 @@ type GetUserOutput {
   createdAt: DateTime!
   email: String!
   id: Int!
-  password: String!
   updatedAt: DateTime!
 }
 
@@ -73,7 +67,6 @@ type GoogleLoginOutput {
   createdAt: DateTime!
   email: String!
   id: Int!
-  password: String!
   updatedAt: DateTime!
 }
 
@@ -86,7 +79,6 @@ type ListUsersOutput_List {
   createdAt: DateTime!
   email: String!
   id: Int!
-  password: String!
   updatedAt: DateTime!
 }
 
@@ -101,23 +93,27 @@ type LoginOutput {
   createdAt: DateTime!
   email: String!
   id: Int!
-  password: String!
   updatedAt: DateTime!
+}
+
+""""""
+type LogoutOutput {
+  success: Boolean!
 }
 
 type Mutation {
   forgotPassword(input: ForgotPasswordInput!): ForgotPasswordOutput!
   googleLogin(input: GoogleLoginInput!): GoogleLoginOutput!
   login(input: LoginInput!): LoginOutput!
-  logout: ClassFromZod_1!
+  logout: LogoutOutput!
   revokePassword(input: RevokePasswordInput!): RevokePasswordOutput!
-  signUp(arg_0: SignUpInput!): SignUpOutput!
+  signUp(input: SignUpInput!): SignUpOutput!
   updatePassword(input: UpdatePasswordInput!): UpdatePasswordOutput!
 }
 
 type Query {
-  song(arg_0: GetSongInput!): GetSongOutput!
-  user(arg_0: GetUserInput!): GetUserOutput!
+  song(input: GetSongInput!): GetSongOutput!
+  user(input: GetUserInput!): GetUserOutput!
   users: ListUsersOutput!
 }
 
@@ -133,7 +129,6 @@ type RevokePasswordOutput {
   createdAt: DateTime!
   email: String!
   id: Int!
-  password: String!
   updatedAt: DateTime!
 }
 
@@ -156,7 +151,6 @@ type SignUpOutput {
   createdAt: DateTime!
   email: String!
   id: Int!
-  password: String!
   updatedAt: DateTime!
 }
 
@@ -171,7 +165,6 @@ type UpdatePasswordOutput {
   createdAt: DateTime!
   email: String!
   id: Int!
-  password: String!
   updatedAt: DateTime!
 }
 

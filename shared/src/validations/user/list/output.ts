@@ -1,10 +1,10 @@
 import { z } from 'zod';
 
-import { userSchema } from '../user';
+import { userNoPasswordSchema } from '../user';
 
 export const listUsersOutputSchema = z
   .object({
-    list: userSchema.array(),
+    list: userNoPasswordSchema.array(),
   })
   .describe('ListUsersOutput:');
 

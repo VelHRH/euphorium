@@ -1,6 +1,5 @@
 import { Injectable, UnauthorizedException } from '@nestjs/common';
 import { Either, left, right } from '@sweet-monads/either';
-import { AuthExceptionMessage } from 'common/exceptions/constants/auth';
 import {
   ConfirmationType,
   ForgotPasswordInput,
@@ -10,9 +9,11 @@ import {
   UpdatePasswordInput,
   UpdatePasswordOutput,
   User,
+  UserNoPassword,
 } from 'shared';
 
 import { BadRequestException, NotFoundException } from '$exceptions';
+import { AuthExceptionMessage } from '$exceptions/constants/auth';
 import { CryptoService } from '$modules/crypto/crypto.service';
 import { ConfirmationService } from '$modules/entities/confirmation/confirmation.service';
 import { UserService } from '$modules/entities/user/user.service';
@@ -123,7 +124,7 @@ export class PasswordService {
   private async updateUserPassword(
     id: User['id'],
     newPassword: UpdatePasswordInput['newPassword'],
-  ): Promise<Either<NotFoundException, User>> {
+  ): Promise<Either<NotFoundException, UserNoPassword>> {
     const hashedPassword = await this.userService.hashPassword(newPassword);
 
     return this.userService.update({

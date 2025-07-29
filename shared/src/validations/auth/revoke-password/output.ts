@@ -1,8 +1,8 @@
 import { z } from 'zod';
 
-import { userSchema } from '../../user/user';
+import { userNoPasswordSchema } from '../../user/user';
 
-export const revokePasswordOutputSchema = userSchema.describe(
+export const revokePasswordOutputSchema = userNoPasswordSchema.describe(
   'RevokePasswordOutput:',
 );
 

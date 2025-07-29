@@ -4,7 +4,6 @@ import {
   UnauthorizedException,
 } from '@nestjs/common';
 import { Either, left } from '@sweet-monads/either';
-import { AuthExceptionMessage } from 'common/exceptions/constants/auth';
 import { Response } from 'express';
 import {
   LoginInput,
@@ -15,6 +14,7 @@ import {
 } from 'shared';
 
 import { BaseException, NotFoundException } from '$exceptions';
+import { AuthExceptionMessage } from '$exceptions/constants/auth';
 import { GqlContext } from '$modules/app/types';
 import { CryptoService } from '$modules/crypto/crypto.service';
 import { SessionService } from '$modules/entities/session/session.service';
@@ -38,10 +38,7 @@ export class AuthService {
   ): Promise<Either<BaseException, LoginOutput>> {
     const { email: inputEmail, password: inputPassword } = input;
 
-    const userResult = await this.userService.findOne(
-      { email: inputEmail },
-      { id: true, email: true, password: true },
-    );
+    const userResult = await this.userService.findOne({ email: inputEmail });
 
     if (userResult.isLeft()) {
       return left(userResult.value);
@@ -74,7 +71,10 @@ export class AuthService {
       return left(sessionResult.value);
     }
 
-    return userResult;
+    return userResult.map((user) => ({
+      ...user,
+      password: undefined,
+    }));
   }
 
   logout(

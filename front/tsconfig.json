@@ -44,7 +44,9 @@
       "$store/*": ["./src/modules/store/*"],
       "$theme": ["./src/modules/theme/index"],
       "$theme/*": ["./src/modules/theme/*"],
-      "$/*": ["./src/*"]
+      "$/*": ["./src/*"],
+      "shared": ["node_modules/@velhrh/new-blood-shared"],
+      "shared/*": ["node_modules/@velhrh/new-blood-shared/*"]
     }
   },
   "include": ["next-env.d.ts", "**/*.ts", "**/*.tsx", ".next/types/**/*.ts"],

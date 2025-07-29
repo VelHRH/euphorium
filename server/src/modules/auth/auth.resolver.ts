@@ -1,5 +1,4 @@
 import { Context, Resolver } from '@nestjs/graphql';
-import { handleEitherResponse } from 'common/helpers';
 import {
   ForgotPasswordInput,
   forgotPasswordInputSchema,
@@ -33,6 +32,7 @@ import { Public } from './decorators';
 import { CurrentUser } from './decorators/current-user';
 import { AuthService, GoogleAuthService, PasswordService } from './services';
 
+import { handleEitherResponse } from '$helpers';
 import { InputSchema, MutationOutputSchema } from '$lib/nestjs-graphql-zod';
 import { GqlContext, UserInGqlContext } from '$modules/app/types';
 

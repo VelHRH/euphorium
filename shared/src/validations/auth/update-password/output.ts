@@ -1,8 +1,8 @@
 import { z } from 'zod';
 
-import { userSchema } from '../../user/user';
+import { userNoPasswordSchema } from '../../user/user';
 
-export const updatePasswordOutputSchema = userSchema.describe(
+export const updatePasswordOutputSchema = userNoPasswordSchema.describe(
   'UpdatePasswordOutput:',
 );
 

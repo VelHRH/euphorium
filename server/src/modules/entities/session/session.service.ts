@@ -1,7 +1,6 @@
 import { Injectable, UnauthorizedException } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { Either, left, right } from '@sweet-monads/either';
-import { AuthExceptionMessage } from 'common/exceptions/constants/auth';
 import { LogoutOutput } from 'shared';
 import { DataSource, QueryRunner, Repository } from 'typeorm';
 
@@ -17,6 +16,7 @@ import {
 import { UserService } from '../user/user.service';
 
 import { NotFoundException } from '$exceptions';
+import { AuthExceptionMessage } from '$exceptions/constants/auth';
 import { GqlContext } from '$modules/app/types';
 import { CryptoService } from '$modules/crypto/crypto.service';
 import { TokenService } from '$modules/token/token.service';
@@ -44,15 +44,9 @@ export class SessionService {
     await queryRunner.startTransaction();
 
     try {
-      const tokensResult = await this.save({ userId, email }, queryRunner);
+      const tokens = await this.save({ userId, email }, queryRunner);
 
-      if (tokensResult.isLeft()) {
-        await queryRunner.rollbackTransaction();
-
-        return left(tokensResult.value);
-      }
-
-      this.tokenService.insertInCookies({ response, ...tokensResult.value });
+      this.tokenService.insertInCookies({ response, ...tokens });
       await queryRunner.commitTransaction();
 
       return right(undefined);
@@ -170,11 +164,11 @@ export class SessionService {
       decodedRefreshToken: signedRefreshToken,
     });
 
-    return tokensResult.map((tokens) => ({
+    return right({
       email,
       userId,
-      ...tokens,
-    }));
+      ...tokensResult,
+    });
 
     // FUNCTIONAL WAY WITH .THEN()
 
@@ -281,7 +275,7 @@ export class SessionService {
   private async save(
     params: SaveParams,
     queryRunner?: QueryRunner,
-  ): Promise<Either<UnauthorizedException, SignedTokens>> {
+  ): Promise<SignedTokens> {
     const { userId, email, decodedRefreshToken } = params;
 
     const manager = queryRunner
@@ -292,31 +286,21 @@ export class SessionService {
       where: { refreshToken: decodedRefreshToken, user: { id: userId } },
     });
 
-    if (session === null) {
-      return left(
-        new UnauthorizedException(AuthExceptionMessage.SESSION_NOT_FOUND),
-      );
-    }
+    const uuidString = this.cryptoService.generateUUID();
 
-    const sessionResult = right(session);
+    const createTokensPayload: JwtPayload = {
+      accessToken: { userId, email },
+      refreshToken: { decodedRefreshToken: uuidString },
+    };
 
-    return sessionResult.asyncMap(async (s) => {
-      const uuidString = this.cryptoService.generateUUID();
+    const tokens = await this.tokenService.create(createTokensPayload);
 
-      const createTokensPayload: JwtPayload = {
-        accessToken: { userId, email },
-        refreshToken: { decodedRefreshToken: uuidString },
-      };
-
-      const tokens = await this.tokenService.create(createTokensPayload);
-
-      await manager.save(SessionEntity, {
-        id: s.id,
-        user: { id: userId },
-        refreshToken: uuidString,
-      });
-
-      return tokens;
+    await manager.save(SessionEntity, {
+      id: session?.id,
+      user: { id: userId },
+      refreshToken: uuidString,
     });
+
+    return tokens;
   }
 }
