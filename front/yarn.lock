@@ -4730,10 +4730,10 @@ setimmediate@^1.0.5:
   resolved "https://registry.yarnpkg.com/setimmediate/-/setimmediate-1.0.5.tgz#290cbb232e306942d7d7ea9b83732ab7856f8285"
   integrity sha512-MATJdZp8sLqDl/68LfQmbP8zKPLQNV6BIZoIgrscFDQ+RsvK/BxeDQOgyxKKoh0y/8h3BqVFnCqQ/gd+reiIXA==
 
-"shared@npm:@velhrh/new-blood-shared@^1.0.0":
-  version "1.0.0"
-  resolved "https://registry.yarnpkg.com/@velhrh/new-blood-shared/-/new-blood-shared-1.0.0.tgz#23910bcd93d8e8883f0930abbc44c62d963f49af"
-  integrity sha512-m2Jr4G86h8eZ2pKecbn94GXh9HqKg1rNFtJABqaR0LgRFUGYVN+rlI9W3ynNdn6cCx5n3OjQ6zic//bmniU+Xg==
+"shared@npm:@velhrh/new-blood-shared@^1.0.1":
+  version "1.0.1"
+  resolved "https://registry.yarnpkg.com/@velhrh/new-blood-shared/-/new-blood-shared-1.0.1.tgz#6f528a645d9166de7f145025eca79fbc57f08c67"
+  integrity sha512-aySDtLIqN6+24QtQdb9vb9prDzrvigNcahtBG1nu6OwSHgCsFfqDzpw/35QO4mt3hjXrqm3GfjSkIHKwb/9J/w==
   dependencies:
     zod "3.23.8"
 
