@@ -1,24 +1,40 @@
-###################
-# BUILD FOR LOCAL DEVELOPMENT
-###################
+# -----------------------------
+# Build stage
+# -----------------------------
+FROM node:20-alpine AS builder
 
-FROM node:20-alpine AS development
-
-# Create app directory
 WORKDIR /app
+
+# Copy package.json and yarn.lock
+COPY package.json yarn.lock ./
+
+# Copy shared package (if needed for build)
 COPY shared ../shared
 
-# Copy application dependency manifests to the container image.
-# Copying this first prevents re-running npm install on every code change.
-COPY  package*.json ./
+# Install dependencies
+RUN yarn install --frozen-lockfile
 
-RUN apk add --no-cache python3 py3-pip make g++
-ENV PYTHON /usr/bin/python3
-
-# Install dependencies with scripts omiting
-RUN yarn install --ignore-scripts
-
-# Bundle app source
+# Copy sources for build
 COPY server/tsconfig*.json ./
 COPY server/nest* ./
 COPY server/src ./src
+
+# Build the project
+RUN yarn build
+
+# -----------------------------
+# Production stage (minimal image)
+# -----------------------------
+FROM node:20-alpine
+
+WORKDIR /app
+
+# Copy only built app and dependencies
+COPY --from=builder /app/node_modules ./node_modules
+COPY --from=builder /app/dist ./dist
+COPY package.json ./
+
+ENV NODE_ENV=production
+
+# Start the application
+CMD ["node", "dist/main.js"]
