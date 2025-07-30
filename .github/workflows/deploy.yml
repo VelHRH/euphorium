@@ -37,10 +37,11 @@ jobs:
           username: ubuntu
           key: ${{ secrets.EC2_SSH_KEY }}
           script: |
+            echo "${{ secrets.ENV_FILE }}" > .env
             docker pull ${{ secrets.DOCKERHUB_USERNAME }}/newblood-server:latest
             docker stop newblood-server || true
             docker rm newblood-server || true
             docker run -d --name newblood-server \
-              -e DATABASE_URL='${{ secrets.DATABASE_URL }}' \
+              --env-file .env \
               -p 8090:8090 \
               ${{ secrets.DOCKERHUB_USERNAME }}/newblood-server:latest
