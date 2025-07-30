@@ -17,5 +17,5 @@ export const appConfig = () => ({
   domain: process.env.DOMAIN,
   isDevelopment: process.env.NODE_ENV === NodeEnv.DEVELOPMENT,
   isProduction: process.env.NODE_ENV === NodeEnv.PRODUCTION,
-  confirmationTokenExpire: process.env.CONFIRMATION_TOKEN_EXPIRE_IN_S,
+  confirmationTokenExpire: Number(process.env.CONFIRMATION_TOKEN_EXPIRE_IN_S),
 });
