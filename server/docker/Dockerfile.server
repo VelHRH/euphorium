@@ -6,18 +6,15 @@ FROM node:20-alpine AS builder
 WORKDIR /app
 
 # Copy package.json and yarn.lock
-COPY server/package.json server/yarn.lock ./
-
-# Copy shared package (if needed for build)
-COPY shared ../shared
+COPY package.json yarn.lock ./
 
 # Install dependencies
 RUN yarn install --frozen-lockfile
 
 # Copy sources for build
-COPY server/tsconfig*.json ./
-COPY server/nest* ./
-COPY server/src ./src
+COPY tsconfig*.json ./
+COPY nest* ./
+COPY src ./src
 
 # Build the project
 RUN yarn build
@@ -32,7 +29,7 @@ WORKDIR /app
 # Copy only built app and dependencies
 COPY --from=builder /app/node_modules ./node_modules
 COPY --from=builder /app/dist ./dist
-COPY server/package.json ./
+COPY package.json ./
 
 ENV NODE_ENV=production
 
