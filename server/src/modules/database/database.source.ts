@@ -9,6 +9,9 @@ type DatabaseOptions = (config: Config['database']) => DataSourceOptions;
 export const databaseOptions: DatabaseOptions = (config) => ({
   type: 'postgres',
   ...config,
+  ssl: {
+    rejectUnauthorized: false,
+  },
 });
 
 export default new DataSource(databaseOptions(databaseConfig()));

@@ -3,7 +3,7 @@ import joi from 'joi';
 export const databaseValidationSchema = joi.object({
   DATABASE_URL: joi
     .string()
-    .uri({ scheme: [/postgres/] })
+    .uri({ scheme: [/postgres(ql)?/] })
     .optional(),
 });
 
