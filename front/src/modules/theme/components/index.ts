@@ -2,7 +2,7 @@ import { Components, Theme } from '@mui/material'
 
 import { generateMuiCssBaseline } from './MuiCssBaseline'
 
-import { ThemeMode } from '../mode'
+import { ThemeMode } from '../constants/mode'
 
 export const generateComponents = (
   mode: ThemeMode,

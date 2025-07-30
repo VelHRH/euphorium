@@ -1,7 +1,7 @@
-import { SignUpFormType } from '$validation'
+import { SignUpInput } from 'shared'
 
 import { loginFields } from './login'
 
 import { FormFields } from '../types'
 
-export const signUpFields: FormFields<SignUpFormType> = loginFields
+export const signUpFields: FormFields<SignUpInput> = loginFields

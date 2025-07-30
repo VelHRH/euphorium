@@ -1,8 +1,8 @@
 import { Components, Theme } from '@mui/material'
 
-import { generateScrollbarStyles } from './getScrollbarStyles'
+import { ThemeMode } from '$modules/theme/constants'
 
-import { ThemeMode } from '../../mode'
+import { generateScrollbarStyles } from './getScrollbarStyles'
 
 export const generateMuiCssBaseline = (
   mode: ThemeMode,
