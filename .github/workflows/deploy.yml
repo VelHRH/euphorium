@@ -1,4 +1,4 @@
-name: Deploy Server and Frontend to EC2
+name: Deploy Server to EC2
 
 on:
   push:
@@ -25,7 +25,6 @@ jobs:
       - name: Create environment files
         run: |
           echo "${{ secrets.BACKEND_ENV_FILE }}" > server/.env
-      # echo "${{ secrets.FRONTEND_ENV_FILE }}" > front/.env
 
       - name: Build and push Server Docker image
         uses: docker/build-push-action@v4
@@ -34,14 +33,6 @@ jobs:
           file: ./server/docker/Dockerfile.server
           push: true
           tags: ${{ secrets.DOCKERHUB_USERNAME }}/newblood-server:latest
-
-      # - name: Build and push Frontend Docker image
-      #   uses: docker/build-push-action@v4
-      #   with:
-      #     context: ./front
-      #     file: ./front/docker/Dockerfile.front
-      #     push: true
-      #     tags: ${{ secrets.DOCKERHUB_USERNAME }}/newblood-front:latest
 
       - name: Deploy to EC2 via SSH
         uses: appleboy/ssh-action@v1.0.3
@@ -52,25 +43,16 @@ jobs:
           script: |
             # Create environment files
             echo "${{ secrets.BACKEND_ENV_FILE }}" > backend.env
-          # echo "${{ secrets.FRONTEND_ENV_FILE }}" > frontend.env
 
             # Pull latest images
             docker pull ${{ secrets.DOCKERHUB_USERNAME }}/newblood-server:latest
-          # docker pull ${{ secrets.DOCKERHUB_USERNAME }}/newblood-front:latest
 
             # Stop and remove existing containers
-            docker stop newblood-server || true # newblood-front || true
-            docker rm newblood-server || true # newblood-front || true
+            docker stop newblood-server || true
+            docker rm newblood-server || true
 
             # Start backend container
             docker run -d --name newblood-server \
               --env-file backend.env \
               -p 8090:8090 \
-              ${{ secrets.DOCKERHUB_USERNAME }}/newblood-server:latest
-
-            # Start frontend container
-            # docker run -d --name newblood-front \
-            #   --env-file frontend.env \
-            #   -p 3001:3001 \
-            #   ${{ secrets.DOCKERHUB_USERNAME }}/newblood-front:latest
-
+              ${{ secrets.DOCKERHUB_USERNAME }}/newblood-server:latest\
