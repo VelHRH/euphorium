@@ -55,4 +55,4 @@ jobs:
             docker run -d --name newblood-server \
               --env-file backend.env \
               -p 8090:8090 \
-              ${{ secrets.DOCKERHUB_USERNAME }}/newblood-server:latest\
+              ${{ secrets.DOCKERHUB_USERNAME }}/newblood-server:latest
