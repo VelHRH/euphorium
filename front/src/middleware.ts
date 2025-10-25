@@ -1,6 +1,6 @@
 import { NextRequest, NextResponse } from 'next/server'
 
-import { middlewares as activatedMiddlewares } from '$middlewares'
+import { middlewares as activatedMiddlewares } from '$/middlewares'
 
 export async function middleware(req: NextRequest) {
   const nextResponse = NextResponse.next()

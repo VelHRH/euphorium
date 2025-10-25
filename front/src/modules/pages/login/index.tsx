@@ -1,19 +1,16 @@
-import { Stack } from '@mui/material'
 import { FC } from 'react'
 
-import { Center, Header, SignWrapper } from '$components'
-
-import { LoginForm } from './components'
+import { LoginForm } from './components/login-form'
 
 export const LoginPage: FC = () => {
   return (
-    <Center>
-      <SignWrapper>
-        <Stack gap={2}>
-          <Header>Login</Header>
-          <LoginForm />
-        </Stack>
-      </SignWrapper>
-    </Center>
+    <div className="p-3 max-w-800px mx-auto">
+      <div className="flex flex-col gap-2 items-center justify-center">
+        <p className="text-2xl font-bold">
+          Login
+        </p>
+        <LoginForm />
+      </div>
+    </div>
   )
 }

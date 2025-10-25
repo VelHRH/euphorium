@@ -4,10 +4,10 @@ FROM node:20-alpine AS builder
 WORKDIR /app
 
 # Copy package files
-COPY package.json yarn.lock ./
+COPY package.json package-lock.json* ./
 
 # Install dependencies
-RUN yarn install --frozen-lockfile
+RUN npm ci
 
 # Copy the rest of the frontend code
 COPY . .
@@ -16,10 +16,10 @@ COPY . .
 COPY .env .env
 
 # Run environment validation
-RUN yarn envValidation
+RUN npm run envValidation
 
 # Build the application
-RUN yarn build
+RUN npm run build
 
 # Production stage
 FROM node:20-alpine AS runner
@@ -30,16 +30,16 @@ WORKDIR /app
 COPY --from=builder /app/.next ./.next
 COPY --from=builder /app/public ./public
 COPY --from=builder /app/package.json ./package.json
-COPY --from=builder /app/yarn.lock ./yarn.lock
+COPY --from=builder /app/package-lock.json ./package-lock.json
 COPY --from=builder /app/next.config.ts ./next.config.ts
 COPY --from=builder /app/envValidation ./envValidation
 COPY --from=builder /app/.env ./.env
 
 # Install production dependencies only
-RUN yarn install --production --frozen-lockfile
+RUN npm ci --only=production
 
 # Expose the port the app runs on
 EXPOSE 3001
 
 # Start the application
-CMD ["yarn", "start"] 
+CMD ["npm", "start"] 

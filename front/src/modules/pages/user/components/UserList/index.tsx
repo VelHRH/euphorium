@@ -2,10 +2,12 @@
 
 import { useLogic } from './useLogic'
 
-import { UserListItem } from '../UserListItem'
-
 export const UserList = () => {
   const { users } = useLogic()
 
-  return users.map(({ id, email }) => <UserListItem key={id} email={email} />)
+  return users.map(({ id, email }) => (
+    <div key={id} className="flex flex-col gap-2">
+      <p>{email}</p>
+    </div>
+  ))
 }

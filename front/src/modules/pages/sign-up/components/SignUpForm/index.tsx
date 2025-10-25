@@ -2,13 +2,13 @@
 
 import { useMutation } from '@apollo/client'
 import { useRouter } from 'next/navigation'
-import { SignUpInput, signUpInputSchema } from 'shared'
+import { SignUpInput } from 'shared'
 import { toast } from 'sonner'
 
-import { SIGN_UP } from '$api/auth/queries/sign-up'
-import { AuthForm } from '$components'
+import { SIGN_UP } from '$/api/auth/queries/sign-up'
+import { Button } from '$components/ui/button'
+import { Input } from '$components/ui/input'
 import { Routes } from '$config'
-import { signUpFields } from '$constants'
 
 export const SignUpForm = () => {
   const [signUp] = useMutation(SIGN_UP)
@@ -27,10 +27,19 @@ export const SignUpForm = () => {
   }
 
   return (
-    <AuthForm
-      inputFields={signUpFields}
-      schema={signUpInputSchema}
-      onSubmit={handleSignUp}
-    />
+    <form
+      className="flex flex-col gap-2"
+      onSubmit={(e) => {
+        e.preventDefault()
+        handleSignUp({
+          email: (e.target as HTMLFormElement).email.value,
+          password: (e.target as HTMLFormElement).password.value,
+        })
+      }}
+    >
+      <Input name="email" placeholder="Email" />
+      <Input name="password" placeholder="Password" />
+      <Button type="submit">Sign Up</Button>
+    </form>
   )
 }

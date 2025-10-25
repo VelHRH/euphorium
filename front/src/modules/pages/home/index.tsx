@@ -1,31 +1,15 @@
 'use client'
 
 import { useMutation, useQuery } from '@apollo/client'
-import { Add as AddIcon, Delete as DeleteIcon } from '@mui/icons-material'
-import {
-  Alert,
-  Box,
-  Button,
-  Card,
-  CardContent,
-  CircularProgress,
-  Dialog,
-  DialogActions,
-  DialogContent,
-  DialogTitle,
-  Fab,
-  IconButton,
-  List,
-  ListItem,
-  ListItemText,
-  TextField,
-  Typography,
-} from '@mui/material'
 import { FC, useState } from 'react'
 
-import { CREATE_SONG } from '$graphql/mutations/song/create'
-import { DELETE_SONG } from '$graphql/mutations/song/delete'
-import { LIST_SONGS } from '$graphql/queries/song/list'
+import { CREATE_SONG } from '$/lib/graphql/mutations/song/create'
+import { DELETE_SONG } from '$/lib/graphql/mutations/song/delete'
+import { LIST_SONGS } from '$/lib/graphql/queries/song/list'
+import { Button } from '$components/ui/button'
+import { Dialog } from '$components/ui/dialog'
+import { Input } from '$components/ui/input'
+import { Spinner } from '$components/ui/spinner'
 
 export const HomePage: FC = () => {
   const [isCreateDialogOpen, setIsCreateDialogOpen] = useState(false)
@@ -64,120 +48,59 @@ export const HomePage: FC = () => {
   }
 
   if (loading) {
-    return (
-      <Box
-        display="flex"
-        justifyContent="center"
-        alignItems="center"
-        minHeight="50vh"
-      >
-        <CircularProgress />
-      </Box>
-    )
+    return <Spinner />
   }
 
   if (error) {
-    return (
-      <Box p={3}>
-        <Alert severity="error">Error loading songs: {error.message}</Alert>
-      </Box>
-    )
+    return <p>Error loading songs: {error.message}</p>
   }
 
   const songs = data?.songs || []
 
   return (
-    <Box p={3} maxWidth="800px" mx="auto">
-      <Typography variant="h4" component="h1" gutterBottom>
-        Song Manager
-      </Typography>
+    <div className="p-3 max-w-800px mx-auto">
+      <p className="text-2xl font-bold">Song Manager</p>
 
-      <Card>
-        <CardContent>
+      <div>
+        <div className="flex flex-col gap-2">
           {songs.length === 0 ? (
-            <Typography
-              variant="body1"
-              color="text.secondary"
-              textAlign="center"
-              py={4}
-            >
+            <p className="text-sm text-gray-500">
               No songs yet. Create your first song!
-            </Typography>
+            </p>
           ) : (
-            <List>
+            <div>
               {songs.map((song: any) => (
-                <ListItem
-                  key={song.id}
-                  divider
-                  secondaryAction={
-                    <IconButton
-                      edge="end"
-                      aria-label="delete"
-                      onClick={() => handleDeleteSong(song.name)}
-                      disabled={deleteLoading}
-                      color="error"
-                    >
-                      <DeleteIcon />
-                    </IconButton>
-                  }
-                >
-                  <ListItemText
-                    primary={song.name}
-                    secondary={`Created: ${new Date(song.createdAt).toLocaleDateString()}`}
-                  />
-                </ListItem>
+                <div key={song.id} className="flex flex-col gap-2">
+                  <p>{song.name}</p>
+                  <p>{`Created: ${new Date(song.createdAt).toLocaleDateString()}`}</p>
+                  <Button
+                    onClick={() => handleDeleteSong(song.name)}
+                    disabled={deleteLoading}
+                  >
+                    Delete
+                  </Button>
+                </div>
               ))}
-            </List>
+            </div>
           )}
-        </CardContent>
-      </Card>
+        </div>
+      </div>
 
-      <Fab
-        color="primary"
-        aria-label="add"
-        sx={{ position: 'fixed', bottom: 16, right: 16 }}
-        onClick={() => setIsCreateDialogOpen(true)}
-      >
-        <AddIcon />
-      </Fab>
+      <Button onClick={() => setIsCreateDialogOpen(true)}>Create Song</Button>
 
-      <Dialog
-        open={isCreateDialogOpen}
-        onClose={() => setIsCreateDialogOpen(false)}
-        maxWidth="sm"
-        fullWidth
-      >
-        <DialogTitle>Create New Song</DialogTitle>
-        <DialogContent>
-          <TextField
-            autoFocus
-            margin="dense"
-            label="Song Name"
-            type="text"
-            fullWidth
-            variant="outlined"
+      <Dialog open={isCreateDialogOpen}>
+        <p>Create New Song</p>
+        <div>
+          <Input
             value={newSongName}
-            onChange={(e) => setNewSongName(e.target.value)}
-            onKeyPress={(e) => e.key === 'Enter' && handleCreateSong()}
+            onChange={(e: React.ChangeEvent<HTMLInputElement>) =>
+              setNewSongName(e.target.value)
+            }
+            onKeyDown={(e) => e.key === 'Enter' && handleCreateSong()}
             disabled={createLoading}
           />
-        </DialogContent>
-        <DialogActions>
-          <Button
-            onClick={() => setIsCreateDialogOpen(false)}
-            disabled={createLoading}
-          >
-            Cancel
-          </Button>
-          <Button
-            onClick={handleCreateSong}
-            variant="contained"
-            disabled={!newSongName.trim() || createLoading}
-          >
-            {createLoading ? <CircularProgress size={20} /> : 'Create'}
-          </Button>
-        </DialogActions>
+        </div>
       </Dialog>
-    </Box>
+    </div>
   )
 }

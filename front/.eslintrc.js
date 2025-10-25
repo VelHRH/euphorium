@@ -7,7 +7,12 @@ module.exports = {
     tsconfigRootDir: __dirname,
     sourceType: 'module',
   },
-  plugins: ['@typescript-eslint/eslint-plugin', 'simple-import-sort', 'import'],
+  plugins: [
+    '@typescript-eslint/eslint-plugin',
+    'simple-import-sort',
+    'import',
+    'unused-imports',
+  ],
   extends: [
     'plugin:@typescript-eslint/recommended',
     'plugin:prettier/recommended',
@@ -98,5 +103,15 @@ module.exports = {
     'no-multiple-empty-lines': ['error', { max: 2, maxBOF: 0, maxEOF: 1 }],
     '@next/next/no-head-element': 'off',
     '@next/next/no-img-element': 'off',
+    'unused-imports/no-unused-imports': 'error',
+    'unused-imports/no-unused-vars': [
+      'warn',
+      {
+        vars: 'all',
+        varsIgnorePattern: '^_',
+        args: 'after-used',
+        argsIgnorePattern: '^_',
+      },
+    ],
   },
 }
