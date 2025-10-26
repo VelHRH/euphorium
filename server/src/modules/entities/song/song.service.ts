@@ -104,7 +104,7 @@ export class SongService {
     input: DeleteSongInput,
   ): Promise<Either<BaseException, DeleteSongOutput>> {
     const song = await this.songRepository.findOne({
-      where: { name: input.name },
+      where: { id: input.id },
     });
 
     if (!song) {
@@ -114,7 +114,7 @@ export class SongService {
     try {
       await this.songRepository.remove(song);
 
-      return right({ success: true });
+      return right({ success: true, id: input.id });
     } catch (error) {
       return left(new BaseException('Failed to delete song'));
     }

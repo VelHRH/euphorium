@@ -1,24 +1,24 @@
 services:
-  server:
-    container_name: server
-    image: server_image
-    build:
-      context: .
-      dockerfile: docker/Dockerfile.server
-      target: development
-    command: sh -c 'yarn && yarn start:dev'
-    restart: always
-    env_file:
-      - .env
-    environment:
-      DATABASE_URL: postgres://postgres:postgres@database:5432/newblood?schema=public&sslmode=disable
-    volumes:
-      - .:/app # enable hot reload
-      - /app/node_modules
-    ports:
-      - ${PORT}:${PORT}
-    depends_on:
-      - database
+  # server:
+  #   container_name: server
+  #   image: server_image
+  #   build:
+  #     context: .
+  #     dockerfile: docker/Dockerfile.server
+  #     target: development
+  #   command: sh -c 'yarn && yarn start:dev'
+  #   restart: always
+  #   env_file:
+  #     - .env
+  #   environment:
+  #     DATABASE_URL: postgres://postgres:postgres@database:5432/newblood?schema=public&sslmode=disable
+  #   volumes:
+  #     - .:/app # enable hot reload
+  #     - /app/node_modules
+  #   ports:
+  #     - ${PORT}:${PORT}
+  #   depends_on:
+  #     - database
 
   database:
     container_name: database
@@ -32,7 +32,7 @@ services:
     environment:
       POSTGRES_DB: newblood
       POSTGRES_USER: postgres
-      POSTGRES_PASSWORD: postgres
+      POSTGRES_PASSWORD: ${DATABASE_PASSWORD}
     ports:
       - 5433:5432
     volumes:

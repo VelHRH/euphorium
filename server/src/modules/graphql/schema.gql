@@ -39,11 +39,12 @@ scalar DateTime
 
 """"""
 input DeleteSongInput {
-  name: String!
+  id: Int!
 }
 
 """"""
 type DeleteSongOutput {
+  id: Int!
   success: Boolean!
 }
 
