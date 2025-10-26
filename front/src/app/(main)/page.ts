@@ -1,1 +1,1 @@
-export { HomePage as default } from '$pages'
+export { HomePage as default } from '$modules/home/pages/home'

@@ -1,4 +1,4 @@
-import { graphql } from '$/lib/graphql'
+import { graphql } from '$lib/apollo'
 
 export const LOGOUT = graphql(`
   mutation Logout {

@@ -1,7 +1,6 @@
+import { Env } from '$config/environment'
 import { HttpLink } from '@apollo/client'
 import { ResponseCookies } from 'next/dist/compiled/@edge-runtime/cookies'
-
-import { Env } from '$config'
 
 export const httpLink = new HttpLink({
   uri: Env.app.NEXT_PUBLIC_API_URL,

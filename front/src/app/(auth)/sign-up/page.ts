@@ -1,1 +1,1 @@
-export { SignUpPage as default } from '$pages'
+export { SignUpPage as default } from '$modules/auth/pages/sign-up'

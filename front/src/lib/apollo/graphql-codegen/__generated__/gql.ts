@@ -1,0 +1,100 @@
+/* eslint-disable */
+import * as types from './graphql';
+import { TypedDocumentNode as DocumentNode } from '@graphql-typed-document-node/core';
+
+/**
+ * Map of all GraphQL operations in the project.
+ *
+ * This map has several performance disadvantages:
+ * 1. It is not tree-shakeable, so it will include all operations in the project.
+ * 2. It is not minifiable, so the string of a GraphQL query will be multiple times inside the bundle.
+ * 3. It does not support dead code elimination, so it will add unused operations.
+ *
+ * Therefore it is highly recommended to use the babel or swc plugin for production.
+ * Learn more about it here: https://the-guild.dev/graphql/codegen/plugins/presets/preset-client#reducing-bundle-size
+ */
+type Documents = {
+    "\n  mutation GoogleLogin($input: GoogleLoginInput!) {\n    googleLogin(input: $input) {\n      id\n      email\n    }\n  }\n": typeof types.GoogleLoginDocument,
+    "\n  mutation Login($input: LoginInput!) {\n    login(input: $input) {\n      id\n      email\n    }\n  }\n": typeof types.LoginDocument,
+    "\n  mutation Logout {\n    logout {\n      success\n    }\n  }\n": typeof types.LogoutDocument,
+    "\n  mutation SignUp($input: SignUpInput!) {\n    signUp(input: $input) {\n      id\n      email\n    }\n  }\n": typeof types.SignUpDocument,
+    "\n  mutation CreateSong($input: CreateSongInput!) {\n    createSong(input: $input) {\n      id\n      name\n      createdAt\n      updatedAt\n    }\n  }\n": typeof types.CreateSongDocument,
+    "\n  mutation DeleteSong($input: DeleteSongInput!) {\n    deleteSong(input: $input) {\n      success\n      id\n    }\n  }\n": typeof types.DeleteSongDocument,
+    "\n  query GetSong($input: GetSongInput!) {\n    song(input: $input) {\n      name\n    }\n  }\n": typeof types.GetSongDocument,
+    "\n  query ListSongs {\n    songs {\n      id\n      name\n      createdAt\n      updatedAt\n    }\n  }\n": typeof types.ListSongsDocument,
+    "\n  fragment UserFields on ListUsersOutput {\n    list {\n      id\n      email\n    }\n  }\n": typeof types.UserFieldsFragmentDoc,
+    "\n  query ListUsers {\n    users {\n      ...UserFields\n    }\n  }\n": typeof types.ListUsersDocument,
+};
+const documents: Documents = {
+    "\n  mutation GoogleLogin($input: GoogleLoginInput!) {\n    googleLogin(input: $input) {\n      id\n      email\n    }\n  }\n": types.GoogleLoginDocument,
+    "\n  mutation Login($input: LoginInput!) {\n    login(input: $input) {\n      id\n      email\n    }\n  }\n": types.LoginDocument,
+    "\n  mutation Logout {\n    logout {\n      success\n    }\n  }\n": types.LogoutDocument,
+    "\n  mutation SignUp($input: SignUpInput!) {\n    signUp(input: $input) {\n      id\n      email\n    }\n  }\n": types.SignUpDocument,
+    "\n  mutation CreateSong($input: CreateSongInput!) {\n    createSong(input: $input) {\n      id\n      name\n      createdAt\n      updatedAt\n    }\n  }\n": types.CreateSongDocument,
+    "\n  mutation DeleteSong($input: DeleteSongInput!) {\n    deleteSong(input: $input) {\n      success\n      id\n    }\n  }\n": types.DeleteSongDocument,
+    "\n  query GetSong($input: GetSongInput!) {\n    song(input: $input) {\n      name\n    }\n  }\n": types.GetSongDocument,
+    "\n  query ListSongs {\n    songs {\n      id\n      name\n      createdAt\n      updatedAt\n    }\n  }\n": types.ListSongsDocument,
+    "\n  fragment UserFields on ListUsersOutput {\n    list {\n      id\n      email\n    }\n  }\n": types.UserFieldsFragmentDoc,
+    "\n  query ListUsers {\n    users {\n      ...UserFields\n    }\n  }\n": types.ListUsersDocument,
+};
+
+/**
+ * The graphql function is used to parse GraphQL queries into a document that can be used by GraphQL clients.
+ *
+ *
+ * @example
+ * ```ts
+ * const query = graphql(`query GetUser($id: ID!) { user(id: $id) { name } }`);
+ * ```
+ *
+ * The query argument is unknown!
+ * Please regenerate the types.
+ */
+export function graphql(source: string): unknown;
+
+/**
+ * The graphql function is used to parse GraphQL queries into a document that can be used by GraphQL clients.
+ */
+export function graphql(source: "\n  mutation GoogleLogin($input: GoogleLoginInput!) {\n    googleLogin(input: $input) {\n      id\n      email\n    }\n  }\n"): (typeof documents)["\n  mutation GoogleLogin($input: GoogleLoginInput!) {\n    googleLogin(input: $input) {\n      id\n      email\n    }\n  }\n"];
+/**
+ * The graphql function is used to parse GraphQL queries into a document that can be used by GraphQL clients.
+ */
+export function graphql(source: "\n  mutation Login($input: LoginInput!) {\n    login(input: $input) {\n      id\n      email\n    }\n  }\n"): (typeof documents)["\n  mutation Login($input: LoginInput!) {\n    login(input: $input) {\n      id\n      email\n    }\n  }\n"];
+/**
+ * The graphql function is used to parse GraphQL queries into a document that can be used by GraphQL clients.
+ */
+export function graphql(source: "\n  mutation Logout {\n    logout {\n      success\n    }\n  }\n"): (typeof documents)["\n  mutation Logout {\n    logout {\n      success\n    }\n  }\n"];
+/**
+ * The graphql function is used to parse GraphQL queries into a document that can be used by GraphQL clients.
+ */
+export function graphql(source: "\n  mutation SignUp($input: SignUpInput!) {\n    signUp(input: $input) {\n      id\n      email\n    }\n  }\n"): (typeof documents)["\n  mutation SignUp($input: SignUpInput!) {\n    signUp(input: $input) {\n      id\n      email\n    }\n  }\n"];
+/**
+ * The graphql function is used to parse GraphQL queries into a document that can be used by GraphQL clients.
+ */
+export function graphql(source: "\n  mutation CreateSong($input: CreateSongInput!) {\n    createSong(input: $input) {\n      id\n      name\n      createdAt\n      updatedAt\n    }\n  }\n"): (typeof documents)["\n  mutation CreateSong($input: CreateSongInput!) {\n    createSong(input: $input) {\n      id\n      name\n      createdAt\n      updatedAt\n    }\n  }\n"];
+/**
+ * The graphql function is used to parse GraphQL queries into a document that can be used by GraphQL clients.
+ */
+export function graphql(source: "\n  mutation DeleteSong($input: DeleteSongInput!) {\n    deleteSong(input: $input) {\n      success\n      id\n    }\n  }\n"): (typeof documents)["\n  mutation DeleteSong($input: DeleteSongInput!) {\n    deleteSong(input: $input) {\n      success\n      id\n    }\n  }\n"];
+/**
+ * The graphql function is used to parse GraphQL queries into a document that can be used by GraphQL clients.
+ */
+export function graphql(source: "\n  query GetSong($input: GetSongInput!) {\n    song(input: $input) {\n      name\n    }\n  }\n"): (typeof documents)["\n  query GetSong($input: GetSongInput!) {\n    song(input: $input) {\n      name\n    }\n  }\n"];
+/**
+ * The graphql function is used to parse GraphQL queries into a document that can be used by GraphQL clients.
+ */
+export function graphql(source: "\n  query ListSongs {\n    songs {\n      id\n      name\n      createdAt\n      updatedAt\n    }\n  }\n"): (typeof documents)["\n  query ListSongs {\n    songs {\n      id\n      name\n      createdAt\n      updatedAt\n    }\n  }\n"];
+/**
+ * The graphql function is used to parse GraphQL queries into a document that can be used by GraphQL clients.
+ */
+export function graphql(source: "\n  fragment UserFields on ListUsersOutput {\n    list {\n      id\n      email\n    }\n  }\n"): (typeof documents)["\n  fragment UserFields on ListUsersOutput {\n    list {\n      id\n      email\n    }\n  }\n"];
+/**
+ * The graphql function is used to parse GraphQL queries into a document that can be used by GraphQL clients.
+ */
+export function graphql(source: "\n  query ListUsers {\n    users {\n      ...UserFields\n    }\n  }\n"): (typeof documents)["\n  query ListUsers {\n    users {\n      ...UserFields\n    }\n  }\n"];
+
+export function graphql(source: string) {
+  return (documents as any)[source] ?? {};
+}
+
+export type DocumentType<TDocumentNode extends DocumentNode<any, any>> = TDocumentNode extends DocumentNode<  infer TType,  any>  ? TType  : never;

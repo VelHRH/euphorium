@@ -1,7 +1,6 @@
 import { CredentialsConfig } from 'next-auth/providers/credentials'
 
-import { getApolloClient } from '$/lib/apollo'
-
+import { apolloClient } from '$lib/apollo'
 import { LOGIN } from '../../queries'
 
 type Credentials = {
@@ -18,12 +17,12 @@ export const credentialsLoginAuthorize: CredentialsConfig['authorize'] = async (
 
   const { email, password } = credentials
 
-  const { data, errors } = await getApolloClient().mutate({
+  const { data, error } = await apolloClient.mutate({
     mutation: LOGIN,
     variables: { input: { email, password } },
   })
 
-  if (errors) {
+  if (error) {
     return null
   }
 

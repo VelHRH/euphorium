@@ -1,6 +1,6 @@
 import { NextRequest, NextResponse } from 'next/server'
 
-import { Routes } from '$config'
+import { Routes } from '$constants/config/routes'
 
 import { getSessionUser } from './getSessionUser'
 
@@ -22,7 +22,7 @@ export default async function authMiddleware(
   const header = new Headers()
   const isPublicPath = publicPaths.some((path) => pathname.startsWith(path))
   const isLoginPaths = loginPaths.some((path) => pathname.startsWith(path))
-
+  console.log(pathname)
   if (isLoginPaths) {
     const user = await getSessionUser()
 

@@ -1,7 +1,7 @@
 import { cookies } from 'next/headers'
 import { Session } from 'next-auth'
 
-import { Env } from '$config'
+import { Env } from '$constants/config/environment'
 
 export const getSessionUser = async () => {
   const cookieValues = await cookies()

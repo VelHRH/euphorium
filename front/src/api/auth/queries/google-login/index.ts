@@ -1,4 +1,4 @@
-import { graphql } from '$/lib/graphql'
+import { graphql } from '$lib/apollo'
 
 export const GOOGLE_LOGIN = graphql(`
   mutation GoogleLogin($input: GoogleLoginInput!) {

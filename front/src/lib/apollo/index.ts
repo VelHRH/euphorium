@@ -1,27 +1,22 @@
-import { ApolloLink } from '@apollo/client'
-import {
-  ApolloClient,
-  InMemoryCache,
-} from '@apollo/experimental-nextjs-app-support'
+import { ApolloClient, ApolloLink, InMemoryCache } from '@apollo/client'
 
-import { forwardCookieLink, httpLink, ssrMultipartLink } from './link'
+import { httpLink } from './link/http'
 
-export const getApolloClient = () =>
-  new ApolloClient({
-    cache: new InMemoryCache(),
-    link:
-      typeof window === 'undefined'
-        ? ApolloLink.from([ssrMultipartLink, forwardCookieLink, httpLink])
-        : httpLink,
-    defaultOptions: {
-      mutate: {
-        errorPolicy: 'all',
-      },
-      query: {
-        errorPolicy: 'all',
-      },
-      watchQuery: {
-        errorPolicy: 'all',
-      },
+export const apolloClient = new ApolloClient({
+  ssrMode: true,
+  cache: new InMemoryCache(),
+  link: ApolloLink.from([httpLink]),
+  defaultOptions: {
+    mutate: {
+      errorPolicy: 'all',
     },
-  })
+    query: {
+      errorPolicy: 'all',
+    },
+    watchQuery: {
+      errorPolicy: 'all',
+    },
+  },
+})
+
+export * from './graphql-codegen/__generated__'

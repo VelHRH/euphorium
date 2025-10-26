@@ -24,6 +24,7 @@
       "$constants/*": ["./src/constants/*"],
       "$components/*": ["./src/components/*"],
       "$api/*": ["./src/api/*"],
+      "$lib/*": ["./src/lib/*"],
       "$/*": ["./src/*"]
     }
   },

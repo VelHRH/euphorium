@@ -2,10 +2,11 @@ import NextAuth, { AuthOptions } from 'next-auth'
 import CredentialsProvider from 'next-auth/providers/credentials'
 import GoogleProvider from 'next-auth/providers/google'
 
-import { Env, Routes } from '$config'
+import { Env } from '$constants/config/environment'
+import { Routes } from '$constants/config/routes'
 
 import { callbacks } from './callbacks'
-import { Provider } from './constants'
+import { Provider } from './constants/providers'
 import { credentialsLoginAuthorize } from './credentials-login'
 import { events } from './events'
 import { googleProfile } from './google-login'
@@ -48,5 +49,3 @@ export const authOptions: AuthOptions = {
 const handler = NextAuth(authOptions)
 
 export { handler as GET, handler as POST }
-
-export * from './constants'

@@ -1,1 +1,1 @@
-export { LoginPage as default } from '$pages'
+export { LoginPage as default } from '$modules/auth/pages/login'
