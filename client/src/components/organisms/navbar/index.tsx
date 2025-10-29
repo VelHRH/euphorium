@@ -8,7 +8,7 @@ const siteName = 'EUPHORIUM'
 export const Navbar = () => {
   const router = useRouter()
   return (
-    <div className="h-16 bg-card/20 backdrop-blur-md border-2 border-border rounded-full fixed top-2 left-2 right-2 shadow-lg">
+    <div className="h-16 bg-card/20 backdrop-blur-md border-2 border-border rounded-full fixed top-2 left-2 right-2 shadow-lg z-50">
       <div className="flex items-center justify-between h-full text-foreground font-medium px-4 py-2">
         <div className="flex items-center gap-2">
           <div
