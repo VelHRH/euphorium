@@ -10,7 +10,7 @@ export const HomeArea: FC<Props> = ({ children, className }) => {
   return (
     <div
       className={cn(
-        'border-2 border-border rounded-xl p-4 flex flex-col justify-between gap-4',
+        'border-2 border-border rounded-lg p-4 flex flex-col justify-between gap-4',
         className,
       )}
     >

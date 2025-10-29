@@ -1,6 +1,7 @@
 'use client'
 
 import { useRouter } from 'next/navigation'
+import { ThemeToggler } from '../theme-toggler'
 import { NavbarButton } from './button'
 
 const siteName = 'EUPHORIUM'
@@ -32,6 +33,7 @@ export const Navbar = () => {
           <NavbarButton label="Profile" route="/profile" />
         </div>
         <div className="flex items-center gap-2">
+          <ThemeToggler />
           <NavbarButton label="Login" route="/login" isGhost={false} />
         </div>
       </div>
