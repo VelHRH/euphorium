@@ -2,10 +2,21 @@
 # THIS FILE WAS AUTOMATICALLY GENERATED (DO NOT MODIFY)
 # ------------------------------------------------------
 
+type ArtistEntity {
+  createdAt: DateTime!
+  id: String!
+  imgPath: String
+  label: String
+  name: String!
+  social: SocialEntity
+  songs: [SongArtistEntity!]!
+  updatedAt: DateTime!
+}
+
 type ConfirmationEntity {
   createdAt: DateTime!
   expires: DateTime!
-  id: Int!
+  id: String!
   token: String!
   type: ConfirmationType!
   updatedAt: DateTime!
@@ -21,15 +32,43 @@ enum ConfirmationType {
 
 """"""
 input CreateSongInput {
+  album: String!
+  artistIds: [String!]!
   name: String!
+  postedAt: DateTime!
+  youtubeUrls: [String!]
 }
 
 """"""
 type CreateSongOutput {
+  album: String!
+  artists: [CreateSongOutput_Artists!]!
   createdAt: DateTime!
-  id: Int!
+  id: String!
   name: String!
+  postedAt: DateTime!
   updatedAt: DateTime!
+  youtubeUrls: [String!]!
+}
+
+type CreateSongOutput_Artists {
+  createdAt: DateTime!
+  id: String!
+  imgPath: String
+  label: String
+  name: String!
+  social: CreateSongOutput_Artists_Social
+  updatedAt: DateTime!
+}
+
+type CreateSongOutput_Artists_Social {
+  createdAt: DateTime!
+  facebook: String
+  id: String!
+  instagram: String
+  updatedAt: DateTime!
+  x: String
+  youtube: String
 }
 
 """
@@ -39,12 +78,12 @@ scalar DateTime
 
 """"""
 input DeleteSongInput {
-  id: Int!
+  id: String!
 }
 
 """"""
 type DeleteSongOutput {
-  id: Int!
+  id: String!
   success: Boolean!
 }
 
@@ -70,14 +109,14 @@ type GetSongOutput {
 
 """"""
 input GetUserInput {
-  id: Int!
+  id: String!
 }
 
 """"""
 type GetUserOutput {
   createdAt: DateTime!
   email: String!
-  id: Int!
+  id: String!
   updatedAt: DateTime!
 }
 
@@ -90,7 +129,7 @@ input GoogleLoginInput {
 type GoogleLoginOutput {
   createdAt: DateTime!
   email: String!
-  id: Int!
+  id: String!
   updatedAt: DateTime!
 }
 
@@ -102,7 +141,7 @@ type ListUsersOutput {
 type ListUsersOutput_List {
   createdAt: DateTime!
   email: String!
-  id: Int!
+  id: String!
   updatedAt: DateTime!
 }
 
@@ -116,7 +155,7 @@ input LoginInput {
 type LoginOutput {
   createdAt: DateTime!
   email: String!
-  id: Int!
+  id: String!
   updatedAt: DateTime!
 }
 
@@ -156,13 +195,13 @@ input RevokePasswordInput {
 type RevokePasswordOutput {
   createdAt: DateTime!
   email: String!
-  id: Int!
+  id: String!
   updatedAt: DateTime!
 }
 
 type SessionEntity {
   createdAt: DateTime!
-  id: Int!
+  id: String!
   refreshToken: String!
   updatedAt: DateTime!
   user: UserEntity!
@@ -178,15 +217,37 @@ input SignUpInput {
 type SignUpOutput {
   createdAt: DateTime!
   email: String!
-  id: Int!
+  id: String!
+  updatedAt: DateTime!
+}
+
+type SocialEntity {
+  createdAt: DateTime!
+  facebook: String
+  id: String!
+  instagram: String
+  updatedAt: DateTime!
+  x: String
+  youtube: String
+}
+
+type SongArtistEntity {
+  artist: ArtistEntity!
+  createdAt: DateTime!
+  id: String!
+  song: SongEntity!
   updatedAt: DateTime!
 }
 
 type SongEntity {
+  album: String!
+  artists: [SongArtistEntity!]!
   createdAt: DateTime!
-  id: Int!
+  id: String!
   name: String!
+  postedAt: DateTime!
   updatedAt: DateTime!
+  youtubeUrls: [String!]!
 }
 
 """"""
@@ -199,7 +260,7 @@ input UpdatePasswordInput {
 type UpdatePasswordOutput {
   createdAt: DateTime!
   email: String!
-  id: Int!
+  id: String!
   updatedAt: DateTime!
 }
 
@@ -207,7 +268,7 @@ type UserEntity {
   confirmation: [ConfirmationEntity!]!
   createdAt: DateTime!
   email: String!
-  id: Int!
+  id: String!
   session: [SessionEntity!]!
   updatedAt: DateTime!
 }

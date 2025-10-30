@@ -1,4 +1,4 @@
-import { Field, Int, ObjectType } from '@nestjs/graphql';
+import { Field, ObjectType } from '@nestjs/graphql';
 import { Base } from 'shared';
 import {
   CreateDateColumn,
@@ -8,9 +8,9 @@ import {
 
 @ObjectType()
 export class BaseEntity implements Base {
-  @PrimaryGeneratedColumn('increment')
-  @Field(() => Int)
-  readonly id: number;
+  @PrimaryGeneratedColumn('uuid')
+  @Field()
+  readonly id: string;
 
   @CreateDateColumn()
   @Field(() => Date)

@@ -4,6 +4,7 @@ import { AuthModule } from '$modules/auth/auth.module';
 import { ConfigModule } from '$modules/config/config.module';
 import { CookieModule } from '$modules/cookie/cookie.module';
 import { DatabaseModule } from '$modules/database/database.module';
+import { ArtistModule } from '$modules/entities/artist/artit.module';
 import { SessionModule } from '$modules/entities/session/session.module';
 import { SongModule } from '$modules/entities/song/song.module';
 import { UserModule } from '$modules/entities/user/user.module';
@@ -14,6 +15,7 @@ import { TokenModule } from '$modules/token/token.module';
   imports: [
     GraphqlModule,
     SongModule,
+    ArtistModule,
     ConfigModule,
     DatabaseModule,
     UserModule,

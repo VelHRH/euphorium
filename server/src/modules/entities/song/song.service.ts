@@ -83,19 +83,23 @@ export class SongService {
     input: CreateSongInput,
   ): Promise<Either<BaseException, CreateSongOutput>> {
     try {
-      const song = this.songRepository.create({
-        name: input.name,
-      });
+      const song = this.songRepository.create(input);
 
       const savedSong = await this.songRepository.save(song);
 
       return right({
         id: savedSong.id,
         name: savedSong.name,
+        artists: [], // toDO normal artist creation implementation
+        youtubeUrls: savedSong.youtubeUrls,
+        album: savedSong.album,
+        postedAt: savedSong.postedAt,
         createdAt: savedSong.createdAt,
         updatedAt: savedSong.updatedAt,
       });
     } catch (error) {
+      console.error(error);
+
       return left(new BaseException('Failed to create song'));
     }
   }

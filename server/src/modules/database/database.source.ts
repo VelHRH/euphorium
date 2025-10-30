@@ -1,8 +1,8 @@
 import { DataSource, DataSourceOptions } from 'typeorm';
 
-import 'dotenv/config';
 import { Config } from '$config';
 import { databaseConfig } from '$config/database';
+import 'dotenv/config';
 
 type DatabaseOptions = (config: Config['database']) => DataSourceOptions;
 
