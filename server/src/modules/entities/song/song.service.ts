@@ -83,19 +83,23 @@ export class SongService {
     input: CreateSongInput,
   ): Promise<Either<BaseException, CreateSongOutput>> {
     try {
-      const song = this.songRepository.create({
-        name: input.name,
-      });
+      const song = this.songRepository.create(input);
 
       const savedSong = await this.songRepository.save(song);
 
       return right({
         id: savedSong.id,
         name: savedSong.name,
+        artists: [], // toDO normal artist creation implementation
+        youtubeUrls: savedSong.youtubeUrls,
+        album: savedSong.album,
+        postedAt: savedSong.postedAt,
         createdAt: savedSong.createdAt,
         updatedAt: savedSong.updatedAt,
       });
     } catch (error) {
+      console.error(error);
+
       return left(new BaseException('Failed to create song'));
     }
   }
@@ -104,7 +108,7 @@ export class SongService {
     input: DeleteSongInput,
   ): Promise<Either<BaseException, DeleteSongOutput>> {
     const song = await this.songRepository.findOne({
-      where: { name: input.name },
+      where: { id: input.id },
     });
 
     if (!song) {
@@ -114,7 +118,7 @@ export class SongService {
     try {
       await this.songRepository.remove(song);
 
-      return right({ success: true });
+      return right({ success: true, id: input.id });
     } catch (error) {
       return left(new BaseException('Failed to delete song'));
     }

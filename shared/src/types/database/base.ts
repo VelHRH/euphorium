@@ -1,6 +1,6 @@
 export interface Base {
   createdAt: Date;
-  id: number;
+  id: string;
   updatedAt: Date;
 }
 

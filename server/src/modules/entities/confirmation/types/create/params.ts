@@ -1,7 +1,7 @@
-import { ConfirmationType } from 'shared';
+import { Base, ConfirmationType } from 'shared';
 
 export type CreateConfirmationParams = {
   type: ConfirmationType;
-  userId: number;
-  id?: number;
+  userId: Base['id'];
+  id?: Base['id'];
 };
