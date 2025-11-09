@@ -21,10 +21,6 @@ export class SongEntity extends BaseEntity implements Song {
   @Field()
   readonly album: string;
 
-  @Column('text', { array: true, default: [] })
-  @Field(() => [String])
-  readonly youtubeUrls: string[];
-
   @Column({ type: 'timestamp', nullable: false })
   @Field(() => Date)
   readonly postedAt: Date;
