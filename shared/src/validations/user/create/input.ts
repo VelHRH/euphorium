@@ -6,7 +6,7 @@ import { userSchema } from '../user';
 export const createUserInputSchema = z
   .object({
     email: userSchema.shape.email,
-    password: passwordSchema.nullable(),
+    password: passwordSchema.optional(),
   })
   .describe('CreateUserInput:');
 
