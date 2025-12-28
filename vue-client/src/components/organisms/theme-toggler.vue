@@ -1,12 +1,8 @@
 <script setup lang="ts">
-import { useThemeStore } from '@/stores/theme'
+import { useTheme } from '@/composables/use-theme'
 import BaseButton from '../molecules/base-button.vue'
 
-const themeStore = useThemeStore()
-
-function toggleTheme() {
-  themeStore.toggleTheme()
-}
+const { toggleTheme } = useTheme()
 </script>
 
 <template>

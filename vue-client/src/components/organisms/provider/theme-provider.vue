@@ -1,13 +1,13 @@
 <script setup lang="ts">
-import { watch, onMounted } from 'vue'
-import { useThemeStore, Theme } from '@/stores/theme'
+import { Theme, useTheme } from '@/composables/use-theme'
+import { onMounted, watch } from 'vue'
 
-const themeStore = useThemeStore()
+const { theme } = useTheme()
 
 function updateTheme() {
   const root = document.documentElement
 
-  if (themeStore.theme === Theme.DARK) {
+  if (theme.value === Theme.DARK) {
     root.setAttribute('data-theme', 'dark')
   } else {
     root.removeAttribute('data-theme')
@@ -19,7 +19,7 @@ onMounted(() => {
 })
 
 watch(
-  () => themeStore.theme,
+  () => theme.value,
   () => {
     updateTheme()
   },

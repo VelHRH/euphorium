@@ -1,11 +1,11 @@
 <script setup lang="ts">
 import { RouterLink, RouterView } from 'vue-router'
 import ThemeToggler from './components/organisms/theme-toggler.vue'
-import ThemeProvider from './components/organisms/theme-provider.vue'
+import AppProvider from './components/organisms/provider/app-provider.vue'
 </script>
 
 <template>
-  <ThemeProvider>
+  <AppProvider>
     <header>
       <img alt="Vue logo" class="logo" src="@/assets/logo.svg" width="125" height="125" />
 
@@ -17,5 +17,5 @@ import ThemeProvider from './components/organisms/theme-provider.vue'
     </header>
 
     <RouterView />
-  </ThemeProvider>
+  </AppProvider>
 </template>

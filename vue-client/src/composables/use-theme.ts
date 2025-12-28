@@ -1,13 +1,11 @@
-import { ref } from 'vue'
-import { defineStore } from 'pinia'
-
+import { useStorage } from '@vueuse/core'
 export enum Theme {
   LIGHT = 'light',
   DARK = 'dark',
 }
 
-export const useThemeStore = defineStore('theme', () => {
-  const theme = ref<Theme>(Theme.LIGHT)
+export const useTheme = () => {
+  const theme = useStorage<Theme>('theme', Theme.LIGHT)
 
   function setTheme(newTheme: Theme) {
     theme.value = newTheme
@@ -18,4 +16,4 @@ export const useThemeStore = defineStore('theme', () => {
   }
 
   return { theme, setTheme, toggleTheme }
-})
+}
