@@ -1,0 +1,8 @@
+export enum Route {
+  HOME = 'HOME',
+  SHOWS = 'SHOWS',
+  LIBRARY = 'LIBRARY',
+  PROFILE = 'PROFILE',
+  LOGIN = 'LOGIN',
+  SIGN_UP = 'SIGN_UP',
+}
