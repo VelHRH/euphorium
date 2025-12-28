@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import { Theme, useTheme } from '@/composables/use-theme'
+import { Theme, useTheme } from '@/modules/theme/composables/use-theme'
 import { onMounted, watch } from 'vue'
 
 const { theme } = useTheme()

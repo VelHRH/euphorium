@@ -1,5 +1,5 @@
+import HomePage from '@/modules/home/home-page.vue'
 import { createRouter, createWebHistory, type RouteRecordRaw } from 'vue-router'
-import HomePage from '../views/home-page.vue'
 import { Layouts } from './types/layouts'
 import { Route } from './types/routes'
 
