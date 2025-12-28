@@ -12,6 +12,7 @@ export const useTheme = () => {
   }
 
   function toggleTheme() {
+    console.log('toggleTheme', theme.value)
     theme.value = theme.value === Theme.DARK ? Theme.LIGHT : Theme.DARK
   }
 

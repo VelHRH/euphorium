@@ -1,21 +1,15 @@
 <script setup lang="ts">
-import { RouterLink, RouterView } from 'vue-router'
-import ThemeToggler from './components/organisms/theme-toggler.vue'
-import AppProvider from './components/organisms/provider/app-provider.vue'
+import { RouterView } from 'vue-router'
+import AppProvider from './components/providers/app-provider.vue'
+import { useCurrentLayout } from './router/composables/use-current-layout'
+
+const { currentLayout } = useCurrentLayout()
 </script>
 
 <template>
   <AppProvider>
-    <header>
-      <img alt="Vue logo" class="logo" src="@/assets/logo.svg" width="125" height="125" />
-
-      <nav>
-        <ThemeToggler />
-        <RouterLink to="/">Home</RouterLink>
-        <RouterLink to="/about">About</RouterLink>
-      </nav>
-    </header>
-
-    <RouterView />
+    <component :is="currentLayout">
+      <RouterView />
+    </component>
   </AppProvider>
 </template>
