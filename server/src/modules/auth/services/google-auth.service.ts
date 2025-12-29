@@ -19,6 +19,7 @@ import {
 import { AuthExceptionMessage } from '$exceptions/constants/auth';
 import { SessionService } from '$modules/entities/session/session.service';
 import { UserService } from '$modules/entities/user/user.service';
+import { IsNull } from 'typeorm';
 
 @Injectable()
 export class GoogleAuthService {
@@ -110,5 +111,64 @@ export class GoogleAuthService {
         new BadRequestException(AuthExceptionMessage.WRONG_GOOGLE_CREDENTIALS),
       );
     }
+  }
+
+  async getGoogleUser(code: string) {
+    const response = await fetch('https://oauth2.googleapis.com/token', {
+      method: 'POST',
+      body: JSON.stringify({
+        code,
+        client_id: this.googleConfig.googleClientId,
+        client_secret: this.googleConfig.googleClientSecret,
+        redirect_uri: this.googleConfig.googleCallbackUrl,
+        grant_type: 'authorization_code'
+      }),
+    });
+
+    const data = await response.json();
+
+
+    const userInfo = await fetch('https://www.googleapis.com/oauth2/v3/userinfo', {
+      headers: { Authorization: `Bearer ${data.access_token}` },
+    });
+
+    const userInfoData = await userInfo.json();
+
+    return userInfoData;
+  }
+
+  getAuthUrl() {
+    return `https://accounts.google.com/o/oauth2/v2/auth?client_id=${this.googleConfig.googleClientId}&redirect_uri=${this.googleConfig.googleCallbackUrl}&response_type=code&scope=email%20profile`;
+  }
+
+  async googleLogin(code: string, response: Response): Promise<void> {
+    // 1. Получаем данные профиля (используя логику из предыдущего ответа)
+    const googleUser = await this.getGoogleUser(code);
+
+    const { email } = googleUser;
+  
+    // 2. Ищем пользователя или создаем нового (Upsert)
+    let candidate = await this.userService.findOne({ email: email ?? IsNull() });
+
+    console.log({candidate})
+
+    if (candidate.isRight()) {
+      await this.createSession(response, candidate.value);
+      return;
+    }
+
+    const userResult = await this.userService.create({
+      email,
+      password: undefined,
+    });
+
+    if (userResult.isLeft()) {
+      throw new Error('User not found');
+    }
+
+    const user = userResult.value;
+
+    await this.createSession(response, user);
+    return;
   }
 }

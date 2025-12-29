@@ -12,6 +12,7 @@ import { ConfirmationModule } from '$modules/entities/confirmation/confirmation.
 import { SessionModule } from '$modules/entities/session/session.module';
 import { UserModule } from '$modules/entities/user/user.module';
 import { TokenModule } from '$modules/token/token.module';
+import { AuthController } from './auth.controller';
 
 @Module({
   imports: [
@@ -29,5 +30,6 @@ import { TokenModule } from '$modules/token/token.module';
     JwtAuthStrategy,
     { provide: APP_GUARD, useClass: JwtAuthGuard },
   ],
+  controllers: [AuthController],
 })
 export class AuthModule {}
