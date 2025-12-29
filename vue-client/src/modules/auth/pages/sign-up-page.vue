@@ -1,20 +1,15 @@
 <script setup lang="ts">
-import { useMutation } from '@vue/apollo-composable'
-import { SIGN_UP } from '../graphql/mutations'
+import { useAuth } from '../composables/use-auth'
 
-const { mutate: signUp } = useMutation(SIGN_UP)
+const { signUp } = useAuth()
 
 const handleSubmit = async (e: SubmitEvent) => {
   e.preventDefault()
   const eTarget = e.target as HTMLFormElement
   const email = eTarget.email.value
   const password = eTarget.password.value
-  await signUp({
-      input: {
-        email,
-        password,
-      },
-  })
+  
+  await signUp(email, password)
 }
 </script>
 

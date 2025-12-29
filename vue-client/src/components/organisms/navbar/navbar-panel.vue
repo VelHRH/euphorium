@@ -3,10 +3,12 @@ import { SITE_NAME } from '@/constants/site-name'
 import { routes } from '@/router'
 import { Route } from '@/router/types/routes'
 import { useRouter } from 'vue-router'
+import { useAuth } from '@/modules/auth/composables/use-auth'
 import NavbarButton from './navbar-button.vue'
 import ThemeToggler from './theme-toggler.vue'
 
 const router = useRouter()
+const { isAuthenticated, logout } = useAuth()
 
 const navigationItems = Object.keys(routes)
   .filter((key) => [Route.SHOWS, Route.LIBRARY, Route.PROFILE].includes(key as Route))
@@ -18,6 +20,11 @@ const navigationItems = Object.keys(routes)
   }))
 
 const loginRoute = routes[Route.LOGIN]
+
+const handleLogout = async () => {
+  await logout()
+  router.push(routes[Route.LOGIN].path)
+}
 </script>
 
 <template>
@@ -50,7 +57,19 @@ const loginRoute = routes[Route.LOGIN]
       </div>
       <div class="flex items-center gap-2">
         <ThemeToggler />
-        <NavbarButton :label="loginRoute.name?.toString() || ''" :path="loginRoute.path" :isGhost="false" />
+        <NavbarButton 
+          v-if="!isAuthenticated"
+          :label="loginRoute.name?.toString() || ''" 
+          :path="loginRoute.path" 
+          :isGhost="false" 
+        />
+        <button 
+          v-else
+          @click="handleLogout"
+          class="px-4 py-2 bg-primary text-primary-foreground rounded-lg hover:bg-primary/90 transition-colors"
+        >
+          Logout
+        </button>
       </div>
     </div>
   </div>

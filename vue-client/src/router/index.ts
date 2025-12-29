@@ -4,6 +4,7 @@ import { Layouts } from './types/layouts'
 import { Route } from './types/routes'
 import SignUpPage from '@/modules/auth/pages/sign-up-page.vue'
 import LoginPage from '@/modules/auth/pages/login-page.vue'
+import { authMiddleware } from './middleware/auth'
 
 export const routes: Record<Route, RouteRecordRaw> = {
   [Route.HOME]: {
@@ -60,5 +61,8 @@ const router = createRouter({
   history: createWebHistory(import.meta.env.BASE_URL),
   routes: Object.values(routes),
 })
+
+// Add global navigation guard for authentication
+router.beforeEach(authMiddleware)
 
 export default router

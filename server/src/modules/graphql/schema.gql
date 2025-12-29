@@ -177,6 +177,7 @@ type Mutation {
 }
 
 type Query {
+  me: GetUserOutput!
   song(input: GetSongInput!): GetSongOutput!
   songs: [SongEntity!]!
   user(input: GetUserInput!): GetUserOutput!
