@@ -36,7 +36,7 @@ input CreateSongInput {
   artistIds: [String!]!
   name: String!
   postedAt: DateTime!
-  youtubeUrls: [String!]
+  youtubeUrl: String
 }
 
 """"""
@@ -48,7 +48,6 @@ type CreateSongOutput {
   name: String!
   postedAt: DateTime!
   updatedAt: DateTime!
-  youtubeUrls: [String!]!
 }
 
 type CreateSongOutput_Artists {
@@ -253,7 +252,7 @@ type SongEntity {
 """"""
 input UpdatePasswordInput {
   newPassword: String!
-  oldPassword: String!
+  oldPassword: String
 }
 
 """"""

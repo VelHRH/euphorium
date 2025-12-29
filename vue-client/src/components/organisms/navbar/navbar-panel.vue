@@ -16,6 +16,8 @@ const navigationItems = Object.keys(routes)
     path: i.path,
     name: i.name as string,
   }))
+
+const loginRoute = routes[Route.LOGIN]
 </script>
 
 <template>
@@ -43,12 +45,12 @@ const navigationItems = Object.keys(routes)
           v-for="item in navigationItems"
           :key="item.path"
           :label="item.name"
-          :route="item.path"
+          :path="item.path"
         />
       </div>
       <div class="flex items-center gap-2">
         <ThemeToggler />
-        <NavbarButton label="Login" route="/login" :isGhost="false" />
+        <NavbarButton :label="loginRoute.name?.toString() || ''" :path="loginRoute.path" :isGhost="false" />
       </div>
     </div>
   </div>

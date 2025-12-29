@@ -58,7 +58,7 @@ export class GoogleAuthService {
 
     const userResult = await this.userService.create({
       email,
-      password: null,
+      password: undefined,
     });
 
     if (userResult.isLeft()) {
