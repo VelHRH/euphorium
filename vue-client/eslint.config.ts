@@ -25,12 +25,12 @@ export default defineConfigWithVueTs(
     files: ['src/**/__tests__/*'],
   },
 
+  skipFormatting,
+
   {
     name: 'app/custom-rules',
     rules: {
-      'no-console': ['error', { allow: ['warn', 'error', 'info', 'debug'] }],
+      'no-console': ['error', { allow: ['error', 'debug', 'warn'] }],
     },
   },
-
-  skipFormatting,
 )

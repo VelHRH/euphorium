@@ -4,7 +4,7 @@ import { useRoute, useRouter } from 'vue-router'
 
 interface NavbarButtonProps {
   label: string
-  route: string
+  path: string
   isGhost?: boolean
 }
 
@@ -16,7 +16,7 @@ const router = useRouter()
 const route = useRoute()
 
 const isActive = computed(() => {
-  return route.path.includes(props.route)
+  return route.path.includes(props.path)
 })
 
 const buttonClasses = computed(() => {
@@ -37,7 +37,7 @@ const buttonClasses = computed(() => {
 })
 
 const handleClick = () => {
-  router.push(props.route)
+  router.push(props.path)
 }
 </script>
 

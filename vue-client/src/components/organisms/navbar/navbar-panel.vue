@@ -3,10 +3,13 @@ import { SITE_NAME } from '@/constants/site-name'
 import { routes } from '@/router'
 import { Route } from '@/router/types/routes'
 import { useRouter } from 'vue-router'
+import { useAuth } from '@/modules/auth/composables/use-auth'
 import NavbarButton from './navbar-button.vue'
 import ThemeToggler from './theme-toggler.vue'
+import { Button } from '@/components/ui/button'
 
 const router = useRouter()
+const { isAuthenticated, logout } = useAuth()
 
 const navigationItems = Object.keys(routes)
   .filter((key) => [Route.SHOWS, Route.LIBRARY, Route.PROFILE].includes(key as Route))
@@ -16,6 +19,13 @@ const navigationItems = Object.keys(routes)
     path: i.path,
     name: i.name as string,
   }))
+
+const loginRoute = routes[Route.LOGIN]
+
+const handleLogout = async () => {
+  await logout()
+  router.push(routes[Route.LOGIN].path)
+}
 </script>
 
 <template>
@@ -43,12 +53,23 @@ const navigationItems = Object.keys(routes)
           v-for="item in navigationItems"
           :key="item.path"
           :label="item.name"
-          :route="item.path"
+          :path="item.path"
         />
       </div>
       <div class="flex items-center gap-2">
         <ThemeToggler />
-        <NavbarButton label="Login" route="/login" :isGhost="false" />
+        <NavbarButton 
+          v-if="!isAuthenticated"
+          :label="loginRoute.name?.toString() || ''" 
+          :path="loginRoute.path" 
+          :isGhost="false" 
+        />
+        <Button 
+          v-else
+          @click="handleLogout"
+          >
+            Logout
+        </Button>
       </div>
     </div>
   </div>

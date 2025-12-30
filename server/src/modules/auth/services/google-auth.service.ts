@@ -19,11 +19,14 @@ import {
 import { AuthExceptionMessage } from '$exceptions/constants/auth';
 import { SessionService } from '$modules/entities/session/session.service';
 import { UserService } from '$modules/entities/user/user.service';
+import { IsNull } from 'typeorm';
 
 @Injectable()
 export class GoogleAuthService {
   private readonly googleClient: OAuth2Client;
   private readonly googleConfig: Config['google'];
+  private readonly GOOGLE_TOKEN_URL = 'https://oauth2.googleapis.com/token';
+  private readonly GOOGLE_USER_INFO_URL = 'https://www.googleapis.com/oauth2/v3/userinfo';
 
   constructor(
     private readonly userService: UserService,
@@ -34,7 +37,7 @@ export class GoogleAuthService {
     this.googleConfig = this.configService.getOrThrow('google');
   }
 
-  async login(
+  async loginByIdToken(
     input: GoogleLoginInput,
     response: Response,
   ): Promise<Either<NotFoundException | BadRequestException, UserNoPassword>> {
@@ -58,7 +61,7 @@ export class GoogleAuthService {
 
     const userResult = await this.userService.create({
       email,
-      password: null,
+      password: undefined,
     });
 
     if (userResult.isLeft()) {
@@ -110,5 +113,84 @@ export class GoogleAuthService {
         new BadRequestException(AuthExceptionMessage.WRONG_GOOGLE_CREDENTIALS),
       );
     }
+  }
+
+
+  // TODO: implement with passport
+
+  private async getAccessTokenByCode(code: string): Promise<Either<BadRequestException, string>> {
+    try {
+    const response = await fetch(this.GOOGLE_TOKEN_URL, {
+      method: 'POST',
+      body: JSON.stringify({
+        code,
+        client_id: this.googleConfig.googleClientId,
+        client_secret: this.googleConfig.googleClientSecret,
+        redirect_uri: this.googleConfig.googleCallbackUrl,
+        grant_type: 'authorization_code'
+      }),
+    });
+
+    const token = await response.json();
+
+    return right(token.access_token as string);
+  } catch (e) {
+    return left(new BadRequestException(AuthExceptionMessage.WRONG_GOOGLE_CREDENTIALS));
+  }
+  }
+  private async getGoogleUserEmailByCode(code: string): Promise<Either<BadRequestException, string>> {
+    const accessToken = await this.getAccessTokenByCode(code);
+
+    if (accessToken.isLeft()) {
+      return left(accessToken.value);
+    }
+
+    try {
+
+    const userInfo = await fetch(this.GOOGLE_USER_INFO_URL, {
+      headers: { Authorization: `Bearer ${accessToken.value}` },
+    });
+
+    const userInfoData = await userInfo.json();
+
+    return right(userInfoData.email as string);
+  } catch (e) {
+    return left(new BadRequestException(AuthExceptionMessage.WRONG_GOOGLE_CREDENTIALS));
+  }
+  }
+
+  getAuthUrl() {
+    return `https://accounts.google.com/o/oauth2/v2/auth?client_id=${this.googleConfig.googleClientId}&redirect_uri=${this.googleConfig.googleCallbackUrl}&response_type=code&scope=email%20profile`;
+  }
+
+  async loginByCode(code: string, response: Response): Promise<Either<BadRequestException, void>> {
+    const emailResult = await this.getGoogleUserEmailByCode(code);
+
+    if (emailResult.isLeft()) {
+      return left(emailResult.value);
+    }
+
+    const email = emailResult.value;
+  
+    let candidate = await this.userService.findOne({ email: email ?? IsNull() });
+
+    if (candidate.isRight()) {
+      await this.createSession(response, candidate.value);
+      return right(undefined);
+    }
+
+    const userResult = await this.userService.create({
+      email,
+      password: undefined,
+    });
+
+    if (userResult.isLeft()) {
+      return left(userResult.value);
+    }
+
+    const user = userResult.value;
+
+    await this.createSession(response, user);
+    return right(undefined);
   }
 }

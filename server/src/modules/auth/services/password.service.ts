@@ -65,7 +65,7 @@ export class PasswordService {
     const user = userResult.value;
 
     const isPasswordValid =
-      user.password === null
+      user.password === undefined
         ? true
         : await this.cryptoService.comparePasswords(
             oldPassword ?? '',
