@@ -8,9 +8,9 @@ function updateTheme() {
   const root = document.documentElement
 
   if (theme.value === Theme.DARK) {
-    root.classList.add('dark')
+    root.setAttribute('data-theme', 'dark')
   } else {
-    root.classList.remove('dark')
+    root.removeAttribute('data-theme')
   }
 }
 
@@ -22,7 +22,7 @@ watch(
   () => theme.value,
   () => {
     updateTheme()
-  },
+  }
 )
 </script>
 

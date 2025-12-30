@@ -7,15 +7,16 @@ import { useAuth } from '@/modules/auth/composables/use-auth'
 import NavbarButton from './navbar-button.vue'
 import ThemeToggler from './theme-toggler.vue'
 import { Button } from '@/components/ui/button'
+import { UserIcon } from 'lucide-vue-next'
 
 const router = useRouter()
 const { isAuthenticated, logout } = useAuth()
 
 const navigationItems = Object.keys(routes)
-  .filter((key) => [Route.SHOWS, Route.LIBRARY, Route.PROFILE].includes(key as Route))
-  .map((key) => routes[key as Route])
-  .filter((i) => i !== undefined)
-  .map((i) => ({
+  .filter(key => [Route.SHOWS, Route.LIBRARY].includes(key as Route))
+  .map(key => routes[key as Route])
+  .filter(i => i !== undefined)
+  .map(i => ({
     path: i.path,
     name: i.name as string,
   }))
@@ -58,18 +59,16 @@ const handleLogout = async () => {
       </div>
       <div class="flex items-center gap-2">
         <ThemeToggler />
-        <NavbarButton 
+        <Button class="flex gap-2 items-center" @click="router.push(routes[Route.PROFILE].path)"
+          ><UserIcon
+        /></Button>
+        <NavbarButton
           v-if="!isAuthenticated"
-          :label="loginRoute.name?.toString() || ''" 
-          :path="loginRoute.path" 
-          :isGhost="false" 
+          :label="loginRoute.name?.toString() || ''"
+          :path="loginRoute.path"
+          :isGhost="false"
         />
-        <Button 
-          v-else
-          @click="handleLogout"
-          >
-            Logout
-        </Button>
+        <Button v-else @click="handleLogout" variant="outline"> Logout </Button>
       </div>
     </div>
   </div>
