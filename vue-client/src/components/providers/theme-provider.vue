@@ -8,9 +8,9 @@ function updateTheme() {
   const root = document.documentElement
 
   if (theme.value === Theme.DARK) {
-    root.setAttribute('data-theme', 'dark')
+    root.classList.add('dark')
   } else {
-    root.removeAttribute('data-theme')
+    root.classList.remove('dark')
   }
 }
 

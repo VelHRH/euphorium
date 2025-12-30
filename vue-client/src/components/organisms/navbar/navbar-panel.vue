@@ -6,6 +6,7 @@ import { useRouter } from 'vue-router'
 import { useAuth } from '@/modules/auth/composables/use-auth'
 import NavbarButton from './navbar-button.vue'
 import ThemeToggler from './theme-toggler.vue'
+import { Button } from '@/components/ui/button'
 
 const router = useRouter()
 const { isAuthenticated, logout } = useAuth()
@@ -63,13 +64,12 @@ const handleLogout = async () => {
           :path="loginRoute.path" 
           :isGhost="false" 
         />
-        <button 
+        <Button 
           v-else
           @click="handleLogout"
-          class="px-4 py-2 bg-primary text-primary-foreground rounded-lg hover:bg-primary/90 transition-colors"
-        >
-          Logout
-        </button>
+          >
+            Logout
+        </Button>
       </div>
     </div>
   </div>
