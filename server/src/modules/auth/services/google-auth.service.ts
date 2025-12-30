@@ -25,6 +25,8 @@ import { IsNull } from 'typeorm';
 export class GoogleAuthService {
   private readonly googleClient: OAuth2Client;
   private readonly googleConfig: Config['google'];
+  private readonly GOOGLE_TOKEN_URL = 'https://oauth2.googleapis.com/token';
+  private readonly GOOGLE_USER_INFO_URL = 'https://www.googleapis.com/oauth2/v3/userinfo';
 
   constructor(
     private readonly userService: UserService,
@@ -35,7 +37,7 @@ export class GoogleAuthService {
     this.googleConfig = this.configService.getOrThrow('google');
   }
 
-  async login(
+  async loginByIdToken(
     input: GoogleLoginInput,
     response: Response,
   ): Promise<Either<NotFoundException | BadRequestException, UserNoPassword>> {
@@ -113,8 +115,12 @@ export class GoogleAuthService {
     }
   }
 
-  async getGoogleUser(code: string) {
-    const response = await fetch('https://oauth2.googleapis.com/token', {
+
+  // TODO: implement with passport
+
+  private async getAccessTokenByCode(code: string): Promise<Either<BadRequestException, string>> {
+    try {
+    const response = await fetch(this.GOOGLE_TOKEN_URL, {
       method: 'POST',
       body: JSON.stringify({
         code,
@@ -125,36 +131,52 @@ export class GoogleAuthService {
       }),
     });
 
-    const data = await response.json();
+    const token = await response.json();
 
+    return right(token.access_token as string);
+  } catch (e) {
+    return left(new BadRequestException(AuthExceptionMessage.WRONG_GOOGLE_CREDENTIALS));
+  }
+  }
+  private async getGoogleUserEmailByCode(code: string): Promise<Either<BadRequestException, string>> {
+    const accessToken = await this.getAccessTokenByCode(code);
 
-    const userInfo = await fetch('https://www.googleapis.com/oauth2/v3/userinfo', {
-      headers: { Authorization: `Bearer ${data.access_token}` },
+    if (accessToken.isLeft()) {
+      return left(accessToken.value);
+    }
+
+    try {
+
+    const userInfo = await fetch(this.GOOGLE_USER_INFO_URL, {
+      headers: { Authorization: `Bearer ${accessToken.value}` },
     });
 
     const userInfoData = await userInfo.json();
 
-    return userInfoData;
+    return right(userInfoData.email as string);
+  } catch (e) {
+    return left(new BadRequestException(AuthExceptionMessage.WRONG_GOOGLE_CREDENTIALS));
+  }
   }
 
   getAuthUrl() {
     return `https://accounts.google.com/o/oauth2/v2/auth?client_id=${this.googleConfig.googleClientId}&redirect_uri=${this.googleConfig.googleCallbackUrl}&response_type=code&scope=email%20profile`;
   }
 
-  async googleLogin(code: string, response: Response): Promise<void> {
-    // 1. Получаем данные профиля (используя логику из предыдущего ответа)
-    const googleUser = await this.getGoogleUser(code);
+  async loginByCode(code: string, response: Response): Promise<Either<BadRequestException, void>> {
+    const emailResult = await this.getGoogleUserEmailByCode(code);
 
-    const { email } = googleUser;
+    if (emailResult.isLeft()) {
+      return left(emailResult.value);
+    }
+
+    const email = emailResult.value;
   
-    // 2. Ищем пользователя или создаем нового (Upsert)
     let candidate = await this.userService.findOne({ email: email ?? IsNull() });
-
-    console.log({candidate})
 
     if (candidate.isRight()) {
       await this.createSession(response, candidate.value);
-      return;
+      return right(undefined);
     }
 
     const userResult = await this.userService.create({
@@ -163,12 +185,12 @@ export class GoogleAuthService {
     });
 
     if (userResult.isLeft()) {
-      throw new Error('User not found');
+      return left(userResult.value);
     }
 
     const user = userResult.value;
 
     await this.createSession(response, user);
-    return;
+    return right(undefined);
   }
 }

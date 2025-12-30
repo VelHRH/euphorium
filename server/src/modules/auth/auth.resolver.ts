@@ -68,7 +68,7 @@ export class AuthResolver {
     @Context() ctx: GqlContext,
   ): Promise<GoogleLoginOutput> {
     return this.googleAuthService
-      .login(input, ctx.res)
+      .loginByIdToken(input, ctx.res)
       .then(handleEitherResponse);
   }
 

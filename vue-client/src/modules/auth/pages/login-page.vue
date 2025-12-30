@@ -10,6 +10,8 @@ const handleSubmit = async (e: SubmitEvent) => {
   const password = eTarget.password.value
   await login(email, password)
 }
+
+const gogleAuthUrl = `${import.meta.env.VITE_API_URL}/auth/google`
 </script>
 
 <template>
@@ -20,6 +22,7 @@ const handleSubmit = async (e: SubmitEvent) => {
         <input name="email" placeholder="Email" />
         <input name="password" placeholder="Password" />
         <button type="submit">Login</button>
+        <a :href="gogleAuthUrl">Continue with Google</a>
       </form>
     </div>
   </div>
