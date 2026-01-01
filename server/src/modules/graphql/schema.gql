@@ -8,9 +8,10 @@ type ArtistEntity {
   imgPath: String
   label: String
   name: String!
+  performers: [SongPerformerEntity!]!
   social: SocialEntity
-  songs: [SongArtistEntity!]!
   updatedAt: DateTime!
+  writers: [SongWriterEntity!]!
 }
 
 type ConfirmationEntity {
@@ -36,31 +37,44 @@ input CreateSongInput {
   artistIds: [String!]!
   name: String!
   postedAt: DateTime!
-  youtubeUrl: String
+  youtubeUrls: [String!]
 }
 
 """"""
 type CreateSongOutput {
   album: String!
-  artists: [CreateSongOutput_Artists!]!
   createdAt: DateTime!
+  group: CreateSongOutput_Group
   id: String!
   name: String!
+  performers: [CreateSongOutput_Performers!]!
   postedAt: DateTime!
+  updatedAt: DateTime!
+  writers: [CreateSongOutput_Performers!]!
+  youtubeUrls: [String!]!
+}
+
+type CreateSongOutput_Group {
+  createdAt: DateTime!
+  id: String!
+  imgPath: String
+  members: [CreateSongOutput_Performers!]!
+  name: String!
+  social: CreateSongOutput_Performers_Social
   updatedAt: DateTime!
 }
 
-type CreateSongOutput_Artists {
+type CreateSongOutput_Performers {
   createdAt: DateTime!
   id: String!
   imgPath: String
   label: String
   name: String!
-  social: CreateSongOutput_Artists_Social
+  social: CreateSongOutput_Performers_Social
   updatedAt: DateTime!
 }
 
-type CreateSongOutput_Artists_Social {
+type CreateSongOutput_Performers_Social {
   createdAt: DateTime!
   facebook: String
   id: String!
@@ -84,6 +98,16 @@ input DeleteSongInput {
 type DeleteSongOutput {
   id: String!
   success: Boolean!
+}
+
+type FestivalEntity {
+  createdAt: DateTime!
+  dateEnd: DateTime!
+  dateStart: DateTime!
+  id: String!
+  name: String!
+  shows: [ShowEntity!]!
+  updatedAt: DateTime!
 }
 
 """"""
@@ -207,6 +231,16 @@ type SessionEntity {
   user: UserEntity!
 }
 
+type ShowEntity {
+  createdAt: DateTime!
+  date: DateTime!
+  festival: FestivalEntity!
+  id: String!
+  name: String!
+  updatedAt: DateTime!
+  venue: VenueEntity!
+}
+
 """"""
 input SignUpInput {
   email: String!
@@ -231,7 +265,19 @@ type SocialEntity {
   youtube: String
 }
 
-type SongArtistEntity {
+type SongEntity {
+  album: String!
+  createdAt: DateTime!
+  id: String!
+  name: String!
+  performers: [SongPerformerEntity!]!
+  postedAt: DateTime!
+  updatedAt: DateTime!
+  writers: [SongWriterEntity!]!
+  youtubeUrls: [String!]!
+}
+
+type SongPerformerEntity {
   artist: ArtistEntity!
   createdAt: DateTime!
   id: String!
@@ -239,21 +285,18 @@ type SongArtistEntity {
   updatedAt: DateTime!
 }
 
-type SongEntity {
-  album: String!
-  artists: [SongArtistEntity!]!
+type SongWriterEntity {
+  artist: ArtistEntity!
   createdAt: DateTime!
   id: String!
-  name: String!
-  postedAt: DateTime!
+  song: SongEntity!
   updatedAt: DateTime!
-  youtubeUrls: [String!]!
 }
 
 """"""
 input UpdatePasswordInput {
   newPassword: String!
-  oldPassword: String
+  oldPassword: String!
 }
 
 """"""
@@ -270,5 +313,17 @@ type UserEntity {
   email: String!
   id: String!
   session: [SessionEntity!]!
+  updatedAt: DateTime!
+}
+
+type VenueEntity {
+  city: String!
+  countryCode: String!
+  createdAt: DateTime!
+  id: String!
+  latitude: Float!
+  longitude: Float!
+  name: String!
+  shows: [ShowEntity!]!
   updatedAt: DateTime!
 }

@@ -90,7 +90,9 @@ export class SongService {
       return right({
         id: savedSong.id,
         name: savedSong.name,
-        artists: [], // toDO normal artist creation implementation
+        performers: [], // toDO normal artist creation implementation
+        writers: [], // toDO normal artist creation implementation
+        group: undefined, // toDO normal group creation implementation
         youtubeUrls: savedSong.youtubeUrls,
         album: savedSong.album,
         postedAt: savedSong.postedAt,
