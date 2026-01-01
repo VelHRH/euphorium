@@ -6,8 +6,8 @@ import { Song } from '../song';
 export interface Entry extends Base {
   show: Show;
   song: Song;
-  countryCode?: string; // optional because not all shows have representing countries like Eurovision
-  totalPoints?: number;
-  publicPoints?: number;
-  juryPoints?: number;
+  countryCode?: string | null; // optional because not all shows have representing countries like Eurovision
+  totalPoints?: number | null;
+  publicPoints?: number | null;
+  juryPoints?: number | null;
 }

@@ -6,4 +6,5 @@ export interface Venue extends Base {
   city: string;
   latitude: number;
   longitude: number;
+  imgPath?: string | null;
 }

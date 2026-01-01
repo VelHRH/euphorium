@@ -7,7 +7,7 @@ export const createSongInputSchema = songSchema
   .pick({ name: true, postedAt: true, album: true })
   .extend({
     artistIds: z.array(artistSchema.shape.id),
-    youtubeUrls: songSchema.shape.youtubeUrls.optional(),
+    youtubeUrls: songSchema.shape.youtubeUrls.nullable().optional(),
   })
   .describe('CreateSongInput:');
 

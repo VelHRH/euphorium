@@ -7,7 +7,7 @@ import { nameSchema } from '../common/name';
 
 export const artistSchema = baseSchema.extend({
   name: nameSchema,
-  imgPath: z.string().optional(),
-  label: z.string().optional(),
-  social: socialSchema.optional(),
+  imgPath: z.string().nullable().optional(),
+  label: z.string().nullable().optional(),
+  social: socialSchema.nullable().optional(),
 }) satisfies z.ZodType<Artist>;

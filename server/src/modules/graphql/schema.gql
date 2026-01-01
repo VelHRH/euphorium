@@ -33,7 +33,7 @@ enum ConfirmationType {
 
 """"""
 input CreateSongInput {
-  album: String!
+  album: String
   artistIds: [String!]!
   name: String!
   postedAt: DateTime!
@@ -42,7 +42,7 @@ input CreateSongInput {
 
 """"""
 type CreateSongOutput {
-  album: String!
+  album: String
   createdAt: DateTime!
   group: CreateSongOutput_Group
   id: String!
@@ -82,6 +82,29 @@ type CreateSongOutput_Performers_Social {
   updatedAt: DateTime!
   x: String
   youtube: String
+}
+
+""""""
+input CreateVenueInput {
+  city: String!
+  countryCode: String!
+  imgPath: String
+  latitude: Float!
+  longitude: Float!
+  name: String!
+}
+
+""""""
+type CreateVenueOutput {
+  city: String!
+  countryCode: String!
+  createdAt: DateTime!
+  id: String!
+  imgPath: String
+  latitude: Float!
+  longitude: Float!
+  name: String!
+  updatedAt: DateTime!
 }
 
 """
@@ -144,6 +167,24 @@ type GetUserOutput {
 }
 
 """"""
+input GetVenueInput {
+  id: String!
+}
+
+""""""
+type GetVenueOutput {
+  city: String!
+  countryCode: String!
+  createdAt: DateTime!
+  id: String!
+  imgPath: String
+  latitude: Float!
+  longitude: Float!
+  name: String!
+  updatedAt: DateTime!
+}
+
+""""""
 input GoogleLoginInput {
   idToken: String!
 }
@@ -152,6 +193,25 @@ input GoogleLoginInput {
 type GoogleLoginOutput {
   createdAt: DateTime!
   email: String!
+  id: String!
+  updatedAt: DateTime!
+}
+
+type GroupEntity {
+  createdAt: DateTime!
+  id: String!
+  imgPath: String
+  members: [GroupMemberEntity!]!
+  name: String!
+  social: SocialEntity
+  songs: [SongEntity!]!
+  updatedAt: DateTime!
+}
+
+type GroupMemberEntity {
+  artist: ArtistEntity!
+  createdAt: DateTime!
+  group: GroupEntity!
   id: String!
   updatedAt: DateTime!
 }
@@ -189,6 +249,7 @@ type LogoutOutput {
 
 type Mutation {
   createSong(input: CreateSongInput!): CreateSongOutput!
+  createVenue(input: CreateVenueInput!): CreateVenueOutput!
   deleteSong(input: DeleteSongInput!): DeleteSongOutput!
   forgotPassword(input: ForgotPasswordInput!): ForgotPasswordOutput!
   googleLogin(input: GoogleLoginInput!): GoogleLoginOutput!
@@ -206,6 +267,7 @@ type Query {
   songs: [SongEntity!]!
   user(input: GetUserInput!): GetUserOutput!
   users: ListUsersOutput!
+  venue(input: GetVenueInput!): GetVenueOutput!
 }
 
 """"""
@@ -266,8 +328,9 @@ type SocialEntity {
 }
 
 type SongEntity {
-  album: String!
+  album: String
   createdAt: DateTime!
+  group: GroupEntity
   id: String!
   name: String!
   performers: [SongPerformerEntity!]!
@@ -296,7 +359,7 @@ type SongWriterEntity {
 """"""
 input UpdatePasswordInput {
   newPassword: String!
-  oldPassword: String!
+  oldPassword: String
 }
 
 """"""
@@ -321,6 +384,7 @@ type VenueEntity {
   countryCode: String!
   createdAt: DateTime!
   id: String!
+  imgPath: String
   latitude: Float!
   longitude: Float!
   name: String!

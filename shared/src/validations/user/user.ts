@@ -6,7 +6,7 @@ import { baseSchema } from '../database';
 
 export const userSchema = baseSchema.extend({
   email: emailSchema,
-  password: z.string().nullable(),
+  password: z.string().nullable().optional(),
 }) satisfies z.ZodType<User>;
 
 export const userNoPasswordSchema = userSchema.omit({ password: true });

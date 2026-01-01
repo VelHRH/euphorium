@@ -23,16 +23,16 @@ export class ArtistEntity extends BaseEntity implements Artist {
   @Field(() => [SongWriterEntity])
   readonly writers: Artist[];
 
-  @Column({ nullable: true })
-  @Field({ nullable: true })
-  readonly imgPath?: string;
+  @Column({ type: 'varchar', nullable: true })
+  @Field(() => String, { nullable: true })
+  readonly imgPath?: string | null;
 
-  @Column({ nullable: true })
-  @Field({ nullable: true })
-  readonly label?: string;
+  @Column({ type: 'varchar', nullable: true })
+  @Field(() => String, { nullable: true })
+  readonly label?: string | null;
 
   @OneToOne(() => SocialEntity, { nullable: true })
   @JoinColumn()
   @Field(() => SocialEntity, { nullable: true })
-  readonly social?: Social;
+  readonly social?: Social | null;
 }

@@ -10,6 +10,6 @@ export * from './user';
 export * from './venue';
 export * from './show';
 export * from './group';
-export * from './group-members';
+export * from './group-member';
 export * from './entry';
 export * from './festival';

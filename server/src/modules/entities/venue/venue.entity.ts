@@ -28,6 +28,10 @@ export class VenueEntity extends BaseEntity implements Venue {
   @Field()
   readonly longitude: number;
 
+  @Column({ type: 'varchar', nullable: true })
+  @Field(() => String, { nullable: true })
+  readonly imgPath?: string | null;
+
   @OneToMany(() => ShowEntity, (show) => show.venue)
   @Field(() => [ShowEntity])
   readonly shows: Show[];

@@ -5,9 +5,9 @@ import { Group } from '../group';
 export interface Song extends Base {
   name: string;
   youtubeUrls: string[];
-  album?: string;
+  album?: string | null;
   postedAt: Date;
   performers: Artist[];
   writers: Artist[];
-  group?: Group;
+  group?: Group | null;
 }

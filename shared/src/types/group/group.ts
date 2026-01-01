@@ -4,7 +4,7 @@ import { Social } from '../social';
 
 export interface Group extends Base {
   name: string;
-  imgPath?: string;
-  social?: Social;
+  imgPath?: string | null;
+  social?: Social | null;
   members: Artist[];
 }

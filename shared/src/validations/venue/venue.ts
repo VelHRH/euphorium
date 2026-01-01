@@ -10,4 +10,5 @@ export const venueSchema = baseSchema.extend({
   city: z.string().trim().min(1, 'City is required'),
   latitude: z.number(),
   longitude: z.number(),
+  imgPath: z.string().nullable().optional(),
 }) satisfies z.ZodType<Venue>;

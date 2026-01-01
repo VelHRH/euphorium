@@ -8,7 +8,7 @@ export const updateUserInputSchema = userSchema
   .partial()
   .merge(userSchema.pick({ id: true }))
   .extend({
-    password: passwordSchema.optional(),
+    password: passwordSchema.nullable().optional(),
   })
   .describe('UpdateUserInput:');
 

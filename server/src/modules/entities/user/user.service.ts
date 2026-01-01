@@ -66,7 +66,9 @@ export class UserService {
     const rawPassword = input.password;
 
     const password =
-      rawPassword !== null ? await this.hashPassword(rawPassword) : null;
+      typeof rawPassword === 'string'
+        ? await this.hashPassword(rawPassword)
+        : null;
 
     try {
       const savedUser = await this.userRepository.save({

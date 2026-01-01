@@ -3,7 +3,7 @@ import { Social } from '../social';
 
 export interface Artist extends Base {
   name: string;
-  imgPath?: string;
-  label?: string;
-  social?: Social;
+  imgPath?: string | null;
+  label?: string | null;
+  social?: Social | null;
 }

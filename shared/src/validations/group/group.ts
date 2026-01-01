@@ -8,7 +8,7 @@ import { socialSchema } from '../social';
 
 export const groupSchema = baseSchema.extend({
   name: nameSchema,
-  imgPath: z.string().optional(),
+  imgPath: z.string().nullable().optional(),
   members: z.array(artistSchema),
-  social: socialSchema.optional(),
+  social: socialSchema.nullable().optional(),
 }) satisfies z.ZodType<Group>;

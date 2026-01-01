@@ -13,4 +13,4 @@ export * from './song-video';
 export * from './user';
 export * from './venue';
 export * from './group';
-export * from './group-members';
+export * from './group-member';
