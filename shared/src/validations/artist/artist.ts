@@ -3,9 +3,10 @@ import { z } from 'zod';
 import { Artist } from '../../types';
 import { baseSchema } from '../database';
 import { socialSchema } from '../social/social';
+import { nameSchema } from '../common/name';
 
 export const artistSchema = baseSchema.extend({
-  name: z.string().trim().min(1, 'Name is required'),
+  name: nameSchema,
   imgPath: z.string().optional(),
   label: z.string().optional(),
   social: socialSchema.optional(),
