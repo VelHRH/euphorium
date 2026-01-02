@@ -11,6 +11,7 @@ import { UserModule } from '$modules/entities/user/user.module';
 import { GraphqlModule } from '$modules/graphql/graphql.module';
 import { TokenModule } from '$modules/token/token.module';
 import { VenueModule } from '$modules/entities/venue/venue.module';
+import { PaginationModule } from '$modules/pagination/pagination.module';
 
 @Module({
   imports: [
@@ -25,6 +26,7 @@ import { VenueModule } from '$modules/entities/venue/venue.module';
     CookieModule,
     TokenModule,
     VenueModule,
+    PaginationModule,
   ],
 })
 export class AppModule {}
