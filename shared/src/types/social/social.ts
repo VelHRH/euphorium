@@ -1,4 +1,4 @@
-import { Base } from '../database';
+import { Base } from '../common';
 
 export interface Social extends Base {
   instagram?: string | null;

@@ -1,8 +1,9 @@
-import { Base } from '../database';
+import { Base, Name, Image } from '../common';
 import { Venue } from '../venue';
 
-export interface Show extends Base {
-  name: string;
-  venue: Venue;
-  date: Date;
-}
+export type Show = Base &
+  Name &
+  Image & {
+    venue: Venue;
+    date: Date;
+  };

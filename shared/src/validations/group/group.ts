@@ -1,14 +1,14 @@
 import { z } from 'zod';
-import { Group, SongWriter } from '../../types';
+import { Group } from '../../types';
 import { artistSchema } from '../artist';
 import { baseSchema } from '../database';
-import { songSchema } from '../song';
 import { nameSchema } from '../common/name';
 import { socialSchema } from '../social';
+import { imgPathSchema } from '../common';
 
 export const groupSchema = baseSchema.extend({
   name: nameSchema,
-  imgPath: z.string().nullable().optional(),
+  imgPath: imgPathSchema,
   members: z.array(artistSchema),
   social: socialSchema.nullable().optional(),
 }) satisfies z.ZodType<Group>;

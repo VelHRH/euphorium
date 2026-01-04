@@ -1,4 +1,4 @@
-import { Base } from '../database';
+import { Base } from '../common';
 import { Social } from '../social';
 
 export interface Artist extends Base {

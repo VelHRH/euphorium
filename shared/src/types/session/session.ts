@@ -1,4 +1,4 @@
-import { Base } from '../database';
+import { Base } from '../common';
 import { User } from '../user';
 
 export interface Session extends Base {

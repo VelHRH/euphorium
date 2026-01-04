@@ -3,9 +3,11 @@ import { z } from 'zod';
 import { baseSchema } from '../database';
 import { Show } from '../../types';
 import { venueSchema } from '../venue';
+import { imgPathSchema, nameSchema } from '../common';
 
 export const showSchema = baseSchema.extend({
-  name: z.string().trim().min(1, 'Name is required'),
+  name: nameSchema,
   venue: venueSchema,
   date: z.date(),
+  imgPath: imgPathSchema,
 }) satisfies z.ZodType<Show>;

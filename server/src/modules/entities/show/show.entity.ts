@@ -24,4 +24,8 @@ export class ShowEntity extends BaseEntity implements Show {
   @ManyToOne(() => FestivalEntity, (festival) => festival.shows)
   @Field(() => FestivalEntity)
   readonly festival: Festival;
+
+  @Column({ type: 'varchar', nullable: true })
+  @Field(() => String, { nullable: true })
+  readonly imgPath?: string | null;
 }

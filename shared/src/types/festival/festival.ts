@@ -1,4 +1,4 @@
-import { Base } from '../database';
+import { Base } from '../common';
 import { Show } from '../show';
 
 export interface Festival extends Base {

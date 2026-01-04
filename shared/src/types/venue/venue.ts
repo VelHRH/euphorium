@@ -1,4 +1,4 @@
-import { Base } from '../database';
+import { Base } from '../common';
 
 export interface Venue extends Base {
   name: string;

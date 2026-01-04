@@ -1,5 +1,5 @@
 import { Artist } from '../artist';
-import { Base } from '../database';
+import { Base } from '../common';
 import { Group } from '../group';
 
 export interface GroupMember extends Base {

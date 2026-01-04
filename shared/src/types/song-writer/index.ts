@@ -1,5 +1,5 @@
 import { Artist } from '../artist/artist';
-import { Base } from '../database';
+import { Base } from '../common';
 import { Song } from '../song/song';
 
 export interface SongWriter extends Base {

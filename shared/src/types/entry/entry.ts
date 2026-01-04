@@ -1,5 +1,5 @@
 import { Artist } from '../artist';
-import { Base } from '../database';
+import { Base } from '../common';
 import { Show } from '../show';
 import { Song } from '../song';
 
