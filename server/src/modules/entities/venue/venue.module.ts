@@ -7,7 +7,7 @@ import { PaginationService } from '$modules/pagination/pagination.service';
 
 @Module({
   imports: [TypeOrmModule.forFeature([VenueEntity])],
-  providers: [VenueResolver, VenueService],
-  exports: [VenueService, PaginationService],
+  providers: [VenueResolver, VenueService, PaginationService],
+  exports: [VenueService],
 })
 export class VenueModule {}

@@ -1,4 +1,4 @@
-export interface PaginationInput {
+export type PaginationInput = {
   first?: number;
   after?: string;
-}
+};

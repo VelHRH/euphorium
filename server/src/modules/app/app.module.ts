@@ -12,6 +12,7 @@ import { GraphqlModule } from '$modules/graphql/graphql.module';
 import { TokenModule } from '$modules/token/token.module';
 import { VenueModule } from '$modules/entities/venue/venue.module';
 import { PaginationModule } from '$modules/pagination/pagination.module';
+import { ShowModule } from '$modules/entities/show/show.module';
 
 @Module({
   imports: [
@@ -27,6 +28,7 @@ import { PaginationModule } from '$modules/pagination/pagination.module';
     TokenModule,
     VenueModule,
     PaginationModule,
+    ShowModule,
   ],
 })
 export class AppModule {}

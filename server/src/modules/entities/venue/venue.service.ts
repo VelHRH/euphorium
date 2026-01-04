@@ -6,6 +6,8 @@ import {
   CreateVenueOutput,
   GetVenueInput,
   GetVenueOutput,
+  ListVenuesOutput,
+  PaginationInput,
   Venue,
 } from 'shared';
 import { FindOptionsSelect, FindOptionsWhere, Repository } from 'typeorm';
@@ -13,12 +15,14 @@ import { FindOptionsSelect, FindOptionsWhere, Repository } from 'typeorm';
 import { BadRequestException, NotFoundException } from '$exceptions';
 import { VenueEntity } from './venue.entity';
 import { VenueExceptionMessage } from '$exceptions/constants/venue';
+import { PaginationService } from '$modules/pagination/pagination.service';
 
 @Injectable()
 export class VenueService {
   constructor(
     @InjectRepository(VenueEntity)
     private readonly venueRepository: Repository<VenueEntity>,
+    private readonly paginationService: PaginationService,
   ) {}
 
   async findOne(
@@ -54,6 +58,23 @@ export class VenueService {
       console.error(error);
       return left(
         new BadRequestException(VenueExceptionMessage.CANNOT_CREATE_VENUE),
+      );
+    }
+  }
+
+  async list(
+    input: PaginationInput,
+  ): Promise<Either<BadRequestException, ListVenuesOutput>> {
+    try {
+      const venues = await this.venueRepository.find();
+
+      return right(
+        this.paginationService.paginate({ items: venues, ...input }),
+      );
+    } catch (error) {
+      console.error(error);
+      return left(
+        new BadRequestException(VenueExceptionMessage.VENUE_NOT_FOUND),
       );
     }
   }

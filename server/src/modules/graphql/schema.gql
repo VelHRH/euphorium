@@ -229,6 +229,34 @@ type ListUsersOutput_List {
 }
 
 """"""
+type ListVenuesOutput {
+  edges: [ListVenuesOutput_Edges!]!
+  pageInfo: ListVenuesOutput_PageInfo!
+}
+
+type ListVenuesOutput_Edges {
+  cursor: String!
+  node: ListVenuesOutput_Edges_Node!
+}
+
+type ListVenuesOutput_Edges_Node {
+  city: String!
+  countryCode: String!
+  createdAt: DateTime!
+  id: String!
+  imgPath: String
+  latitude: Float!
+  longitude: Float!
+  name: String!
+  updatedAt: DateTime!
+}
+
+type ListVenuesOutput_PageInfo {
+  endCursor: String
+  hasNextPage: Boolean!
+}
+
+""""""
 input LoginInput {
   email: String!
   password: String!
@@ -261,7 +289,14 @@ type Mutation {
   updatePassword(input: UpdatePasswordInput!): UpdatePasswordOutput!
 }
 
+""""""
+input PaginationInput {
+  after: String
+  first: Float
+}
+
 type Query {
+  listVenues(input: PaginationInput!): ListVenuesOutput!
   me: GetUserOutput!
   song(input: GetSongInput!): GetSongOutput!
   songs: [SongEntity!]!

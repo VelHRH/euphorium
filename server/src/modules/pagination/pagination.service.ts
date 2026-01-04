@@ -6,18 +6,18 @@ interface PaginateOptions<T> {
   items: T[];
   first?: number;
   after?: string;
-  cursorField: keyof T;
+  cursorField?: keyof T;
 }
 
 @Injectable()
 export class PaginationService {
   constructor() {}
 
-  paginateWithCursor<T>({
+  paginate<T>({
     items,
     first,
     after,
-    cursorField,
+    cursorField = 'id' as keyof T,
   }: PaginateOptions<T>) {
     const limit = Math.min(first ?? DEFAULT_PAGE_SIZE, MAX_PAGE_SIZE);
 
@@ -35,14 +35,19 @@ export class PaginationService {
     return {
       edges: pageItems.map((item) => ({
         node: item,
-        cursor: encodeCursor(item[cursorField] as any),
+        cursor: encodeCursor(item[cursorField] as string | number | Date),
       })),
       pageInfo: {
         hasNextPage: sliced.length > limit,
         endCursor:
           pageItems.length > 0
-            ? encodeCursor(pageItems[pageItems.length - 1][cursorField] as any)
-            : null,
+            ? encodeCursor(
+                pageItems[pageItems.length - 1][cursorField] as
+                  | string
+                  | number
+                  | Date,
+              )
+            : undefined,
       },
     };
   }

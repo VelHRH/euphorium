@@ -8,6 +8,10 @@ import {
   getVenueInputSchema,
   GetVenueOutput,
   getVenueOutputSchema,
+  ListVenuesOutput,
+  listVenuesOutputSchema,
+  PaginationInput,
+  paginationInputSchema,
 } from 'shared';
 
 import { handleEitherResponse } from '$helpers';
@@ -35,5 +39,12 @@ export class VenueResolver {
     @InputSchema(createVenueInputSchema) input: CreateVenueInput,
   ): Promise<CreateVenueOutput> {
     return this.service.create(input).then(handleEitherResponse);
+  }
+
+  @QueryOutputSchema(listVenuesOutputSchema)
+  async listVenues(
+    @InputSchema(paginationInputSchema) input: PaginationInput,
+  ): Promise<ListVenuesOutput> {
+    return this.service.list(input).then(handleEitherResponse);
   }
 }
