@@ -14,3 +14,4 @@ export * from './group-member';
 export * from './entry';
 export * from './festival';
 export * from './pagination';
+export * from './city';

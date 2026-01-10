@@ -13,6 +13,7 @@ import { TokenModule } from '$modules/token/token.module';
 import { VenueModule } from '$modules/entities/venue/venue.module';
 import { PaginationModule } from '$modules/pagination/pagination.module';
 import { ShowModule } from '$modules/entities/show/show.module';
+import { CityModule } from '$modules/entities/city/city.module';
 
 @Module({
   imports: [
@@ -29,6 +30,7 @@ import { ShowModule } from '$modules/entities/show/show.module';
     VenueModule,
     PaginationModule,
     ShowModule,
+    CityModule,
   ],
 })
 export class AppModule {}

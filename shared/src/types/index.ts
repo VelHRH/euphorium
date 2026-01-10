@@ -15,3 +15,4 @@ export * from './venue';
 export * from './group';
 export * from './group-member';
 export * from './pagination';
+export * from './city';

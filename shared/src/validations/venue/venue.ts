@@ -4,11 +4,11 @@ import { baseSchema } from '../database';
 import { Venue } from '../../types';
 import { nameSchema } from '../common/name';
 import { imgPathSchema } from '../common';
+import { citySchema } from '../city';
 
 export const venueSchema = baseSchema.extend({
   name: nameSchema,
-  countryCode: z.string().trim().min(1, 'Country code is required'),
-  city: z.string().trim().min(1, 'City is required'),
+  city: citySchema,
   latitude: z.number(),
   longitude: z.number(),
   imgPath: imgPathSchema,

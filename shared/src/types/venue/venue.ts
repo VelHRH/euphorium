@@ -1,10 +1,10 @@
-import { Base } from '../common';
+import { City } from '../city';
+import { Base, Image, Name } from '../common';
 
-export interface Venue extends Base {
-  name: string;
-  countryCode: string;
-  city: string;
-  latitude: number;
-  longitude: number;
-  imgPath?: string | null;
-}
+export type Venue = Base &
+  Image &
+  Name & {
+    city: City;
+    latitude: number;
+    longitude: number;
+  };
