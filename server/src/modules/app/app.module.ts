@@ -14,6 +14,7 @@ import { VenueModule } from '$modules/entities/venue/venue.module';
 import { PaginationModule } from '$modules/pagination/pagination.module';
 import { ShowModule } from '$modules/entities/show/show.module';
 import { CityModule } from '$modules/entities/city/city.module';
+import { FestivalModule } from '$modules/entities/festival/festival.module';
 
 @Module({
   imports: [
@@ -31,6 +32,7 @@ import { CityModule } from '$modules/entities/city/city.module';
     PaginationModule,
     ShowModule,
     CityModule,
+    FestivalModule,
   ],
 })
 export class AppModule {}

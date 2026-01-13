@@ -51,7 +51,11 @@ export class VenueService {
     input: CreateVenueInput,
   ): Promise<Either<BadRequestException, CreateVenueOutput>> {
     try {
-      const savedVenue = await this.venueRepository.save(input);
+      const { cityId, ...venueData } = input;
+      const savedVenue = await this.venueRepository.save({
+        ...venueData,
+        city: { id: cityId },
+      });
 
       return right(savedVenue);
     } catch (error) {

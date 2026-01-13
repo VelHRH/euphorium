@@ -23,4 +23,8 @@ export class FestivalEntity extends BaseEntity implements Festival {
   @OneToMany(() => ShowEntity, (show) => show.festival)
   @Field(() => [ShowEntity])
   readonly shows: Show[];
+
+  @Column('varchar', { array: true, default: [] })
+  @Field(() => [String])
+  readonly imgPaths: string[];
 }

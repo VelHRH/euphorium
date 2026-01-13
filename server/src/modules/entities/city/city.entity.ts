@@ -1,9 +1,8 @@
 import { Field, ObjectType } from '@nestjs/graphql';
-import { Show, City, Venue } from 'shared';
+import { City, Venue } from 'shared';
 import { Column, Entity, OneToMany } from 'typeorm';
 
 import { BaseEntity } from '$modules/database/entities';
-import { ShowEntity } from '../show/show.entity';
 import { VenueEntity } from '../venue/venue.entity';
 
 @ObjectType()

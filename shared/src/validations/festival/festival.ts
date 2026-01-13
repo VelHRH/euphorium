@@ -10,4 +10,5 @@ export const festivalSchema = baseSchema.extend({
   dateStart: z.date(),
   dateEnd: z.date(),
   shows: z.array(showSchema),
+  imgPaths: z.array(z.string()),
 }) satisfies z.ZodType<Festival>;

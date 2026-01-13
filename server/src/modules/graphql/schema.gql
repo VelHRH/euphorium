@@ -14,6 +14,15 @@ type ArtistEntity {
   writers: [SongWriterEntity!]!
 }
 
+type CityEntity {
+  countryCode: String!
+  createdAt: DateTime!
+  id: String!
+  name: String!
+  updatedAt: DateTime!
+  venues: [VenueEntity!]!
+}
+
 type ConfirmationEntity {
   createdAt: DateTime!
   expires: DateTime!
@@ -29,6 +38,38 @@ enum ConfirmationType {
   EMAIL
   PASSWORD
   PASSWORD_CHANGED
+}
+
+""""""
+input CreateCityInput {
+  countryCode: String!
+  name: String!
+}
+
+""""""
+type CreateCityOutput {
+  countryCode: String!
+  createdAt: DateTime!
+  id: String!
+  name: String!
+  updatedAt: DateTime!
+}
+
+""""""
+input CreateShowInput {
+  date: DateTime!
+  name: String!
+  venueId: String!
+}
+
+""""""
+type CreateShowOutput {
+  createdAt: DateTime!
+  date: DateTime!
+  id: String!
+  name: String!
+  updatedAt: DateTime!
+  venue: ListVenuesOutput_Edges_Node!
 }
 
 """"""
@@ -86,8 +127,7 @@ type CreateSongOutput_Performers_Social {
 
 """"""
 input CreateVenueInput {
-  city: String!
-  countryCode: String!
+  cityId: String!
   imgPath: String
   latitude: Float!
   longitude: Float!
@@ -96,8 +136,7 @@ input CreateVenueInput {
 
 """"""
 type CreateVenueOutput {
-  city: String!
-  countryCode: String!
+  city: GetVenueOutput_City!
   createdAt: DateTime!
   id: String!
   imgPath: String
@@ -128,6 +167,7 @@ type FestivalEntity {
   dateEnd: DateTime!
   dateStart: DateTime!
   id: String!
+  imgPaths: [String!]!
   name: String!
   shows: [ShowEntity!]!
   updatedAt: DateTime!
@@ -141,6 +181,35 @@ input ForgotPasswordInput {
 """"""
 type ForgotPasswordOutput {
   success: Boolean!
+}
+
+""""""
+input GetCityInput {
+  id: String!
+}
+
+""""""
+type GetCityOutput {
+  countryCode: String!
+  createdAt: DateTime!
+  id: String!
+  name: String!
+  updatedAt: DateTime!
+}
+
+""""""
+input GetShowInput {
+  id: String!
+}
+
+""""""
+type GetShowOutput {
+  createdAt: DateTime!
+  date: DateTime!
+  id: String!
+  name: String!
+  updatedAt: DateTime!
+  venue: ListVenuesOutput_Edges_Node!
 }
 
 """"""
@@ -173,13 +242,20 @@ input GetVenueInput {
 
 """"""
 type GetVenueOutput {
-  city: String!
-  countryCode: String!
+  city: GetVenueOutput_City!
   createdAt: DateTime!
   id: String!
   imgPath: String
   latitude: Float!
   longitude: Float!
+  name: String!
+  updatedAt: DateTime!
+}
+
+type GetVenueOutput_City {
+  countryCode: String!
+  createdAt: DateTime!
+  id: String!
   name: String!
   updatedAt: DateTime!
 }
@@ -217,6 +293,47 @@ type GroupMemberEntity {
 }
 
 """"""
+type ListCitiesOutput {
+  edges: [ListCitiesOutput_Edges!]!
+  pageInfo: ListCitiesOutput_PageInfo!
+}
+
+type ListCitiesOutput_Edges {
+  cursor: String!
+  node: GetVenueOutput_City!
+}
+
+type ListCitiesOutput_PageInfo {
+  endCursor: String
+  hasNextPage: Boolean!
+}
+
+""""""
+type ListShowsOutput {
+  edges: [ListShowsOutput_Edges!]!
+  pageInfo: ListShowsOutput_PageInfo!
+}
+
+type ListShowsOutput_Edges {
+  cursor: String!
+  node: ListShowsOutput_Edges_Node!
+}
+
+type ListShowsOutput_Edges_Node {
+  createdAt: DateTime!
+  date: DateTime!
+  id: String!
+  name: String!
+  updatedAt: DateTime!
+  venue: ListVenuesOutput_Edges_Node!
+}
+
+type ListShowsOutput_PageInfo {
+  endCursor: String
+  hasNextPage: Boolean!
+}
+
+""""""
 type ListUsersOutput {
   list: [ListUsersOutput_List!]!
 }
@@ -240,8 +357,7 @@ type ListVenuesOutput_Edges {
 }
 
 type ListVenuesOutput_Edges_Node {
-  city: String!
-  countryCode: String!
+  city: GetVenueOutput_City!
   createdAt: DateTime!
   id: String!
   imgPath: String
@@ -276,6 +392,8 @@ type LogoutOutput {
 }
 
 type Mutation {
+  createCity(input: CreateCityInput!): CreateCityOutput!
+  createShow(input: CreateShowInput!): CreateShowOutput!
   createSong(input: CreateSongInput!): CreateSongOutput!
   createVenue(input: CreateVenueInput!): CreateVenueOutput!
   deleteSong(input: DeleteSongInput!): DeleteSongOutput!
@@ -296,8 +414,12 @@ input PaginationInput {
 }
 
 type Query {
+  city(input: GetCityInput!): GetCityOutput!
+  listCities(input: PaginationInput!): ListCitiesOutput!
+  listShows(input: PaginationInput!): ListShowsOutput!
   listVenues(input: PaginationInput!): ListVenuesOutput!
   me: GetUserOutput!
+  show(input: GetShowInput!): GetShowOutput!
   song(input: GetSongInput!): GetSongOutput!
   songs: [SongEntity!]!
   user(input: GetUserInput!): GetUserOutput!
@@ -415,8 +537,7 @@ type UserEntity {
 }
 
 type VenueEntity {
-  city: String!
-  countryCode: String!
+  city: CityEntity!
   createdAt: DateTime!
   id: String!
   imgPath: String
