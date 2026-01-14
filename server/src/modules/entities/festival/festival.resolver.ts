@@ -42,7 +42,7 @@ export class FestivalResolver {
   }
 
   @QueryOutputSchema(listFestivalsOutputSchema)
-  async listFestivals(
+  async festivals(
     @InputSchema(paginationInputSchema) input: PaginationInput,
   ): Promise<ListFestivalsOutput> {
     return this.service.list(input).then(handleEitherResponse);

@@ -269,6 +269,7 @@ type GetUserOutput {
   createdAt: DateTime!
   email: String!
   id: String!
+  role: ListUsersOutput_List_RoleEnum_0!
   updatedAt: DateTime!
 }
 
@@ -307,6 +308,7 @@ type GoogleLoginOutput {
   createdAt: DateTime!
   email: String!
   id: String!
+  role: ListUsersOutput_List_RoleEnum_0!
   updatedAt: DateTime!
 }
 
@@ -406,7 +408,14 @@ type ListUsersOutput_List {
   createdAt: DateTime!
   email: String!
   id: String!
+  role: ListUsersOutput_List_RoleEnum_0!
   updatedAt: DateTime!
+}
+
+"""Enum values for ListUsersOutput_List.role"""
+enum ListUsersOutput_List_RoleEnum_0 {
+  ADMIN
+  USER
 }
 
 """"""
@@ -447,6 +456,7 @@ type LoginOutput {
   createdAt: DateTime!
   email: String!
   id: String!
+  role: ListUsersOutput_List_RoleEnum_0!
   updatedAt: DateTime!
 }
 
@@ -479,19 +489,19 @@ input PaginationInput {
 }
 
 type Query {
+  cities(input: PaginationInput!): ListCitiesOutput!
   city(input: GetCityInput!): GetCityOutput!
   festival(input: GetFestivalInput!): GetFestivalOutput!
-  listCities(input: PaginationInput!): ListCitiesOutput!
-  listFestivals(input: PaginationInput!): ListFestivalsOutput!
-  listShows(input: PaginationInput!): ListShowsOutput!
-  listVenues(input: PaginationInput!): ListVenuesOutput!
+  festivals(input: PaginationInput!): ListFestivalsOutput!
   me: GetUserOutput!
   show(input: GetShowInput!): GetShowOutput!
+  shows(input: PaginationInput!): ListShowsOutput!
   song(input: GetSongInput!): GetSongOutput!
   songs: [SongEntity!]!
   user(input: GetUserInput!): GetUserOutput!
   users: ListUsersOutput!
   venue(input: GetVenueInput!): GetVenueOutput!
+  venues(input: PaginationInput!): ListVenuesOutput!
 }
 
 """"""
@@ -506,6 +516,7 @@ type RevokePasswordOutput {
   createdAt: DateTime!
   email: String!
   id: String!
+  role: ListUsersOutput_List_RoleEnum_0!
   updatedAt: DateTime!
 }
 
@@ -538,6 +549,7 @@ type SignUpOutput {
   createdAt: DateTime!
   email: String!
   id: String!
+  role: ListUsersOutput_List_RoleEnum_0!
   updatedAt: DateTime!
 }
 
@@ -591,6 +603,7 @@ type UpdatePasswordOutput {
   createdAt: DateTime!
   email: String!
   id: String!
+  role: ListUsersOutput_List_RoleEnum_0!
   updatedAt: DateTime!
 }
 
@@ -599,6 +612,7 @@ type UserEntity {
   createdAt: DateTime!
   email: String!
   id: String!
+  role: ListUsersOutput_List_RoleEnum_0!
   session: [SessionEntity!]!
   updatedAt: DateTime!
 }

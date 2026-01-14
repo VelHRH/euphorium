@@ -48,7 +48,7 @@ export class CityResolver {
   }
 
   @QueryOutputSchema(listCitiesOutputSchema)
-  async listCities(
+  async cities(
     @InputSchema(paginationInputSchema) input: PaginationInput,
   ): Promise<ListCitiesOutput> {
     return this.service.list(input).then(handleEitherResponse);

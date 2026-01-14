@@ -1,18 +1,50 @@
 <script setup lang="ts">
-import { ref } from 'vue'
+import { computed, watchEffect, ref } from 'vue'
 import HomeCard from './components/home-card.vue'
+import { useQuery } from '@vue/apollo-composable'
+import { FESTIVALS } from '../festivals/graphql/queries/festivals'
 
-const picture1 = 1
-const allPictures = [1, 2, 3]
-const picture2 = ref(0)
-const picture3 = ref(0)
-const picture4 = ref(0)
+const { result } = useQuery(FESTIVALS, () => ({
+  input: {},
+}))
 
-picture2.value = allPictures[Math.floor(Math.random() * allPictures.length)] as number
-let leftOverPictures = allPictures.filter(n => n !== picture2.value)
-picture3.value = leftOverPictures[Math.floor(Math.random() * leftOverPictures.length)] as number
-leftOverPictures = leftOverPictures.filter(n => n !== picture3.value)
-picture4.value = leftOverPictures[Math.floor(Math.random() * leftOverPictures.length)] as number
+const eurovisions = computed(() => {
+  const edges = result?.value?.festivals?.edges || []
+  return edges.filter((edge: { node: { name: string; imgPaths: string[] } }) =>
+    edge.node.name.includes('Eurovision')
+  )
+})
+
+const picture1 = `/images/vidbir-2026-${1}.png`
+const picture2 = `/images/supernova-2026-${[1, 2, 3][Math.floor(Math.random() * [1, 2, 3].length)]}.png`
+
+const picture3 = ref<string>(picture1)
+const picture4 = ref<string>(picture1)
+
+const getRandomEurovisionImage = () => {
+  if (eurovisions.value.length === 0) {
+    console.warn('No eurovisions available')
+    return undefined
+  }
+
+  const randomIndex = Math.floor(Math.random() * eurovisions.value.length)
+  const randomFestival = eurovisions.value[randomIndex]?.node
+
+  const imgPaths = randomFestival?.imgPaths || []
+
+  if (imgPaths.length === 0) {
+    return undefined
+  }
+
+  return imgPaths[Math.floor(Math.random() * imgPaths.length)]
+}
+
+watchEffect(() => {
+  if (eurovisions.value.length > 0) {
+    picture3.value = getRandomEurovisionImage()
+    picture4.value = getRandomEurovisionImage()
+  }
+})
 </script>
 
 <template>
@@ -21,22 +53,22 @@ picture4.value = leftOverPictures[Math.floor(Math.random() * leftOverPictures.le
       <HomeCard
         class="col-span-2 row-span-2 origin-top-left border-2 border-border"
         title="Vidbir 2026 🇺🇦"
-        :imagePath="`/images/vidbir-2026-${picture1}.png`"
+        :imagePath="picture1"
       />
       <HomeCard
         class="col-span-1 row-span-2 border-2 border-border"
         title="Supernova 2026 🇱🇻"
-        :imagePath="`/images/supernova-2026-${picture2}.png`"
+        :imagePath="picture2"
       />
       <HomeCard
         class="col-span-1 row-span-1 origin-top-right border-2 border-border"
         title="Enter our fantasy"
-        :imagePath="`/images/supernova-2026-${picture3}.png`"
+        :imagePath="picture3"
       />
       <HomeCard
         class="col-span-1 row-span-1 origin-top-right border-2 border-border"
         title="Create rankings"
-        :imagePath="`/images/supernova-2026-${picture4}.png`"
+        :imagePath="picture4"
       />
     </div>
   </div>

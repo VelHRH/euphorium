@@ -70,7 +70,15 @@ export class FestivalService {
     input: PaginationInput,
   ): Promise<Either<BadRequestException, ListFestivalsOutput>> {
     try {
-      const festivals = await this.festivalRepository.find();
+      const festivals = await this.festivalRepository.find({
+        relations: {
+          shows: {
+            venue: {
+              city: true,
+            },
+          },
+        },
+      });
 
       return right(
         this.paginationService.paginate({ items: festivals, ...input }),

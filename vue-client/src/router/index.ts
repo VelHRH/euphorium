@@ -5,6 +5,7 @@ import { Route } from './types/routes'
 import SignUpPage from '@/modules/auth/pages/sign-up-page.vue'
 import LoginPage from '@/modules/auth/pages/login-page.vue'
 import { authMiddleware } from './middleware/auth'
+import FestivalsPage from '@/modules/festivals/pages/festivals-page.vue'
 
 export const routes: Record<Route, RouteRecordRaw> = {
   [Route.HOME]: {
@@ -53,6 +54,14 @@ export const routes: Record<Route, RouteRecordRaw> = {
     component: SignUpPage,
     meta: {
       layout: Layouts.AUTH,
+    },
+  },
+  [Route.FESTIVALS]: {
+    path: '/festivals',
+    name: 'festivals',
+    component: FestivalsPage,
+    meta: {
+      layout: Layouts.APP,
     },
   },
 }

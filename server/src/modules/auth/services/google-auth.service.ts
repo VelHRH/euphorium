@@ -8,6 +8,7 @@ import {
   GoogleTokenPayload,
   googleTokenPayloadSchema,
   UserNoPassword,
+  UserRoles,
 } from 'shared';
 
 import { Config } from '$config';
@@ -63,6 +64,7 @@ export class GoogleAuthService {
     const userResult = await this.userService.create({
       email,
       password: null,
+      role: UserRoles.USER,
     });
 
     if (userResult.isLeft()) {
@@ -194,6 +196,7 @@ export class GoogleAuthService {
     const userResult = await this.userService.create({
       email,
       password: null,
+      role: UserRoles.USER,
     });
 
     if (userResult.isLeft()) {

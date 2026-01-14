@@ -42,7 +42,7 @@ export class ShowResolver {
   }
 
   @QueryOutputSchema(listShowsOutputSchema)
-  async listShows(
+  async shows(
     @InputSchema(paginationInputSchema) input: PaginationInput,
   ): Promise<ListShowsOutput> {
     return this.service.list(input).then(handleEitherResponse);

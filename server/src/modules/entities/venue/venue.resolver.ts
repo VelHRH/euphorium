@@ -42,7 +42,7 @@ export class VenueResolver {
   }
 
   @QueryOutputSchema(listVenuesOutputSchema)
-  async listVenues(
+  async venues(
     @InputSchema(paginationInputSchema) input: PaginationInput,
   ): Promise<ListVenuesOutput> {
     return this.service.list(input).then(handleEitherResponse);

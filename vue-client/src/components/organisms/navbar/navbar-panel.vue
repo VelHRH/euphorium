@@ -13,7 +13,7 @@ const router = useRouter()
 const { isAuthenticated, logout } = useAuth()
 
 const navigationItems = Object.keys(routes)
-  .filter(key => [Route.SHOWS, Route.LIBRARY].includes(key as Route))
+  .filter(key => [Route.FESTIVALS].includes(key as Route))
   .map(key => routes[key as Route])
   .filter(i => i !== undefined)
   .map(i => ({
