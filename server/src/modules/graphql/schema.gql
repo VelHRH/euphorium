@@ -56,6 +56,26 @@ type CreateCityOutput {
 }
 
 """"""
+input CreateFestivalInput {
+  dateEnd: DateTime!
+  dateStart: DateTime!
+  imgPaths: [String!]!
+  name: String!
+}
+
+""""""
+type CreateFestivalOutput {
+  createdAt: DateTime!
+  dateEnd: DateTime!
+  dateStart: DateTime!
+  id: String!
+  imgPaths: [String!]!
+  name: String!
+  shows: [ListShowsOutput_Edges_Node!]!
+  updatedAt: DateTime!
+}
+
+""""""
 input CreateShowInput {
   date: DateTime!
   name: String!
@@ -198,6 +218,23 @@ type GetCityOutput {
 }
 
 """"""
+input GetFestivalInput {
+  id: String!
+}
+
+""""""
+type GetFestivalOutput {
+  createdAt: DateTime!
+  dateEnd: DateTime!
+  dateStart: DateTime!
+  id: String!
+  imgPaths: [String!]!
+  name: String!
+  shows: [ListShowsOutput_Edges_Node!]!
+  updatedAt: DateTime!
+}
+
+""""""
 input GetShowInput {
   id: String!
 }
@@ -309,6 +346,33 @@ type ListCitiesOutput_PageInfo {
 }
 
 """"""
+type ListFestivalsOutput {
+  edges: [ListFestivalsOutput_Edges!]!
+  pageInfo: ListFestivalsOutput_PageInfo!
+}
+
+type ListFestivalsOutput_Edges {
+  cursor: String!
+  node: ListFestivalsOutput_Edges_Node!
+}
+
+type ListFestivalsOutput_Edges_Node {
+  createdAt: DateTime!
+  dateEnd: DateTime!
+  dateStart: DateTime!
+  id: String!
+  imgPaths: [String!]!
+  name: String!
+  shows: [ListShowsOutput_Edges_Node!]!
+  updatedAt: DateTime!
+}
+
+type ListFestivalsOutput_PageInfo {
+  endCursor: String
+  hasNextPage: Boolean!
+}
+
+""""""
 type ListShowsOutput {
   edges: [ListShowsOutput_Edges!]!
   pageInfo: ListShowsOutput_PageInfo!
@@ -393,6 +457,7 @@ type LogoutOutput {
 
 type Mutation {
   createCity(input: CreateCityInput!): CreateCityOutput!
+  createFestival(input: CreateFestivalInput!): CreateFestivalOutput!
   createShow(input: CreateShowInput!): CreateShowOutput!
   createSong(input: CreateSongInput!): CreateSongOutput!
   createVenue(input: CreateVenueInput!): CreateVenueOutput!
@@ -415,7 +480,9 @@ input PaginationInput {
 
 type Query {
   city(input: GetCityInput!): GetCityOutput!
+  festival(input: GetFestivalInput!): GetFestivalOutput!
   listCities(input: PaginationInput!): ListCitiesOutput!
+  listFestivals(input: PaginationInput!): ListFestivalsOutput!
   listShows(input: PaginationInput!): ListShowsOutput!
   listVenues(input: PaginationInput!): ListVenuesOutput!
   me: GetUserOutput!
