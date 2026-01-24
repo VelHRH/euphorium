@@ -1,11 +1,12 @@
 import { Field, ObjectType } from '@nestjs/graphql';
-import { Artist, Social, Song } from 'shared';
+import { Artist, Social } from 'shared';
 import { Column, Entity, JoinColumn, OneToMany, OneToOne } from 'typeorm';
 
 import { SocialEntity } from '../social/social.entity';
-import { SongArtistEntity } from '../song-artist/song-artist.entity';
+import { SongWriterEntity } from '../song-writer/song-writer.entity';
 
 import { BaseEntity } from '$modules/database/entities';
+import { SongPerformerEntity } from '../song-perfomer/song-perfomer.entity';
 
 @ObjectType()
 @Entity('artists')
@@ -14,20 +15,24 @@ export class ArtistEntity extends BaseEntity implements Artist {
   @Field()
   readonly name: string;
 
-  @OneToMany(() => SongArtistEntity, (songArtist) => songArtist.artist)
-  @Field(() => [SongArtistEntity])
-  readonly songs: Song[];
+  @OneToMany(() => SongPerformerEntity, (songPerformer) => songPerformer.song)
+  @Field(() => [SongPerformerEntity])
+  readonly performers: Artist[];
 
-  @Column({ nullable: true })
-  @Field({ nullable: true })
-  readonly imgPath?: string;
+  @OneToMany(() => SongWriterEntity, (songWriter) => songWriter.song)
+  @Field(() => [SongWriterEntity])
+  readonly writers: Artist[];
 
-  @Column({ nullable: true })
-  @Field({ nullable: true })
-  readonly label?: string;
+  @Column({ type: 'varchar', nullable: true })
+  @Field(() => String, { nullable: true })
+  readonly imgPath?: string | null;
+
+  @Column({ type: 'varchar', nullable: true })
+  @Field(() => String, { nullable: true })
+  readonly label?: string | null;
 
   @OneToOne(() => SocialEntity, { nullable: true })
   @JoinColumn()
   @Field(() => SocialEntity, { nullable: true })
-  readonly social?: Social;
+  readonly social?: Social | null;
 }

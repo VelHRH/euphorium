@@ -7,6 +7,7 @@ import {
   LogoutOutput,
   SignUpInput,
   SignUpOutput,
+  UserRoles,
 } from 'shared';
 
 import {
@@ -30,7 +31,7 @@ export class AuthService {
   ) {}
 
   signUp(input: SignUpInput): Promise<Either<BaseException, SignUpOutput>> {
-    return this.userService.create(input);
+    return this.userService.create({ ...input, role: UserRoles.USER }); // TODO: in the future mabe let register admins directly
   }
 
   async login(

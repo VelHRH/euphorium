@@ -27,7 +27,6 @@ export class ConfirmationEntity extends BaseEntity implements Confirmation {
   readonly token: string;
 
   @ManyToOne(() => UserEntity, (user) => user.session)
-  @JoinColumn({ name: 'userId' })
   @Field(() => UserEntity)
   readonly user: User;
 }

@@ -5,4 +5,5 @@ export enum Route {
   PROFILE = 'PROFILE',
   LOGIN = 'LOGIN',
   SIGN_UP = 'SIGN_UP',
+  FESTIVALS = 'FESTIVALS',
 }

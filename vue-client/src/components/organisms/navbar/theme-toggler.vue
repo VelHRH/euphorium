@@ -1,10 +1,14 @@
 <script setup lang="ts">
-import { useTheme } from '@/modules/theme/composables/use-theme'
-import BaseButton from '../../molecules/base-button.vue'
+import { Theme, useTheme } from '@/modules/theme/composables/use-theme'
+import { Button } from '@/components/ui/button'
+import { SunIcon, MoonIcon } from 'lucide-vue-next'
 
-const { toggleTheme } = useTheme()
+const { toggleTheme, theme } = useTheme()
 </script>
 
 <template>
-  <BaseButton @click="toggleTheme" label="Change theme" />
+  <Button variant="ghost" @click="toggleTheme">
+    <SunIcon v-if="theme === Theme.LIGHT" />
+    <MoonIcon v-else />
+  </Button>
 </template>

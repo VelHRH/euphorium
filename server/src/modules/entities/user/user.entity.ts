@@ -1,5 +1,5 @@
 import { Field, HideField, ObjectType } from '@nestjs/graphql';
-import { User } from 'shared';
+import { User, UserRoles } from 'shared';
 import { Column, Entity, OneToMany } from 'typeorm';
 
 import { ConfirmationEntity } from '../confirmation/confirmation.entity';
@@ -16,7 +16,7 @@ export class UserEntity extends BaseEntity implements User {
 
   @Column({ type: 'varchar', select: false, nullable: true })
   @HideField()
-  readonly password: string | undefined;
+  readonly password: string | null;
 
   @OneToMany(() => SessionEntity, (session) => session.user)
   @Field(() => [SessionEntity])
@@ -25,4 +25,13 @@ export class UserEntity extends BaseEntity implements User {
   @OneToMany(() => ConfirmationEntity, (session) => session.user)
   @Field(() => [ConfirmationEntity])
   readonly confirmation: ConfirmationEntity[];
+
+  @Column({
+    type: 'enum',
+    enum: UserRoles,
+    nullable: false,
+    default: UserRoles.USER,
+  })
+  @Field(() => UserRoles)
+  readonly role: UserRoles;
 }

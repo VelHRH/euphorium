@@ -14,7 +14,6 @@ export class SessionEntity extends BaseEntity implements Session {
   readonly refreshToken: string;
 
   @ManyToOne(() => UserEntity, (user) => user.session)
-  @JoinColumn({ name: 'userId' })
   @Field(() => UserEntity)
   readonly user: UserEntity;
 }

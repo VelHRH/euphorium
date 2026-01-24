@@ -7,19 +7,19 @@ import { BaseEntity } from '$modules/database/entities';
 @ObjectType()
 @Entity('socials')
 export class SocialEntity extends BaseEntity implements Social {
-  @Column({ nullable: true })
-  @Field({ nullable: true })
-  readonly instagram?: string;
+  @Column({ type: 'varchar', nullable: true })
+  @Field(() => String, { nullable: true })
+  readonly instagram?: string | null;
 
-  @Column({ nullable: true })
-  @Field({ nullable: true })
-  readonly x?: string;
+  @Column({ type: 'varchar', nullable: true })
+  @Field(() => String, { nullable: true })
+  readonly x?: string | null;
 
-  @Column({ nullable: true })
-  @Field({ nullable: true })
-  readonly youtube?: string;
+  @Column({ type: 'varchar', nullable: true })
+  @Field(() => String, { nullable: true })
+  readonly youtube?: string | null;
 
-  @Column({ nullable: true })
-  @Field({ nullable: true })
-  readonly facebook?: string;
+  @Column({ type: 'varchar', nullable: true })
+  @Field(() => String, { nullable: true })
+  readonly facebook?: string | null;
 }

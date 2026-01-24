@@ -18,22 +18,24 @@
   },
   "dependencies": {
     "@tailwindcss/vite": "^4.1.17",
-    "@vue/apollo-composable": "^4.2.2",
+    "@tanstack/vue-query": "^5.92.9",
     "@vueuse/core": "^14.1.0",
     "class-variance-authority": "^0.7.1",
     "clsx": "^2.1.1",
-    "graphql-tag": "^2.12.6",
+    "lucide-vue-next": "^0.562.0",
     "pinia": "^3.0.4",
     "radix-vue": "^1.9.17",
     "reka-ui": "^2.7.0",
-    "shared": "npm:@velhrh/new-blood-shared@^1.0.1",
     "tailwind-merge": "^3.4.0",
     "tailwindcss": "^4.1.17",
     "vue": "^3.5.25",
     "vue-router": "^4.6.3",
-    "vue-sonner": "^2.0.9"
+    "vue-sonner": "^2.0.9",
+    "shared": "file:../shared"
   },
   "devDependencies": {
+    "@graphql-codegen/cli": "^6.1.1",
+    "@graphql-codegen/client-preset": "^5.2.2",
     "@tsconfig/node24": "^24.0.3",
     "@types/jsdom": "^27.0.0",
     "@types/node": "^24.10.1",

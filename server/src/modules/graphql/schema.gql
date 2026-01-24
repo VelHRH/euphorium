@@ -8,9 +8,19 @@ type ArtistEntity {
   imgPath: String
   label: String
   name: String!
+  performers: [SongPerformerEntity!]!
   social: SocialEntity
-  songs: [SongArtistEntity!]!
   updatedAt: DateTime!
+  writers: [SongWriterEntity!]!
+}
+
+type CityEntity {
+  countryCode: String!
+  createdAt: DateTime!
+  id: String!
+  name: String!
+  updatedAt: DateTime!
+  venues: [VenueEntity!]!
 }
 
 type ConfirmationEntity {
@@ -31,36 +41,101 @@ enum ConfirmationType {
 }
 
 """"""
+input CreateCityInput {
+  countryCode: String!
+  name: String!
+}
+
+""""""
+type CreateCityOutput {
+  countryCode: String!
+  createdAt: DateTime!
+  id: String!
+  name: String!
+  updatedAt: DateTime!
+}
+
+""""""
+input CreateFestivalInput {
+  dateEnd: DateTime!
+  dateStart: DateTime!
+  imgPaths: [String!]!
+  name: String!
+}
+
+""""""
+type CreateFestivalOutput {
+  createdAt: DateTime!
+  dateEnd: DateTime!
+  dateStart: DateTime!
+  id: String!
+  imgPaths: [String!]!
+  name: String!
+  shows: [ListShowsOutput_Edges_Node!]!
+  updatedAt: DateTime!
+}
+
+""""""
+input CreateShowInput {
+  date: DateTime!
+  name: String!
+  venueId: String!
+}
+
+""""""
+type CreateShowOutput {
+  createdAt: DateTime!
+  date: DateTime!
+  id: String!
+  name: String!
+  updatedAt: DateTime!
+  venue: ListVenuesOutput_Edges_Node!
+}
+
+""""""
 input CreateSongInput {
-  album: String!
+  album: String
   artistIds: [String!]!
   name: String!
   postedAt: DateTime!
-  youtubeUrl: String
+  youtubeUrls: [String!]
 }
 
 """"""
 type CreateSongOutput {
-  album: String!
-  artists: [CreateSongOutput_Artists!]!
+  album: String
   createdAt: DateTime!
+  group: CreateSongOutput_Group
   id: String!
   name: String!
+  performers: [CreateSongOutput_Performers!]!
   postedAt: DateTime!
+  updatedAt: DateTime!
+  writers: [CreateSongOutput_Performers!]!
+  youtubeUrls: [String!]!
+}
+
+type CreateSongOutput_Group {
+  createdAt: DateTime!
+  id: String!
+  imgPath: String
+  members: [CreateSongOutput_Performers!]!
+  name: String!
+  social: CreateSongOutput_Performers_Social
   updatedAt: DateTime!
 }
 
-type CreateSongOutput_Artists {
+type CreateSongOutput_Performers {
   createdAt: DateTime!
   id: String!
   imgPath: String
   label: String
   name: String!
-  social: CreateSongOutput_Artists_Social
+  social: CreateSongOutput_Performers_Social
   updatedAt: DateTime!
 }
 
-type CreateSongOutput_Artists_Social {
+type CreateSongOutput_Performers_Social {
   createdAt: DateTime!
   facebook: String
   id: String!
@@ -68,6 +143,27 @@ type CreateSongOutput_Artists_Social {
   updatedAt: DateTime!
   x: String
   youtube: String
+}
+
+""""""
+input CreateVenueInput {
+  cityId: String!
+  imgPath: String
+  latitude: Float!
+  longitude: Float!
+  name: String!
+}
+
+""""""
+type CreateVenueOutput {
+  city: GetVenueOutput_City!
+  createdAt: DateTime!
+  id: String!
+  imgPath: String
+  latitude: Float!
+  longitude: Float!
+  name: String!
+  updatedAt: DateTime!
 }
 
 """
@@ -86,6 +182,17 @@ type DeleteSongOutput {
   success: Boolean!
 }
 
+type FestivalEntity {
+  createdAt: DateTime!
+  dateEnd: DateTime!
+  dateStart: DateTime!
+  id: String!
+  imgPaths: [String!]!
+  name: String!
+  shows: [ShowEntity!]!
+  updatedAt: DateTime!
+}
+
 """"""
 input ForgotPasswordInput {
   email: String!
@@ -94,6 +201,52 @@ input ForgotPasswordInput {
 """"""
 type ForgotPasswordOutput {
   success: Boolean!
+}
+
+""""""
+input GetCityInput {
+  id: String!
+}
+
+""""""
+type GetCityOutput {
+  countryCode: String!
+  createdAt: DateTime!
+  id: String!
+  name: String!
+  updatedAt: DateTime!
+}
+
+""""""
+input GetFestivalInput {
+  id: String!
+}
+
+""""""
+type GetFestivalOutput {
+  createdAt: DateTime!
+  dateEnd: DateTime!
+  dateStart: DateTime!
+  id: String!
+  imgPaths: [String!]!
+  name: String!
+  shows: [ListShowsOutput_Edges_Node!]!
+  updatedAt: DateTime!
+}
+
+""""""
+input GetShowInput {
+  id: String!
+}
+
+""""""
+type GetShowOutput {
+  createdAt: DateTime!
+  date: DateTime!
+  id: String!
+  name: String!
+  updatedAt: DateTime!
+  venue: ListVenuesOutput_Edges_Node!
 }
 
 """"""
@@ -116,6 +269,32 @@ type GetUserOutput {
   createdAt: DateTime!
   email: String!
   id: String!
+  role: ListUsersOutput_List_RoleEnum_0!
+  updatedAt: DateTime!
+}
+
+""""""
+input GetVenueInput {
+  id: String!
+}
+
+""""""
+type GetVenueOutput {
+  city: GetVenueOutput_City!
+  createdAt: DateTime!
+  id: String!
+  imgPath: String
+  latitude: Float!
+  longitude: Float!
+  name: String!
+  updatedAt: DateTime!
+}
+
+type GetVenueOutput_City {
+  countryCode: String!
+  createdAt: DateTime!
+  id: String!
+  name: String!
   updatedAt: DateTime!
 }
 
@@ -129,7 +308,95 @@ type GoogleLoginOutput {
   createdAt: DateTime!
   email: String!
   id: String!
+  role: ListUsersOutput_List_RoleEnum_0!
   updatedAt: DateTime!
+}
+
+type GroupEntity {
+  createdAt: DateTime!
+  id: String!
+  imgPath: String
+  members: [GroupMemberEntity!]!
+  name: String!
+  social: SocialEntity
+  songs: [SongEntity!]!
+  updatedAt: DateTime!
+}
+
+type GroupMemberEntity {
+  artist: ArtistEntity!
+  createdAt: DateTime!
+  group: GroupEntity!
+  id: String!
+  updatedAt: DateTime!
+}
+
+""""""
+type ListCitiesOutput {
+  edges: [ListCitiesOutput_Edges!]!
+  pageInfo: ListCitiesOutput_PageInfo!
+}
+
+type ListCitiesOutput_Edges {
+  cursor: String!
+  node: GetVenueOutput_City!
+}
+
+type ListCitiesOutput_PageInfo {
+  endCursor: String
+  hasNextPage: Boolean!
+}
+
+""""""
+type ListFestivalsOutput {
+  edges: [ListFestivalsOutput_Edges!]!
+  pageInfo: ListFestivalsOutput_PageInfo!
+}
+
+type ListFestivalsOutput_Edges {
+  cursor: String!
+  node: ListFestivalsOutput_Edges_Node!
+}
+
+type ListFestivalsOutput_Edges_Node {
+  createdAt: DateTime!
+  dateEnd: DateTime!
+  dateStart: DateTime!
+  id: String!
+  imgPaths: [String!]!
+  name: String!
+  shows: [ListShowsOutput_Edges_Node!]!
+  updatedAt: DateTime!
+}
+
+type ListFestivalsOutput_PageInfo {
+  endCursor: String
+  hasNextPage: Boolean!
+}
+
+""""""
+type ListShowsOutput {
+  edges: [ListShowsOutput_Edges!]!
+  pageInfo: ListShowsOutput_PageInfo!
+}
+
+type ListShowsOutput_Edges {
+  cursor: String!
+  node: ListShowsOutput_Edges_Node!
+}
+
+type ListShowsOutput_Edges_Node {
+  createdAt: DateTime!
+  date: DateTime!
+  id: String!
+  name: String!
+  updatedAt: DateTime!
+  venue: ListVenuesOutput_Edges_Node!
+}
+
+type ListShowsOutput_PageInfo {
+  endCursor: String
+  hasNextPage: Boolean!
 }
 
 """"""
@@ -141,7 +408,41 @@ type ListUsersOutput_List {
   createdAt: DateTime!
   email: String!
   id: String!
+  role: ListUsersOutput_List_RoleEnum_0!
   updatedAt: DateTime!
+}
+
+"""Enum values for ListUsersOutput_List.role"""
+enum ListUsersOutput_List_RoleEnum_0 {
+  ADMIN
+  USER
+}
+
+""""""
+type ListVenuesOutput {
+  edges: [ListVenuesOutput_Edges!]!
+  pageInfo: ListVenuesOutput_PageInfo!
+}
+
+type ListVenuesOutput_Edges {
+  cursor: String!
+  node: ListVenuesOutput_Edges_Node!
+}
+
+type ListVenuesOutput_Edges_Node {
+  city: GetVenueOutput_City!
+  createdAt: DateTime!
+  id: String!
+  imgPath: String
+  latitude: Float!
+  longitude: Float!
+  name: String!
+  updatedAt: DateTime!
+}
+
+type ListVenuesOutput_PageInfo {
+  endCursor: String
+  hasNextPage: Boolean!
 }
 
 """"""
@@ -155,6 +456,7 @@ type LoginOutput {
   createdAt: DateTime!
   email: String!
   id: String!
+  role: ListUsersOutput_List_RoleEnum_0!
   updatedAt: DateTime!
 }
 
@@ -164,7 +466,11 @@ type LogoutOutput {
 }
 
 type Mutation {
+  createCity(input: CreateCityInput!): CreateCityOutput!
+  createFestival(input: CreateFestivalInput!): CreateFestivalOutput!
+  createShow(input: CreateShowInput!): CreateShowOutput!
   createSong(input: CreateSongInput!): CreateSongOutput!
+  createVenue(input: CreateVenueInput!): CreateVenueOutput!
   deleteSong(input: DeleteSongInput!): DeleteSongOutput!
   forgotPassword(input: ForgotPasswordInput!): ForgotPasswordOutput!
   googleLogin(input: GoogleLoginInput!): GoogleLoginOutput!
@@ -176,12 +482,26 @@ type Mutation {
   updatePassword(input: UpdatePasswordInput!): UpdatePasswordOutput!
 }
 
+""""""
+input PaginationInput {
+  after: String
+  first: Float
+}
+
 type Query {
+  cities(input: PaginationInput!): ListCitiesOutput!
+  city(input: GetCityInput!): GetCityOutput!
+  festival(input: GetFestivalInput!): GetFestivalOutput!
+  festivals(input: PaginationInput!): ListFestivalsOutput!
   me: GetUserOutput!
+  show(input: GetShowInput!): GetShowOutput!
+  shows(input: PaginationInput!): ListShowsOutput!
   song(input: GetSongInput!): GetSongOutput!
   songs: [SongEntity!]!
   user(input: GetUserInput!): GetUserOutput!
   users: ListUsersOutput!
+  venue(input: GetVenueInput!): GetVenueOutput!
+  venues(input: PaginationInput!): ListVenuesOutput!
 }
 
 """"""
@@ -196,6 +516,7 @@ type RevokePasswordOutput {
   createdAt: DateTime!
   email: String!
   id: String!
+  role: ListUsersOutput_List_RoleEnum_0!
   updatedAt: DateTime!
 }
 
@@ -205,6 +526,16 @@ type SessionEntity {
   refreshToken: String!
   updatedAt: DateTime!
   user: UserEntity!
+}
+
+type ShowEntity {
+  createdAt: DateTime!
+  date: DateTime!
+  festival: FestivalEntity!
+  id: String!
+  name: String!
+  updatedAt: DateTime!
+  venue: VenueEntity!
 }
 
 """"""
@@ -218,6 +549,7 @@ type SignUpOutput {
   createdAt: DateTime!
   email: String!
   id: String!
+  role: ListUsersOutput_List_RoleEnum_0!
   updatedAt: DateTime!
 }
 
@@ -231,7 +563,20 @@ type SocialEntity {
   youtube: String
 }
 
-type SongArtistEntity {
+type SongEntity {
+  album: String
+  createdAt: DateTime!
+  group: GroupEntity
+  id: String!
+  name: String!
+  performers: [SongPerformerEntity!]!
+  postedAt: DateTime!
+  updatedAt: DateTime!
+  writers: [SongWriterEntity!]!
+  youtubeUrls: [String!]!
+}
+
+type SongPerformerEntity {
   artist: ArtistEntity!
   createdAt: DateTime!
   id: String!
@@ -239,15 +584,12 @@ type SongArtistEntity {
   updatedAt: DateTime!
 }
 
-type SongEntity {
-  album: String!
-  artists: [SongArtistEntity!]!
+type SongWriterEntity {
+  artist: ArtistEntity!
   createdAt: DateTime!
   id: String!
-  name: String!
-  postedAt: DateTime!
+  song: SongEntity!
   updatedAt: DateTime!
-  youtubeUrls: [String!]!
 }
 
 """"""
@@ -261,6 +603,7 @@ type UpdatePasswordOutput {
   createdAt: DateTime!
   email: String!
   id: String!
+  role: ListUsersOutput_List_RoleEnum_0!
   updatedAt: DateTime!
 }
 
@@ -269,6 +612,19 @@ type UserEntity {
   createdAt: DateTime!
   email: String!
   id: String!
+  role: ListUsersOutput_List_RoleEnum_0!
   session: [SessionEntity!]!
+  updatedAt: DateTime!
+}
+
+type VenueEntity {
+  city: CityEntity!
+  createdAt: DateTime!
+  id: String!
+  imgPath: String
+  latitude: Float!
+  longitude: Float!
+  name: String!
+  shows: [ShowEntity!]!
   updatedAt: DateTime!
 }

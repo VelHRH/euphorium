@@ -83,20 +83,14 @@ export class SongService {
     input: CreateSongInput,
   ): Promise<Either<BaseException, CreateSongOutput>> {
     try {
-      const song = this.songRepository.create(input);
+      const song = this.songRepository.create({
+        ...input,
+        youtubeUrls: input.youtubeUrls ?? [],
+      });
 
       const savedSong = await this.songRepository.save(song);
 
-      return right({
-        id: savedSong.id,
-        name: savedSong.name,
-        artists: [], // toDO normal artist creation implementation
-        youtubeUrls: savedSong.youtubeUrls,
-        album: savedSong.album,
-        postedAt: savedSong.postedAt,
-        createdAt: savedSong.createdAt,
-        updatedAt: savedSong.updatedAt,
-      });
+      return right(savedSong);
     } catch (error) {
       console.error(error);
 

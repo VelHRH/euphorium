@@ -4,8 +4,8 @@ import { Social } from '../../types';
 import { baseSchema } from '../database';
 
 export const socialSchema = baseSchema.extend({
-  x: z.string().optional(),
-  instagram: z.string().optional(),
-  facebook: z.string().optional(),
-  youtube: z.string().optional(),
+  x: z.string().nullable().optional(),
+  instagram: z.string().nullable().optional(),
+  facebook: z.string().nullable().optional(),
+  youtube: z.string().nullable().optional(),
 }) satisfies z.ZodType<Social>;

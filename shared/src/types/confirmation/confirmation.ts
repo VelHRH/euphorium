@@ -1,5 +1,5 @@
 import { ConfirmationType } from '../../constants';
-import { Base } from '../database';
+import { Base } from '../common';
 import { User } from '../user';
 
 export interface Confirmation extends Base {
