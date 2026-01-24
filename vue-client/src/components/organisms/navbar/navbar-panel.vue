@@ -25,7 +25,7 @@ const loginRoute = routes[Route.LOGIN]
 
 const handleLogout = async () => {
   await logout()
-  router.push(routes[Route.LOGIN].path)
+  router.push(loginRoute.path)
 }
 </script>
 

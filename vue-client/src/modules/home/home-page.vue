@@ -1,15 +1,12 @@
 <script setup lang="ts">
 import { computed, watchEffect, ref } from 'vue'
 import HomeCard from './components/home-card.vue'
-import { useQuery } from '@vue/apollo-composable'
-import { FESTIVALS } from '../festivals/graphql/queries/festivals'
+import { useFetchFestivals } from '../festivals/hooks/use-fetch-festivals'
 
-const { result } = useQuery(FESTIVALS, () => ({
-  input: {},
-}))
+const { data: festivals } = useFetchFestivals()
 
 const eurovisions = computed(() => {
-  const edges = result?.value?.festivals?.edges || []
+  const edges = festivals.value?.edges || []
   return edges.filter((edge: { node: { name: string; imgPaths: string[] } }) =>
     edge.node.name.includes('Eurovision')
   )
@@ -41,8 +38,8 @@ const getRandomEurovisionImage = () => {
 
 watchEffect(() => {
   if (eurovisions.value.length > 0) {
-    picture3.value = getRandomEurovisionImage()
-    picture4.value = getRandomEurovisionImage()
+    picture3.value = getRandomEurovisionImage() || ''
+    picture4.value = getRandomEurovisionImage() || ''
   }
 })
 </script>

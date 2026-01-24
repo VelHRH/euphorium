@@ -1,15 +1,10 @@
-import { apolloClient } from "@/lib/apollo"
-import { ME } from "../graphql/queries"
 import type { GetUserOutput } from "shared"
+import { fetchMe } from "../api/queries/me"
 
 export async function getCurrentUser(): Promise<GetUserOutput | null> {
     try {
-      const result = await apolloClient.query({
-        query: ME,
-        errorPolicy: 'ignore',
-        fetchPolicy: 'network-only',
-      })
-      return result.data?.me || null
+      const result = await fetchMe()
+      return result || null
     } catch {
       return null
     }
