@@ -1,16 +1,14 @@
 import './assets/main.css'
 
-import { DefaultApolloClient } from '@vue/apollo-composable'
 import { createPinia } from 'pinia'
-import { createApp, h, provide } from 'vue'
+import { createApp, h } from 'vue'
 
-import { apolloClient } from '@/lib/apollo'
 import App from './app.vue'
 import router from './router'
+import { VueQueryPlugin } from '@tanstack/vue-query'
 
 const app = createApp({
   setup() {
-    provide(DefaultApolloClient, apolloClient)
   },
 
   render: () => h(App),
@@ -18,5 +16,6 @@ const app = createApp({
 
 app.use(createPinia())
 app.use(router)
+app.use(VueQueryPlugin)
 
 app.mount('#app')

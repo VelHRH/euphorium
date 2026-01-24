@@ -1,6 +1,4 @@
 import { ref, computed, onMounted } from 'vue'
-import { useMutation } from '@vue/apollo-composable'
-import { LOGIN, LOGOUT, SIGN_UP } from '../graphql/mutations'
 import { getCurrentUser } from '../services/get-user'
 import { showError } from '@/utils/show-error'
 import { toast } from 'vue-sonner'
@@ -8,6 +6,9 @@ import { Route } from '@/router/types/routes'
 import { useRouter } from 'vue-router'
 import { routes } from '@/router'
 import type { UserNoPassword } from 'shared'
+import { loginMutation } from '../api/mutations/login'
+import { logoutMutation } from '../api/mutations/logout'
+import { signUpMutation } from '../api/mutations/sign-up'
 
 const user = ref<UserNoPassword | null>(null)
 const isAuthenticated = computed(() => !!user.value)
@@ -16,9 +17,6 @@ const isLoading = ref(false)
 export const useAuth = () => {
   const router = useRouter()
 
-  const { mutate: logoutMutation } = useMutation(LOGOUT)
-  const { mutate: loginMutation } = useMutation(LOGIN)
-  const { mutate: signUpMutation } = useMutation(SIGN_UP)
 
   // Initialize user data on mount
   onMounted(async () => {
@@ -32,13 +30,11 @@ export const useAuth = () => {
     try {
       isLoading.value = true
       const result = await loginMutation({
-        input: {
-          email,
-          password,
-        },
+        email,
+        password,
       })
-      
-      user.value = result?.data?.login.id || null
+
+      user.value = result || null
       
       if (user.value) {
         toast.success('Login successful')
@@ -68,10 +64,8 @@ export const useAuth = () => {
     try {
       isLoading.value = true
       await signUpMutation({
-        input: {
-          email,
-          password,
-        },
+        email,
+        password,
       })
       
       router.push(routes[Route.LOGIN].path)
