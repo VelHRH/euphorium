@@ -1,6 +1,5 @@
 <template>
-    <div className="px-2 min-h-screen flex flex-col">
+  <div className="px-2 min-h-screen flex flex-col">
     <slot />
-    </div>
+  </div>
 </template>
-    

@@ -1,5 +1,5 @@
-import { gqlRequest } from "@/utils/gql-request";
-import type { GetUserOutput } from "shared";
+import { gqlRequest } from '@/utils/gql-request'
+import type { GetUserOutput } from 'shared'
 
 const ME = `
   query Me {
@@ -10,7 +10,6 @@ const ME = `
       updatedAt
     }
   }
-`;
-
+`
 
 export const fetchMe = async () => gqlRequest<GetUserOutput>(ME)

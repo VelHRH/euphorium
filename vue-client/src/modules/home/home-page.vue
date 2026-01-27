@@ -7,8 +7,9 @@ const { data: festivals } = useFetchFestivals()
 
 const eurovisions = computed(() => {
   const edges = festivals.value?.edges || []
-  return edges.filter((edge: { node: { name: string; imgPaths: string[] } }) =>
-    edge.node.name.includes('Eurovision')
+  return edges.filter(
+    (edge: { node: { name: string; imgPaths: string[] } }) =>
+      edge.node.name.includes('Eurovision') || edge.node.name.includes('Sanremo')
   )
 })
 

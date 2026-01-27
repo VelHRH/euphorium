@@ -1,5 +1,5 @@
-import { gqlRequest } from "@/utils/gql-request";
-import type { LogoutOutput } from "shared";
+import { gqlRequest } from '@/utils/gql-request'
+import type { LogoutOutput } from 'shared'
 
 const LOGOUT = `
   mutation Logout {
@@ -7,6 +7,6 @@ const LOGOUT = `
       success
     }
   }
-` 
+`
 
 export const logoutMutation = async () => gqlRequest<LogoutOutput>(LOGOUT)

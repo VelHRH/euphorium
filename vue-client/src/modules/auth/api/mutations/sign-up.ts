@@ -1,5 +1,5 @@
-import { gqlRequest } from "@/utils/gql-request";
-import type { SignUpInput, SignUpOutput } from "shared";
+import { gqlRequest } from '@/utils/gql-request'
+import type { SignUpInput, SignUpOutput } from 'shared'
 
 export const SIGN_UP = `
 mutation SignUp($input: SignUpInput!) {

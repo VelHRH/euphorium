@@ -13,9 +13,9 @@ export const authMiddleware = async (
 ) => {
   const isAuthenticated = await getCurrentUser()
 
-  const targetRoute = Object.keys(routes).find((route) => 
-    to.path === routes[route as Route].path
-  ) as Route | undefined
+  const targetRoute = Object.keys(routes).find(route => to.path === routes[route as Route].path) as
+    | Route
+    | undefined
 
   // If user is authenticated and trying to access auth-only pages (login/signup)
   if (isAuthenticated && targetRoute && PUBLIC_ONLY_ROUTES.includes(targetRoute)) {

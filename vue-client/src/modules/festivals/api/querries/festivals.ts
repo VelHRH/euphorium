@@ -23,8 +23,7 @@ const FESTIVALS = `
 }
 `
 
-
 export const fetchFestivals = async (input: PaginationInput) => {
-   const result = await gqlRequest<{ festivals: ListFestivalsOutput }>(FESTIVALS, input)
-   return result.festivals
+  const result = await gqlRequest<{ festivals: ListFestivalsOutput }>(FESTIVALS, input)
+  return result.festivals
 }

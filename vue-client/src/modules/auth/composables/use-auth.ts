@@ -17,14 +17,12 @@ const isLoading = ref(false)
 export const useAuth = () => {
   const router = useRouter()
 
-
   // Initialize user data on mount
   onMounted(async () => {
     isLoading.value = true
     user.value = await getCurrentUser()
     isLoading.value = false
   })
-
 
   const login = async (email: string, password: string) => {
     try {
@@ -35,7 +33,7 @@ export const useAuth = () => {
       })
 
       user.value = result || null
-      
+
       if (user.value) {
         toast.success('Login successful')
         router.push({ name: Route.HOME.toLowerCase() })
@@ -67,7 +65,7 @@ export const useAuth = () => {
         email,
         password,
       })
-      
+
       router.push(routes[Route.LOGIN].path)
     } catch (error) {
       showError('Sign up failed', error)
