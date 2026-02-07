@@ -6,6 +6,8 @@ import AccordionContent from '@/components/ui/accordion/AccordionContent.vue'
 import Image from '@/components/molecules/image.vue'
 import { useFetchFestivals } from '../hooks/use-fetch-festivals'
 import { computed } from 'vue'
+import FestivalListSkeleton from '../components/festival-list-skeleton.vue'
+import CreateFestivalModal from '../components/create-festival-modal.vue'
 
 const { data: festivals, isLoading } = useFetchFestivals()
 
@@ -14,24 +16,24 @@ const festivalsList = computed(() => festivals.value?.edges || [])
 
 <template>
   <div class="min-h-screen bg-linear-to-br from-background via-background to-muted/20 p-6">
-    <div class="max-w-6xl mx-auto mb-12">
-      <div class="text-center space-y-4">
+    <div class="max-w-6xl mx-auto mb-12 text-center space-y-4">
+      <div class="flex items-center gap-4 justify-center">
         <h1
-          class="text-6xl font-bold bg-linear-to-r from-neon-purple via-neon-pink to-neon-cyan bg-clip-text text-transparent w-1/2 mx-auto"
+          class="text-6xl font-bold bg-linear-to-r from-neon-purple via-neon-pink to-neon-cyan bg-clip-text text-transparent w-1/2"
         >
           Eurovision Festivals
         </h1>
-        <div
-          class="w-32 h-1 bg-linear-to-r from-neon-purple via-neon-pink to-neon-cyan mx-auto rounded-full"
-        ></div>
+        <CreateFestivalModal />
       </div>
+      <div
+        class="w-32 h-1 bg-linear-to-r from-neon-purple via-neon-pink to-neon-cyan mx-auto rounded-full"
+      ></div>
     </div>
 
     <div v-if="!isLoading && (!festivalsList || festivalsList.length === 0)">
       <p class="text-center text-2xl font-bold">No festivals found</p>
     </div>
 
-    <!-- Festivals Grid -->
     <div class="max-w-6xl mx-auto">
       <Accordion type="single" collapsible class="space-y-6">
         <AccordionItem
@@ -90,22 +92,7 @@ const festivalsList = computed(() => festivals.value?.edges || [])
       </Accordion>
 
       <div v-if="isLoading" class="space-y-6">
-        <div v-for="i in 3" :key="i" class="animate-pulse">
-          <div class="rounded-2xl border-2 border-border/30 bg-card/50 p-8">
-            <div class="flex items-center gap-6">
-              <div class="w-12 h-12 bg-muted rounded-full"></div>
-              <div class="flex-1 space-y-2">
-                <div class="h-6 bg-muted rounded w-1/3"></div>
-                <div class="h-4 bg-muted/60 rounded w-1/4"></div>
-              </div>
-              <div class="flex gap-2">
-                <div class="w-16 h-16 bg-muted rounded-lg"></div>
-                <div class="w-16 h-16 bg-muted rounded-lg"></div>
-                <div class="w-16 h-16 bg-muted rounded-lg"></div>
-              </div>
-            </div>
-          </div>
-        </div>
+        <FestivalListSkeleton />
       </div>
     </div>
   </div>

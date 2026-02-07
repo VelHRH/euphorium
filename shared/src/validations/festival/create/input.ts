@@ -1,7 +1,6 @@
 import { z } from 'zod';
 
 import { festivalSchema } from '../festival';
-import { venueSchema } from '../../venue';
 
 export const createFestivalInputSchema = festivalSchema
   .pick({

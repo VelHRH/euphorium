@@ -1,4 +1,5 @@
 import { DataSource, DataSourceOptions } from 'typeorm';
+import { SnakeNamingStrategy } from 'typeorm-naming-strategies';
 
 import { Config } from '$config';
 import { databaseConfig } from '$config/database';
@@ -12,6 +13,7 @@ export const databaseOptions: DatabaseOptions = (config) => ({
   ssl: {
     rejectUnauthorized: false,
   },
+  namingStrategy: new SnakeNamingStrategy(),
 });
 
 export default new DataSource(databaseOptions(databaseConfig()));

@@ -2,7 +2,7 @@ import { Artist } from '../artist';
 import { Base } from '../common';
 import { Group } from '../group';
 
-export interface Song extends Base {
+export type Song = Base & {
   name: string;
   youtubeUrls: string[];
   album?: string | null;
