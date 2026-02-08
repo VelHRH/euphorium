@@ -7,23 +7,29 @@
     "typescriptreact",
     "vue"
   ],
-  "eslint.workingDirectories": ["vue-client", "client"],
-  "eslint.experimental.useFlatConfig": true,
   "editor.formatOnSave": true,
   "editor.defaultFormatter": "esbenp.prettier-vscode",
   "editor.codeActionsOnSave": {
     "source.fixAll.eslint": "explicit"
   },
   "[vue]": {
-    "editor.defaultFormatter": "esbenp.prettier-vscode"
+    "editor.defaultFormatter": "Vue.volar",
+    "editor.formatOnSave": true
   },
   "[javascript]": {
-    "editor.defaultFormatter": "esbenp.prettier-vscode"
+    "editor.defaultFormatter": "esbenp.prettier-vscode",
+    "editor.formatOnSave": true
   },
   "[typescript]": {
-    "editor.defaultFormatter": "esbenp.prettier-vscode"
+    "editor.defaultFormatter": "vscode.typescript-language-features",
+    "editor.formatOnSave": true
+  },
+  "[typescriptreact]": {
+    "editor.defaultFormatter": "vscode.typescript-language-features",
+    "editor.formatOnSave": true
   },
   "[json]": {
-    "editor.defaultFormatter": "esbenp.prettier-vscode"
-  }
+    "editor.defaultFormatter": "esbenp.prettier-vscode",
+    "editor.formatOnSave": true
+  },
 }
