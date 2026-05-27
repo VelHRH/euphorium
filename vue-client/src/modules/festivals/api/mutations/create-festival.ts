@@ -17,4 +17,3 @@ export const createFestivalMutation = async (input: CreateFestivalInput) => {
   const result = await gqlRequest<{ createFestival: CreateFestivalOutput }>(CREATE_FESTIVAL, input)
   return result.createFestival
 }
-

@@ -7,8 +7,7 @@ import App from './app.vue'
 import router from './router'
 import { VueQueryPlugin } from '@tanstack/vue-query'
 
-const app = createApp({
-  setup() {},
+const app = createApp({ setup() {},
 
   render: () => h(App),
 })
