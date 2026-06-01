@@ -30,11 +30,11 @@ export class EventInstanceEntity extends BaseEntity implements EventInstance {
   @Field()
   readonly timeEnd: Date;
 
-  @Column({ nullable: true })
-  @Field({ nullable: true })
+  @Column({ type: 'varchar', nullable: true })
+  @Field(() => String, { nullable: true })
   readonly specialName?: string | null;
 
-  @Column({ nullable: true })
+  @Column({ type: 'float', nullable: true })
   @Field(() => Number, { nullable: true })
   readonly rating?: number | null;
 }

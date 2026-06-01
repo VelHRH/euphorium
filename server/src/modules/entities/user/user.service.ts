@@ -18,11 +18,13 @@ import { UserEntity } from './user.entity';
 
 import { Config } from '$config';
 import { BadRequestException, NotFoundException } from '$exceptions';
-import { UserExceptionMessage } from '$exceptions/constants';
 import { CryptoService } from '$modules/crypto/crypto.service';
+import { LocalizedEntityService } from '$i18n/base/entity-i18n.service';
+import { I18nService } from 'nestjs-i18n';
+import { AuthI18nKey } from '$i18n/keys/auth';
 
 @Injectable()
-export class UserService {
+export class UserService extends LocalizedEntityService {
   private readonly salt: number;
 
   constructor(
@@ -30,8 +32,14 @@ export class UserService {
     private readonly userRepository: Repository<UserEntity>,
     private readonly cryptoService: CryptoService,
     private readonly configService: ConfigService<Config>,
+    i18n: I18nService,
   ) {
+    super(i18n);
     this.salt = this.configService.getOrThrow('jwt.salt', { infer: true });
+  }
+
+  protected localizedEntityKey(): string {
+    return AuthI18nKey.USER;
   }
 
   async findOne(
@@ -44,7 +52,7 @@ export class UserService {
     });
 
     if (!user) {
-      return left(new NotFoundException(UserExceptionMessage.USER_NOT_FOUND));
+      return left(this.notFound());
     }
 
     return right(user);
@@ -78,9 +86,7 @@ export class UserService {
 
       return right(savedUser);
     } catch {
-      return left(
-        new BadRequestException(UserExceptionMessage.CANNOT_CREATE_USER),
-      );
+      return left(this.cannotCreate());
     }
   }
 
@@ -104,7 +110,7 @@ export class UserService {
 
       return await this.findOne({ id });
     } catch {
-      return left(new NotFoundException(UserExceptionMessage.USER_NOT_FOUND));
+      return left(this.notFound());
     }
   }
 }

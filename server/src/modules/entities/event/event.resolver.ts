@@ -5,6 +5,7 @@ import {
   CreateEventOutput,
   createEventOutputSchema,
   GetEventInput,
+  getEventInputSchema,
   GetEventOutput,
   getEventOutputSchema,
   ListEventsOutput,
@@ -28,7 +29,7 @@ export class EventResolver {
 
   @QueryOutputSchema(getEventOutputSchema)
   async event(
-    @InputSchema(getEventOutputSchema) input: GetEventInput,
+    @InputSchema(getEventInputSchema) input: GetEventInput,
   ): Promise<GetEventOutput> {
     return this.service.get(input).then(handleEitherResponse);
   }

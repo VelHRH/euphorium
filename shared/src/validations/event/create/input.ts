@@ -5,7 +5,6 @@ import { eventSchema } from '../event';
 export const createEventInputSchema = eventSchema
   .pick({
     name: true,
-    location: true,
     description: true,
   })
   .describe('CreateEventInput:');

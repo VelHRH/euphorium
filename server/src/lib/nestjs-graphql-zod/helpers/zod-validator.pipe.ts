@@ -2,12 +2,12 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
 import {
   ArgumentMetadata,
-  BadRequestException,
   PipeTransform,
   Type,
   ValidationError,
 } from '@nestjs/common';
 import { ZodError, ZodType } from 'zod';
+import { ValidationException } from '$exceptions';
 
 /**
  * A validation pipe from `zod` validation schema.
@@ -70,7 +70,10 @@ export class ZodValidatorPipe<T extends ZodType> implements PipeTransform {
         } as ValidationError;
       });
 
-      throw new BadRequestException(message, 'Validation Exception');
+      const firstIssue = error.issues[0];
+      const errorMessage = firstIssue?.message || 'Validation failed';
+
+      throw new ValidationException(errorMessage, error);
     }
   }
 }

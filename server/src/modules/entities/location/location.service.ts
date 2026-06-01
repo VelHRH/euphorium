@@ -13,17 +13,26 @@ import {
 import { FindOptionsSelect, FindOptionsWhere, Repository } from 'typeorm';
 
 import { BadRequestException, NotFoundException } from '$exceptions';
-import { VenueExceptionMessage } from '$exceptions/constants/venue';
 import { PaginationService } from '$modules/pagination/pagination.service';
 import { LocationEntity } from './location.entity';
+import { I18nService } from 'nestjs-i18n';
+import { LocalizedEntityService } from '$i18n/base/entity-i18n.service';
+import { LocationI18nKey } from '$i18n/keys/location';
 
 @Injectable()
-export class LocationService {
+export class LocationService extends LocalizedEntityService {
   constructor(
     @InjectRepository(LocationEntity)
     private readonly locationRepository: Repository<LocationEntity>,
     private readonly paginationService: PaginationService,
-  ) {}
+    i18n: I18nService,
+  ) {
+    super(i18n);
+  }
+
+  protected localizedEntityKey(): string {
+    return LocationI18nKey.LOCATION;
+  }
 
   async findOne(
     where: FindOptionsWhere<LocationEntity>,
@@ -35,7 +44,7 @@ export class LocationService {
     });
 
     if (!location) {
-      return left(new NotFoundException(VenueExceptionMessage.VENUE_NOT_FOUND));
+      return left(this.notFound());
     }
 
     return right(location);
@@ -60,9 +69,7 @@ export class LocationService {
       return right(savedLocation);
     } catch (error) {
       console.error(error);
-      return left(
-        new BadRequestException(VenueExceptionMessage.CANNOT_CREATE_VENUE),
-      );
+      return left(this.cannotCreate());
     }
   }
 
@@ -77,9 +84,7 @@ export class LocationService {
       );
     } catch (error) {
       console.error(error);
-      return left(
-        new BadRequestException(VenueExceptionMessage.VENUE_NOT_FOUND),
-      );
+      return left(this.notFound());
     }
   }
 }

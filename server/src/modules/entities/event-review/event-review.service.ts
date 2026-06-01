@@ -14,15 +14,24 @@ import { FindOptionsSelect, FindOptionsWhere, Repository } from 'typeorm';
 import { BadRequestException, NotFoundException } from '$exceptions';
 import { PaginationService } from '$modules/pagination/pagination.service';
 import { EventReviewEntity } from './event-review.entity';
-import { EventReviewExceptionMessage } from './event-review.exceptions';
+import { LocalizedEntityService } from '$i18n/base/entity-i18n.service';
+import { I18nService } from 'nestjs-i18n';
+import { EventI18nKey } from '$i18n/keys/event';
 
 @Injectable()
-export class EventReviewService {
+export class EventReviewService extends LocalizedEntityService {
   constructor(
     @InjectRepository(EventReviewEntity)
     private readonly eventReviewRepository: Repository<EventReviewEntity>,
     private readonly paginationService: PaginationService,
-  ) {}
+    i18n: I18nService,
+  ) {
+    super(i18n);
+  }
+
+  protected localizedEntityKey(): string {
+    return EventI18nKey.EVENT_REVIEW;
+  }
 
   async findOne(
     where: FindOptionsWhere<EventReviewEntity>,
@@ -34,11 +43,7 @@ export class EventReviewService {
     });
 
     if (!eventReview) {
-      return left(
-        new NotFoundException(
-          EventReviewExceptionMessage.EVENT_REVIEW_NOT_FOUND,
-        ),
-      );
+      return left(this.notFound());
     }
 
     return right(eventReview);
@@ -54,16 +59,17 @@ export class EventReviewService {
     input: CreateEventReviewInput,
   ): Promise<Either<BadRequestException, CreateEventReviewOutput>> {
     try {
-      const savedEventReview = await this.eventReviewRepository.save(input);
+      const { eventInstanceId, ...reviewData } = input;
+      const savedEventReview = await this.eventReviewRepository.save({
+        ...reviewData,
+        eventInstance: { id: eventInstanceId },
+        commentEmbedding: [],
+      });
 
       return right(savedEventReview);
     } catch (error) {
       console.error(error);
-      return left(
-        new BadRequestException(
-          EventReviewExceptionMessage.CANNOT_CREATE_EVENT_REVIEW,
-        ),
-      );
+      return left(this.cannotCreate());
     }
   }
 
@@ -78,11 +84,7 @@ export class EventReviewService {
       );
     } catch (error) {
       console.error(error);
-      return left(
-        new BadRequestException(
-          EventReviewExceptionMessage.EVENT_REVIEW_NOT_FOUND,
-        ),
-      );
+      return left(this.notFound());
     }
   }
 }

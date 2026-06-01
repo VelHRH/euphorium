@@ -16,11 +16,11 @@ import {
   NotFoundException,
   UnauthorizedException,
 } from '$exceptions';
-import { AuthExceptionMessage } from '$exceptions/constants/auth';
 import { GqlContext } from '$modules/app/types';
 import { CryptoService } from '$modules/crypto/crypto.service';
 import { SessionService } from '$modules/entities/session/session.service';
 import { UserService } from '$modules/entities/user/user.service';
+import { AuthExceptionMessage } from '$constants';
 
 @Injectable()
 export class AuthService {
@@ -31,7 +31,7 @@ export class AuthService {
   ) {}
 
   signUp(input: SignUpInput): Promise<Either<BaseException, SignUpOutput>> {
-    return this.userService.create({ ...input, role: UserRoles.USER }); // TODO: in the future mabe let register admins directly
+    return this.userService.create({ ...input, role: UserRoles.USER }); // TODO: in the future maybe let register admins directly
   }
 
   async login(
@@ -46,6 +46,7 @@ export class AuthService {
         id: true,
         email: true,
         password: true,
+        role: true,
         createdAt: true,
         updatedAt: true,
       },

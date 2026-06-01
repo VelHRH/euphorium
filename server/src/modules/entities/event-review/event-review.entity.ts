@@ -12,7 +12,7 @@ export class EventReviewEntity extends BaseEntity implements EventReview {
   @Field(() => EventInstanceEntity)
   readonly eventInstance: EventInstanceEntity;
 
-  @Column({ nullable: false })
+  @Column({ type: 'float', nullable: false })
   @Field(() => Number)
   readonly rating: number;
 
@@ -20,7 +20,7 @@ export class EventReviewEntity extends BaseEntity implements EventReview {
   @Field(() => String)
   readonly comment: string;
 
-  @Column({ array: true, default: [] })
+  @Column('double precision', { array: true, default: [] })
   @Field(() => [Number])
   readonly commentEmbedding: number[];
 }

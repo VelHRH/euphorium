@@ -13,10 +13,10 @@ import {
 } from 'shared';
 
 import { BadRequestException, NotFoundException } from '$exceptions';
-import { AuthExceptionMessage } from '$exceptions/constants/auth';
 import { CryptoService } from '$modules/crypto/crypto.service';
 import { ConfirmationService } from '$modules/entities/confirmation/confirmation.service';
 import { UserService } from '$modules/entities/user/user.service';
+import { AuthExceptionMessage } from '$constants';
 
 @Injectable()
 export class PasswordService {

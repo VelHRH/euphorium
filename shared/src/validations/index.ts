@@ -7,3 +7,4 @@ export * from './pagination';
 export * from './city';
 export * from './event-instance';
 export * from './event-review';
+export * from './user';

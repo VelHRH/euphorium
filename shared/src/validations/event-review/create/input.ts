@@ -1,12 +1,15 @@
 import { z } from 'zod';
 
+import { eventInstanceSchema } from '../../event-instance';
 import { eventReviewSchema } from '../event-review';
 
 export const createEventReviewInputSchema = eventReviewSchema
   .pick({
-    eventInstance: true,
     comment: true,
     rating: true,
+  })
+  .extend({
+    eventInstanceId: eventInstanceSchema.shape.id,
   })
   .describe('CreateEventReviewInput:');
 

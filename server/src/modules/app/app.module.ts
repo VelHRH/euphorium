@@ -13,6 +13,15 @@ import { PaginationModule } from '$modules/pagination/pagination.module';
 import { EventModule } from '$modules/entities/event/event.module';
 import { CityModule } from '$modules/entities/city/city.module';
 import { EventReviewModule } from '$modules/entities/event-review/event-review.module';
+import {
+  AcceptLanguageResolver,
+  CookieResolver,
+  HeaderResolver,
+  I18nModule,
+  QueryResolver,
+} from 'nestjs-i18n';
+import { ConfigService } from '@nestjs/config';
+import { join } from 'path';
 
 @Module({
   imports: [
@@ -29,6 +38,22 @@ import { EventReviewModule } from '$modules/entities/event-review/event-review.m
     EventModule,
     CityModule,
     EventReviewModule,
+    I18nModule.forRootAsync({
+      useFactory: (configService: ConfigService) => ({
+        fallbackLanguage: 'en',
+        loaderOptions: {
+          path: join(__dirname, '../../i18n/'),
+          watch: true,
+        },
+      }),
+      resolvers: [
+        new QueryResolver(['lang', 'l']),
+        new HeaderResolver(['x-custom-lang']),
+        new CookieResolver(),
+        AcceptLanguageResolver,
+      ],
+      inject: [ConfigService],
+    }),
   ],
 })
 export class AppModule {}

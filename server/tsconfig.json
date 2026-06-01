@@ -19,7 +19,8 @@
       "$helpers": ["src/common/helpers"],
       "$exceptions": ["src/common/exceptions"],
       "$exceptions/*": ["src/common/exceptions/*"],
-      "$lib/*": ["src/lib/*"]
+      "$lib/*": ["src/lib/*"],
+      "$i18n/*": ["src/i18n/*"]
     },
     "incremental": true,
     "skipLibCheck": true,

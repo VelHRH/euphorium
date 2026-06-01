@@ -1,0 +1,4 @@
+{
+  "cannotCreate": "Can't create {entity}",
+  "notFound": "{entity} not found"
+}

@@ -14,15 +14,24 @@ import { FindOptionsSelect, FindOptionsWhere, Repository } from 'typeorm';
 import { BadRequestException, NotFoundException } from '$exceptions';
 import { PaginationService } from '$modules/pagination/pagination.service';
 import { EventInstanceEntity } from './event-instance.entity';
-import { EventInstanceExceptionMessage } from './event-instance.exceptions';
+import { LocalizedEntityService } from '$i18n/base/entity-i18n.service';
+import { I18nService } from 'nestjs-i18n';
+import { EventI18nKey } from '$i18n/keys/event';
 
 @Injectable()
-export class EventInstanceService {
+export class EventInstanceService extends LocalizedEntityService {
   constructor(
     @InjectRepository(EventInstanceEntity)
     private readonly eventInstanceRepository: Repository<EventInstanceEntity>,
     private readonly paginationService: PaginationService,
-  ) {}
+    i18n: I18nService,
+  ) {
+    super(i18n);
+  }
+
+  protected localizedEntityKey(): string {
+    return EventI18nKey.EVENT_INSTANCE;
+  }
 
   async findOne(
     where: FindOptionsWhere<EventInstanceEntity>,
@@ -34,11 +43,7 @@ export class EventInstanceService {
     });
 
     if (!eventInstance) {
-      return left(
-        new NotFoundException(
-          EventInstanceExceptionMessage.EVENT_INSTANCE_NOT_FOUND,
-        ),
-      );
+      return left(this.notFound());
     }
 
     return right(eventInstance);
@@ -54,16 +59,17 @@ export class EventInstanceService {
     input: CreateEventInstanceInput,
   ): Promise<Either<BadRequestException, CreateEventInstanceOutput>> {
     try {
-      const savedEventInstance = await this.eventInstanceRepository.save(input);
+      const { eventId, locationId, ...instanceData } = input;
+      const savedEventInstance = await this.eventInstanceRepository.save({
+        ...instanceData,
+        event: { id: eventId },
+        location: { id: locationId },
+      });
 
       return right(savedEventInstance);
     } catch (error) {
       console.error(error);
-      return left(
-        new BadRequestException(
-          EventInstanceExceptionMessage.CANNOT_CREATE_EVENT_INSTANCE,
-        ),
-      );
+      return left(this.cannotCreate());
     }
   }
 
@@ -78,11 +84,7 @@ export class EventInstanceService {
       );
     } catch (error) {
       console.error(error);
-      return left(
-        new BadRequestException(
-          EventInstanceExceptionMessage.EVENT_INSTANCE_NOT_FOUND,
-        ),
-      );
+      return left(this.notFound());
     }
   }
 }

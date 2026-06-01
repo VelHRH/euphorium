@@ -8,7 +8,7 @@ import { EventInstanceEntity } from '../event-instance/event-instance.entity';
 @ObjectType()
 @Entity('events')
 export class EventEntity extends BaseEntity implements Event {
-  @Column({ nullable: false })
+  @Column({ type: 'varchar', nullable: false })
   @Field()
   readonly name: string;
 
@@ -16,7 +16,7 @@ export class EventEntity extends BaseEntity implements Event {
   @Field()
   readonly description: string;
 
-  @Column({ array: true, default: [] })
+  @Column('double precision', { array: true, default: [] })
   @Field(() => [Number])
   readonly descriptionEmbedding: number[];
 

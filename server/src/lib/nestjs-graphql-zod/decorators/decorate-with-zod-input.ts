@@ -1,7 +1,7 @@
 /* eslint-disable @typescript-eslint/no-explicit-any, @typescript-eslint/naming-convention */
-import { BadRequestException } from '@nestjs/common';
 import { plainToInstance } from 'class-transformer';
 import { AnyZodObject, ZodError } from 'zod';
+import { ValidationException } from '$exceptions';
 
 import type { DynamicZodModelClass } from './types';
 import type { BaseOptions } from './zod-options-wrapper.interface';
@@ -48,7 +48,9 @@ export function decorateWithZodInput<T extends AnyZodObject, F extends Fn = Fn>(
         )
         .catch((error: Error) => {
           if (error instanceof ZodError) {
-            throw new BadRequestException(error.issues);
+            const firstIssue = error.issues[0];
+            const errorMessage = firstIssue?.message || 'Validation failed';
+            throw new ValidationException(errorMessage, error);
           } else {
             throw error;
           }
@@ -63,6 +65,8 @@ export function decorateWithZodInput<T extends AnyZodObject, F extends Fn = Fn>(
         : parseResult.data;
     }
 
-    throw new BadRequestException(parseResult.error.issues);
+    const firstIssue = parseResult.error.issues[0];
+    const errorMessage = firstIssue?.message || 'Validation failed';
+    throw new ValidationException(errorMessage, parseResult.error);
   };
 }

@@ -1,6 +1,7 @@
 import { Injectable } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { Either, left, right } from '@sweet-monads/either';
+import { I18nService } from 'nestjs-i18n';
 import {
   CreateEventInput,
   CreateEventOutput,
@@ -14,16 +15,24 @@ import { FindOptionsSelect, FindOptionsWhere, Repository } from 'typeorm';
 
 import { BadRequestException, NotFoundException } from '$exceptions';
 import { PaginationService } from '$modules/pagination/pagination.service';
-import { EventExceptionMessage } from './event.exceptions';
+import { EventI18nKey } from '$i18n/keys/event';
 import { EventEntity } from './event.entity';
+import { LocalizedEntityService } from '$i18n/base/entity-i18n.service';
 
 @Injectable()
-export class EventService {
+export class EventService extends LocalizedEntityService {
   constructor(
     @InjectRepository(EventEntity)
     private readonly eventRepository: Repository<EventEntity>,
     private readonly paginationService: PaginationService,
-  ) {}
+    i18n: I18nService,
+  ) {
+    super(i18n);
+  }
+
+  protected localizedEntityKey(): string {
+    return EventI18nKey.EVENT;
+  }
 
   async findOne(
     where: FindOptionsWhere<EventEntity>,
@@ -35,7 +44,7 @@ export class EventService {
     });
 
     if (!event) {
-      return left(new NotFoundException(EventExceptionMessage.EVENT_NOT_FOUND));
+      return left(this.notFound());
     }
 
     return right(event);
@@ -56,15 +65,13 @@ export class EventService {
       return right(savedEvent);
     } catch (error) {
       console.error(error);
-      return left(
-        new BadRequestException(EventExceptionMessage.CANNOT_CREATE_EVENT),
-      );
+      return left(this.cannotCreate());
     }
   }
 
   async list(
     input: PaginationInput,
-  ): Promise<Either<BadRequestException, ListEventsOutput>> {
+  ): Promise<Either<NotFoundException, ListEventsOutput>> {
     try {
       const events = await this.eventRepository.find();
 
@@ -73,9 +80,7 @@ export class EventService {
       );
     } catch (error) {
       console.error(error);
-      return left(
-        new BadRequestException(EventExceptionMessage.EVENT_NOT_FOUND),
-      );
+      return left(this.notFound());
     }
   }
 }
