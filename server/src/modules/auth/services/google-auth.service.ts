@@ -7,8 +7,8 @@ import {
   GoogleLoginInput,
   GoogleTokenPayload,
   googleTokenPayloadSchema,
-  UserNoPassword,
   UserRoles,
+  UserNoPassword,
 } from 'shared';
 
 import { Config } from '$config';
@@ -17,7 +17,7 @@ import {
   NotFoundException,
   UnauthorizedException,
 } from '$exceptions';
-import { AuthExceptionMessage } from '$exceptions/constants/auth';
+import { AuthExceptionMessage } from '$constants';
 import { SessionService } from '$modules/entities/session/session.service';
 import { UserService } from '$modules/entities/user/user.service';
 import { IsNull } from 'typeorm';
@@ -135,9 +135,9 @@ export class GoogleAuthService {
         }),
       });
 
-      const token = await response.json();
+      const token = (await response.json()) as { access_token: string };
 
-      return right(token.access_token as string);
+      return right(token.access_token);
     } catch (e) {
       return left(
         new BadRequestException(AuthExceptionMessage.WRONG_GOOGLE_CREDENTIALS),
@@ -158,9 +158,9 @@ export class GoogleAuthService {
         headers: { Authorization: `Bearer ${accessToken.value}` },
       });
 
-      const userInfoData = await userInfo.json();
+      const userInfoData = (await userInfo.json()) as { email: string };
 
-      return right(userInfoData.email as string);
+      return right(userInfoData.email);
     } catch (e) {
       return left(
         new BadRequestException(AuthExceptionMessage.WRONG_GOOGLE_CREDENTIALS),

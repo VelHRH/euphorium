@@ -6,7 +6,7 @@ import {
   CreateCityInput,
   CreateCityOutput,
   GetCityOutput,
-  GetVenueInput,
+  GetLocationInput,
   ListCitiesOutput,
   PaginationInput,
 } from 'shared';
@@ -14,9 +14,8 @@ import { FindOptionsSelect, FindOptionsWhere, Repository } from 'typeorm';
 
 import { BadRequestException, NotFoundException } from '$exceptions';
 import { CityEntity } from './city.entity';
-import { VenueExceptionMessage } from '$exceptions/constants/venue';
 import { PaginationService } from '$modules/pagination/pagination.service';
-import { CityExceptionMessage } from '$exceptions/constants';
+import { CityExceptionMessage } from './city.exceptions';
 
 @Injectable()
 export class CityService {
@@ -42,7 +41,9 @@ export class CityService {
     return right(city);
   }
 
-  get(input: GetVenueInput): Promise<Either<NotFoundException, GetCityOutput>> {
+  get(
+    input: GetLocationInput,
+  ): Promise<Either<NotFoundException, GetCityOutput>> {
     return this.findOne({ id: input.id });
   }
 
@@ -56,7 +57,7 @@ export class CityService {
     } catch (error) {
       console.error(error);
       return left(
-        new BadRequestException(VenueExceptionMessage.CANNOT_CREATE_VENUE),
+        new BadRequestException(CityExceptionMessage.CANNOT_CREATE_CITY),
       );
     }
   }

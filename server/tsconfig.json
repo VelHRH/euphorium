@@ -28,7 +28,8 @@
     "strictBindCallApply": false,
     "forceConsistentCasingInFileNames": false,
     "noFallthroughCasesInSwitch": false,
-    "resolveJsonModule": true
+    "resolveJsonModule": true,
+    "lib": ["ES2021"]
   },
   "ts-node": {
     "require": ["tsconfig-paths/register"]

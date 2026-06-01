@@ -2,62 +2,62 @@ import { Injectable } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { Either, left, right } from '@sweet-monads/either';
 import {
-  CreateVenueInput,
-  CreateVenueOutput,
-  GetVenueInput,
-  GetVenueOutput,
-  ListVenuesOutput,
+  CreateLocationInput,
+  CreateLocationOutput,
+  GetLocationInput,
+  GetLocationOutput,
+  ListLocationsOutput,
   PaginationInput,
-  Venue,
+  Location,
 } from 'shared';
 import { FindOptionsSelect, FindOptionsWhere, Repository } from 'typeorm';
 
 import { BadRequestException, NotFoundException } from '$exceptions';
-import { VenueEntity } from './venue.entity';
 import { VenueExceptionMessage } from '$exceptions/constants/venue';
 import { PaginationService } from '$modules/pagination/pagination.service';
+import { LocationEntity } from './location.entity';
 
 @Injectable()
-export class VenueService {
+export class LocationService {
   constructor(
-    @InjectRepository(VenueEntity)
-    private readonly venueRepository: Repository<VenueEntity>,
+    @InjectRepository(LocationEntity)
+    private readonly locationRepository: Repository<LocationEntity>,
     private readonly paginationService: PaginationService,
   ) {}
 
   async findOne(
-    where: FindOptionsWhere<VenueEntity>,
-    select?: FindOptionsSelect<VenueEntity>,
-  ): Promise<Either<NotFoundException, Venue>> {
-    const venue = await this.venueRepository.findOne({
+    where: FindOptionsWhere<LocationEntity>,
+    select?: FindOptionsSelect<LocationEntity>,
+  ): Promise<Either<NotFoundException, Location>> {
+    const location = await this.locationRepository.findOne({
       where,
       select,
     });
 
-    if (!venue) {
+    if (!location) {
       return left(new NotFoundException(VenueExceptionMessage.VENUE_NOT_FOUND));
     }
 
-    return right(venue);
+    return right(location);
   }
 
   get(
-    input: GetVenueInput,
-  ): Promise<Either<NotFoundException, GetVenueOutput>> {
+    input: GetLocationInput,
+  ): Promise<Either<NotFoundException, GetLocationOutput>> {
     return this.findOne({ id: input.id });
   }
 
   async create(
-    input: CreateVenueInput,
-  ): Promise<Either<BadRequestException, CreateVenueOutput>> {
+    input: CreateLocationInput,
+  ): Promise<Either<BadRequestException, CreateLocationOutput>> {
     try {
-      const { cityId, ...venueData } = input;
-      const savedVenue = await this.venueRepository.save({
-        ...venueData,
+      const { cityId, ...locationData } = input;
+      const savedLocation = await this.locationRepository.save({
+        ...locationData,
         city: { id: cityId },
       });
 
-      return right(savedVenue);
+      return right(savedLocation);
     } catch (error) {
       console.error(error);
       return left(
@@ -68,12 +68,12 @@ export class VenueService {
 
   async list(
     input: PaginationInput,
-  ): Promise<Either<BadRequestException, ListVenuesOutput>> {
+  ): Promise<Either<BadRequestException, ListLocationsOutput>> {
     try {
-      const venues = await this.venueRepository.find();
+      const locations = await this.locationRepository.find();
 
       return right(
-        this.paginationService.paginate({ items: venues, ...input }),
+        this.paginationService.paginate({ items: locations, ...input }),
       );
     } catch (error) {
       console.error(error);
