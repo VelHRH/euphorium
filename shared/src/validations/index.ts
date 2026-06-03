@@ -8,3 +8,4 @@ export * from './city';
 export * from './event-instance';
 export * from './event-review';
 export * from './user';
+export * from './search';
