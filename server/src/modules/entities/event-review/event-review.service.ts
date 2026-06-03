@@ -11,12 +11,17 @@ import {
 } from 'shared';
 import { FindOptionsSelect, FindOptionsWhere, Repository } from 'typeorm';
 
-import { BadRequestException, NotFoundException } from '$exceptions';
+import {
+  BadRequestException,
+  InternalServerException,
+  NotFoundException,
+} from '$exceptions';
 import { PaginationService } from '$modules/pagination/pagination.service';
 import { EventReviewEntity } from './event-review.entity';
 import { LocalizedEntityService } from '$i18n/base/entity-i18n.service';
 import { I18nService } from 'nestjs-i18n';
 import { EventI18nKey } from '$i18n/keys/event';
+import { EmbeddingService } from '$modules/embedding/embedding.service';
 
 @Injectable()
 export class EventReviewService extends LocalizedEntityService {
@@ -24,6 +29,7 @@ export class EventReviewService extends LocalizedEntityService {
     @InjectRepository(EventReviewEntity)
     private readonly eventReviewRepository: Repository<EventReviewEntity>,
     private readonly paginationService: PaginationService,
+    private readonly embeddingService: EmbeddingService,
     i18n: I18nService,
   ) {
     super(i18n);
@@ -57,13 +63,25 @@ export class EventReviewService extends LocalizedEntityService {
 
   async create(
     input: CreateEventReviewInput,
-  ): Promise<Either<BadRequestException, CreateEventReviewOutput>> {
+  ): Promise<
+    Either<
+      BadRequestException | InternalServerException,
+      CreateEventReviewOutput
+    >
+  > {
+    const { eventInstanceId, ...reviewData } = input;
+
+    const embeddingResult = await this.embeddingService.embed(reviewData.comment);
+
+    if (embeddingResult.isLeft()) {
+      return left(embeddingResult.value);
+    }
+
     try {
-      const { eventInstanceId, ...reviewData } = input;
       const savedEventReview = await this.eventReviewRepository.save({
         ...reviewData,
         eventInstance: { id: eventInstanceId },
-        commentEmbedding: [],
+        commentEmbedding: embeddingResult.value,
       });
 
       return right(savedEventReview);

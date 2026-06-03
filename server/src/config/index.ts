@@ -3,6 +3,7 @@ import joi from 'joi';
 import { appConfig, appValidationSchema } from './app';
 import { cookieConfig, cookieValidationSchema } from './cookie';
 import { databaseConfig, databaseValidationSchema } from './database';
+import { geminiConfig, geminiValidationSchema } from './gemini';
 import { googleConfig, googleValidationSchema } from './google';
 import { jwtConfig, jwtValidationSchema } from './jwt';
 import { mailConfig, mailValidationSchema } from './mail';
@@ -16,7 +17,8 @@ export const validationSchema = joi
   .concat(cookieValidationSchema)
   .concat(mailValidationSchema)
   .concat(securityValidationSchema)
-  .concat(googleValidationSchema);
+  .concat(googleValidationSchema)
+  .concat(geminiValidationSchema);
 
 export const config = () => ({
   app: appConfig(),
@@ -26,6 +28,7 @@ export const config = () => ({
   mail: mailConfig(),
   security: securityConfig(),
   google: googleConfig(),
+  gemini: geminiConfig(),
 });
 
 export type Config = ReturnType<typeof config>;

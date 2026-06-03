@@ -13,11 +13,16 @@ import {
 } from 'shared';
 import { FindOptionsSelect, FindOptionsWhere, Repository } from 'typeorm';
 
-import { BadRequestException, NotFoundException } from '$exceptions';
+import {
+  BadRequestException,
+  InternalServerException,
+  NotFoundException,
+} from '$exceptions';
 import { PaginationService } from '$modules/pagination/pagination.service';
 import { EventI18nKey } from '$i18n/keys/event';
 import { EventEntity } from './event.entity';
 import { LocalizedEntityService } from '$i18n/base/entity-i18n.service';
+import { EmbeddingService } from '$modules/embedding/embedding.service';
 
 @Injectable()
 export class EventService extends LocalizedEntityService {
@@ -25,6 +30,7 @@ export class EventService extends LocalizedEntityService {
     @InjectRepository(EventEntity)
     private readonly eventRepository: Repository<EventEntity>,
     private readonly paginationService: PaginationService,
+    private readonly embeddingService: EmbeddingService,
     i18n: I18nService,
   ) {
     super(i18n);
@@ -58,9 +64,22 @@ export class EventService extends LocalizedEntityService {
 
   async create(
     input: CreateEventInput,
-  ): Promise<Either<BadRequestException, CreateEventOutput>> {
+  ): Promise<
+    Either<BadRequestException | InternalServerException, CreateEventOutput>
+  > {
+    const embeddingResult = await this.embeddingService.embed(
+      input.description,
+    );
+
+    if (embeddingResult.isLeft()) {
+      return left(embeddingResult.value);
+    }
+
     try {
-      const savedEvent = await this.eventRepository.save(input);
+      const savedEvent = await this.eventRepository.save({
+        ...input,
+        descriptionEmbedding: embeddingResult.value,
+      });
 
       return right(savedEvent);
     } catch (error) {

@@ -1,4 +1,5 @@
 {
   "cannotCreate": "Can't create {entity}",
-  "notFound": "{entity} not found"
+  "notFound": "{entity} not found",
+  "serviceUnavailable": "Service is temporarily unavailable. Please try again later."
 }

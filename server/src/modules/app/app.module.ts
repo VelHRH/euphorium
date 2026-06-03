@@ -13,6 +13,7 @@ import { PaginationModule } from '$modules/pagination/pagination.module';
 import { EventModule } from '$modules/entities/event/event.module';
 import { CityModule } from '$modules/entities/city/city.module';
 import { EventReviewModule } from '$modules/entities/event-review/event-review.module';
+import { SearchModule } from '$modules/search/search.module';
 import {
   AcceptLanguageResolver,
   CookieResolver,
@@ -38,6 +39,7 @@ import { join } from 'path';
     EventModule,
     CityModule,
     EventReviewModule,
+    SearchModule,
     I18nModule.forRootAsync({
       useFactory: (configService: ConfigService) => ({
         fallbackLanguage: 'en',

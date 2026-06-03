@@ -4,9 +4,10 @@ import { EventService } from './event.service';
 import { EventResolver } from './event.resolver';
 import { PaginationService } from '$modules/pagination/pagination.service';
 import { EventEntity } from './event.entity';
+import { EmbeddingModule } from '$modules/embedding/embedding.module';
 
 @Module({
-  imports: [TypeOrmModule.forFeature([EventEntity])],
+  imports: [TypeOrmModule.forFeature([EventEntity]), EmbeddingModule],
   providers: [EventResolver, EventService, PaginationService],
   exports: [EventService],
 })
