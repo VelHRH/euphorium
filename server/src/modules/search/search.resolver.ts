@@ -1,9 +1,9 @@
 import { Resolver } from '@nestjs/graphql';
 import {
-  SearchEventsInput,
-  searchEventsInputSchema,
   SearchEventsOutput,
   searchEventsOutputSchema,
+  SearchInput,
+  searchInputSchema,
 } from 'shared';
 
 import { handleEitherResponse } from '$helpers';
@@ -16,7 +16,7 @@ export class SearchResolver {
 
   @QueryOutputSchema(searchEventsOutputSchema)
   async searchEvents(
-    @InputSchema(searchEventsInputSchema) input: SearchEventsInput,
+    @InputSchema(searchInputSchema) input: SearchInput,
   ): Promise<SearchEventsOutput> {
     return this.searchService
       .searchSimilarEvents(input.query, input.limit)

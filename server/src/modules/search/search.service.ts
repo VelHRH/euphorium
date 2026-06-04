@@ -6,12 +6,7 @@ import { Repository } from 'typeorm';
 import { InternalServerException } from '$exceptions';
 import { EmbeddingService } from '$modules/embedding/embedding.service';
 import { EventEntity } from '$modules/entities/event/event.entity';
-import { SearchEventsOutput } from 'shared';
-
-export interface SearchResult {
-  event: EventEntity;
-  similarity: number;
-}
+import { SearchEventOutput, SearchEventsOutput } from 'shared';
 
 @Injectable()
 export class SearchService {
@@ -25,7 +20,6 @@ export class SearchService {
     query: string,
     limit: number = 5,
   ): Promise<Either<InternalServerException, SearchEventsOutput>> {
-    // Get embedding for user query
     const embeddingResult = await this.embeddingService.embed(query);
 
     if (embeddingResult.isLeft()) {
@@ -60,9 +54,9 @@ export class SearchService {
         .limit(limit)
         .getRawAndEntities();
 
-      const searchResults: SearchResult[] = results.entities.map(
+      const searchResults: SearchEventOutput[] = results.entities.map(
         (event, index) => ({
-          event,
+          item: event,
           similarity: parseFloat(results.raw[index].similarity) || 0,
         }),
       );

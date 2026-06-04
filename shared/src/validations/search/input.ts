@@ -1,6 +1,7 @@
 import { z } from 'zod';
+import { SearchInput } from '../../types';
 
-export const searchEventsInputSchema = z
+export const searchInputSchema = z
   .object({
     query: z
       .string()
@@ -8,6 +9,4 @@ export const searchEventsInputSchema = z
       .max(500, 'Search query is too long'),
     limit: z.number().int().min(1).max(50).optional().default(5),
   })
-  .describe('SearchEventsInput:');
-
-export type SearchEventsInput = z.infer<typeof searchEventsInputSchema>;
+  .describe('SearchInput:') satisfies z.ZodType<SearchInput>;

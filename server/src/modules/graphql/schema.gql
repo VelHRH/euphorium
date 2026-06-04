@@ -441,7 +441,7 @@ type Query {
   location(input: GetLocationInput!): GetLocationOutput!
   locations(input: PaginationInput!): ListLocationsOutput!
   me: GetUserOutput!
-  searchEvents(input: SearchEventsInput!): SearchEventsOutput!
+  searchEvents(input: SearchInput!): SearchEventsOutput!
   user(input: GetUserInput!): GetUserOutput!
   users: ListUsersOutput!
 }
@@ -463,29 +463,27 @@ type RevokePasswordOutput {
 }
 
 """"""
-input SearchEventsInput {
-  limit: Int = 5
-  query: String!
-}
-
-""""""
 type SearchEventsOutput {
-  """SearchResult:"""
   results: [SearchEventsOutput_Results!]!
 }
 
-"""SearchResult:"""
 type SearchEventsOutput_Results {
-  event: SearchEventsOutput_Results_Event!
+  item: SearchEventsOutput_Results_Item!
   similarity: Float!
 }
 
-type SearchEventsOutput_Results_Event {
+type SearchEventsOutput_Results_Item {
   createdAt: DateTime!
   description: String!
   id: String!
   name: String!
   updatedAt: DateTime!
+}
+
+""""""
+input SearchInput {
+  limit: Int = 5
+  query: String!
 }
 
 type SessionEntity {
