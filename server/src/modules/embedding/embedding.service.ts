@@ -6,8 +6,9 @@ import { I18nService } from 'nestjs-i18n';
 import { InternalServerException } from '$exceptions';
 import { Config } from '$config';
 import { ExceptionsI18nKey } from '$i18n/keys/exceptions';
-import { EMBEDDING_DIMENSION, GEMINI_EMBED_URL } from './embedding.constants';
+import { GEMINI_EMBED_URL } from './embedding.constants';
 import { GeminiEmbedContentResponse } from './embedding.types';
+import { EMBEDDING_DIMENSION } from 'shared';
 
 @Injectable()
 export class EmbeddingService {
@@ -16,7 +17,9 @@ export class EmbeddingService {
     private readonly i18n: I18nService,
   ) {}
 
-  async embed(text: string): Promise<Either<InternalServerException, number[]>> {
+  async embed(
+    text: string,
+  ): Promise<Either<InternalServerException, number[]>> {
     const { apiKey } = this.configService.getOrThrow('gemini', { infer: true });
 
     if (!apiKey) {

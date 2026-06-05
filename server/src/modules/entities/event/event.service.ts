@@ -68,7 +68,7 @@ export class EventService extends LocalizedEntityService {
     Either<BadRequestException | InternalServerException, CreateEventOutput>
   > {
     const embeddingResult = await this.embeddingService.embed(
-      input.description,
+      `${input.name}. ${input.description}`,
     );
 
     if (embeddingResult.isLeft()) {

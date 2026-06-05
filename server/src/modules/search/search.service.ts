@@ -16,7 +16,7 @@ export class SearchService {
     private readonly embeddingService: EmbeddingService,
   ) {}
 
-  async searchSimilarEvents(
+  async searchEvents(
     query: string,
     limit: number = 5,
   ): Promise<Either<InternalServerException, SearchEventsOutput>> {
@@ -29,39 +29,12 @@ export class SearchService {
     const queryEmbedding = embeddingResult.value;
 
     try {
-      // Use pgvector cosine distance to find similar events
-      // The <=> operator calculates cosine distance (0 = identical, 1 = opposite)
-      // We convert distance to similarity (1 - distance) for better UX
-      const results = await this.eventRepository
-        .createQueryBuilder('event')
-        .select([
-          'event.id',
-          'event.name',
-          'event.description',
-          'event.createdAt',
-          'event.updatedAt',
-        ])
-        .addSelect(
-          `1 - (event.description_embedding <=> CAST(:queryEmbedding AS vector))`,
-          'similarity',
-        )
-        .where('event.description_embedding IS NOT NULL')
-        .setParameter('queryEmbedding', `[${queryEmbedding.join(',')}]`)
-        .orderBy(
-          'event.description_embedding <=> CAST(:queryEmbedding AS vector)',
-          'ASC',
-        )
-        .limit(limit)
-        .getRawAndEntities();
+      const [byDescription, byReviews] = await Promise.all([
+        this.searchSimilarEventsByDescription(queryEmbedding, limit),
+        this.searchSimilarEventsByReviews(queryEmbedding, limit),
+      ]);
 
-      const searchResults: SearchEventOutput[] = results.entities.map(
-        (event, index) => ({
-          item: event,
-          similarity: parseFloat(results.raw[index].similarity) || 0,
-        }),
-      );
-
-      return right({ results: searchResults });
+      return right({ byDescription, byReviews });
     } catch (error) {
       console.error('Vector search failed:', error);
       return left(
@@ -70,5 +43,80 @@ export class SearchService {
         ),
       );
     }
+  }
+
+  private async searchSimilarEventsByDescription(
+    queryEmbedding: number[],
+    limit: number,
+  ): Promise<SearchEventOutput[]> {
+    const results = await this.eventRepository
+      .createQueryBuilder('event')
+      .select([
+        'event.id',
+        'event.name',
+        'event.description',
+        'event.createdAt',
+        'event.updatedAt',
+      ])
+      .addSelect(
+        `1 - (event.description_embedding <=> CAST(:queryEmbedding AS vector))`,
+        'similarity',
+      )
+      .where('event.description_embedding IS NOT NULL')
+      .setParameter('queryEmbedding', this.toVectorParam(queryEmbedding))
+      .orderBy(
+        'event.description_embedding <=> CAST(:queryEmbedding AS vector)',
+        'ASC',
+      )
+      .limit(limit)
+      .getRawAndEntities();
+
+    return this.mapSearchResults(results);
+  }
+
+  private async searchSimilarEventsByReviews(
+    queryEmbedding: number[],
+    limit: number,
+  ): Promise<SearchEventOutput[]> {
+    const reviewSimilarityExpr = `MAX(1 - (review.comment_embedding <=> CAST(:queryEmbedding AS vector)))`;
+
+    const results = await this.eventRepository
+      .createQueryBuilder('event')
+      .innerJoin('event.instances', 'instance')
+      .innerJoin('instance.reviews', 'review')
+      .select([
+        'event.id',
+        'event.name',
+        'event.description',
+        'event.createdAt',
+        'event.updatedAt',
+      ])
+      .addSelect(reviewSimilarityExpr, 'similarity')
+      .where('review.comment_embedding IS NOT NULL')
+      .groupBy('event.id')
+      .addGroupBy('event.name')
+      .addGroupBy('event.description')
+      .addGroupBy('event.createdAt')
+      .addGroupBy('event.updatedAt')
+      .setParameter('queryEmbedding', this.toVectorParam(queryEmbedding))
+      .orderBy(reviewSimilarityExpr, 'DESC')
+      .limit(limit)
+      .getRawAndEntities();
+
+    return this.mapSearchResults(results);
+  }
+
+  private mapSearchResults(results: {
+    entities: EventEntity[];
+    raw: Pick<SearchEventOutput, 'similarity'>[];
+  }): SearchEventOutput[] {
+    return results.entities.map((event, index) => ({
+      item: event,
+      similarity: Number(results.raw[index].similarity) || 0,
+    }));
+  }
+
+  private toVectorParam(embedding: number[]): string {
+    return `[${embedding.join(',')}]`;
   }
 }

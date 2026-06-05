@@ -19,7 +19,7 @@ export class SearchResolver {
     @InputSchema(searchInputSchema) input: SearchInput,
   ): Promise<SearchEventsOutput> {
     return this.searchService
-      .searchSimilarEvents(input.query, input.limit)
+      .searchEvents(input.query, input.limit)
       .then(handleEitherResponse);
   }
 }

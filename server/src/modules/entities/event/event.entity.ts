@@ -1,11 +1,12 @@
 import { Field, ObjectType } from '@nestjs/graphql';
-import { Event, EventInstance } from 'shared';
-import { Column, Entity, ManyToOne, OneToMany } from 'typeorm';
+import { EMBEDDING_DIMENSION, Event, EventInstance } from 'shared';
+import { Column, Entity, Index, ManyToOne, OneToMany } from 'typeorm';
 
 import { BaseEntity } from '$modules/database/entities';
 import { EventInstanceEntity } from '../event-instance/event-instance.entity';
 
 @ObjectType()
+@Index('idx_events_description_embedding_hnsw', { synchronize: false })
 @Entity('events')
 export class EventEntity extends BaseEntity implements Event {
   @Column({ type: 'varchar', nullable: false })
@@ -16,8 +17,8 @@ export class EventEntity extends BaseEntity implements Event {
   @Field()
   readonly description: string;
 
-  @Column('double precision', { array: true, default: [] })
-  @Field(() => [Number])
+  @Column('vector', { length: EMBEDDING_DIMENSION })
+  @Field(() => [Number], { nullable: false })
   readonly descriptionEmbedding: number[];
 
   @OneToMany(() => EventInstanceEntity, (instance) => instance.event)

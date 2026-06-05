@@ -3,7 +3,7 @@ import { City } from '../city';
 import { LocationType } from '../../constants';
 
 export type Location = Base & {
-  name: string;
+  name?: string | null;
   city: City;
   latitude: number;
   longitude: number;

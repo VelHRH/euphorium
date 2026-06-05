@@ -25,6 +25,13 @@ import { EmbeddingService } from '$modules/embedding/embedding.service';
 
 @Injectable()
 export class EventReviewService extends LocalizedEntityService {
+  private readonly relations = [
+    'eventInstance',
+    'eventInstance.event',
+    'eventInstance.location',
+    'eventInstance.location.city',
+  ] as const;
+
   constructor(
     @InjectRepository(EventReviewEntity)
     private readonly eventReviewRepository: Repository<EventReviewEntity>,
@@ -46,6 +53,7 @@ export class EventReviewService extends LocalizedEntityService {
     const eventReview = await this.eventReviewRepository.findOne({
       where,
       select,
+      relations: [...this.relations],
     });
 
     if (!eventReview) {
@@ -71,7 +79,9 @@ export class EventReviewService extends LocalizedEntityService {
   > {
     const { eventInstanceId, ...reviewData } = input;
 
-    const embeddingResult = await this.embeddingService.embed(reviewData.comment);
+    const embeddingResult = await this.embeddingService.embed(
+      reviewData.comment,
+    );
 
     if (embeddingResult.isLeft()) {
       return left(embeddingResult.value);
@@ -84,7 +94,16 @@ export class EventReviewService extends LocalizedEntityService {
         commentEmbedding: embeddingResult.value,
       });
 
-      return right(savedEventReview);
+      const eventReview = await this.eventReviewRepository.findOne({
+        where: { id: savedEventReview.id },
+        relations: [...this.relations],
+      });
+
+      if (!eventReview) {
+        return left(this.cannotCreate());
+      }
+
+      return right(eventReview);
     } catch (error) {
       console.error(error);
       return left(this.cannotCreate());
@@ -95,7 +114,9 @@ export class EventReviewService extends LocalizedEntityService {
     input: PaginationInput,
   ): Promise<Either<BadRequestException, ListEventReviewsOutput>> {
     try {
-      const eventReviews = await this.eventReviewRepository.find();
+      const eventReviews = await this.eventReviewRepository.find({
+        relations: [...this.relations],
+      });
 
       return right(
         this.paginationService.paginate({ items: eventReviews, ...input }),
