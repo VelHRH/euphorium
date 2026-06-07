@@ -3,8 +3,7 @@ import { eventSchema } from '../../event/event';
 import { SearchEventOutput } from '../../../types';
 
 export type SearchEventsOutput = {
-  byDescription: SearchEventOutput[];
-  byReviews: SearchEventOutput[];
+  events: SearchEventOutput[];
 };
 
 const searchEventOutputSchema = z.object({
@@ -14,7 +13,6 @@ const searchEventOutputSchema = z.object({
 
 export const searchEventsOutputSchema = z
   .object({
-    byDescription: z.array(searchEventOutputSchema),
-    byReviews: z.array(searchEventOutputSchema),
+    events: z.array(searchEventOutputSchema),
   })
   .describe('SearchEventsOutput:') satisfies z.ZodType<SearchEventsOutput>;

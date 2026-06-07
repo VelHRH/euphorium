@@ -6,7 +6,10 @@ import { Repository } from 'typeorm';
 import { InternalServerException } from '$exceptions';
 import { EmbeddingService } from '$modules/embedding/embedding.service';
 import { EventEntity } from '$modules/entities/event/event.entity';
+import { EventRagService } from '$modules/entities/event/event-rag.service';
 import { SearchEventOutput, SearchEventsOutput } from 'shared';
+import { EventReviewService } from '$modules/entities/event-review/event-review.service';
+import { EventReviewEntity } from '$modules/entities/event-review/event-review.entity';
 
 @Injectable()
 export class SearchService {
@@ -14,6 +17,8 @@ export class SearchService {
     @InjectRepository(EventEntity)
     private readonly eventRepository: Repository<EventEntity>,
     private readonly embeddingService: EmbeddingService,
+    private readonly eventRagService: EventRagService,
+    private readonly eventReviewService: EventReviewService,
   ) {}
 
   async searchEvents(
@@ -28,13 +33,50 @@ export class SearchService {
 
     const queryEmbedding = embeddingResult.value;
 
+    const similarityLimit = limit * 2;
+
+    const eventsReviews: Map<
+      string,
+      Pick<EventReviewEntity, 'comment' | 'rating'>[]
+    > = new Map();
+
     try {
       const [byDescription, byReviews] = await Promise.all([
-        this.searchSimilarEventsByDescription(queryEmbedding, limit),
-        this.searchSimilarEventsByReviews(queryEmbedding, limit),
+        this.searchSimilarEventsByDescription(queryEmbedding, similarityLimit),
+        this.searchSimilarEventsByReviews(queryEmbedding, similarityLimit),
       ]);
 
-      return right({ byDescription, byReviews });
+      for (const eventId of new Set([
+        ...byDescription.map((e) => e.item.id),
+        ...byReviews.map((e) => e.item.id),
+      ])) {
+        const eventReviews =
+          await this.eventReviewService.getEventReviews(eventId);
+
+        if (eventReviews.isLeft()) {
+          return left(eventReviews.value);
+        }
+
+        eventsReviews.set(
+          eventId,
+          eventReviews.value.map((e) => ({
+            comment: e.comment,
+            rating: e.rating,
+          })),
+        );
+      }
+
+      const rankingResult = await this.eventRagService.rankEvents(
+        query,
+        { byDescription, byReviews, eventsReviews },
+        limit,
+      );
+
+      if (rankingResult.isLeft()) {
+        return left(rankingResult.value);
+      }
+
+      return right({ events: rankingResult.value });
     } catch (error) {
       console.error('Vector search failed:', error);
       return left(

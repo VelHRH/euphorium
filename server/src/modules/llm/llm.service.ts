@@ -5,14 +5,14 @@ import { I18nService } from 'nestjs-i18n';
 
 import { InternalServerException } from '$exceptions';
 import { Config } from '$config';
-import { GEMINI_EMBED_URL } from './embedding.constants';
-import { GeminiEmbedContentResponse } from './embedding.types';
-import { EMBEDDING_DIMENSION } from 'shared';
+import { ExceptionsI18nKey } from '$i18n/keys/exceptions';
+import { GEMINI_GENERATE_URL } from './llm.constants';
+import { GeminiGenerateContentResponse, GeminiJsonSchema } from './llm.types';
 import { LocalizedEntityService } from '$i18n/base/entity-i18n.service';
-import { EmbeddingI18nKey } from '$i18n/keys/embedding';
+import { LlmI18nKey } from '$i18n/keys/llm';
 
 @Injectable()
-export class EmbeddingService extends LocalizedEntityService {
+export class LlmService extends LocalizedEntityService {
   constructor(
     private readonly configService: ConfigService<Config, true>,
     i18n: I18nService,
@@ -21,12 +21,13 @@ export class EmbeddingService extends LocalizedEntityService {
   }
 
   protected localizedEntityKey(): string {
-    return EmbeddingI18nKey.EMBEDDING;
+    return LlmI18nKey.LLM;
   }
 
-  async embed(
-    text: string,
-  ): Promise<Either<InternalServerException, number[]>> {
+  async generateJson<T>(
+    prompt: string,
+    responseSchema: GeminiJsonSchema,
+  ): Promise<Either<InternalServerException, T>> {
     const { apiKey } = this.configService.getOrThrow('gemini', { infer: true });
 
     if (!apiKey) {
@@ -36,17 +37,18 @@ export class EmbeddingService extends LocalizedEntityService {
     }
 
     try {
-      const response = await fetch(GEMINI_EMBED_URL, {
+      const response = await fetch(GEMINI_GENERATE_URL, {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
           'x-goog-api-key': apiKey,
         },
         body: JSON.stringify({
-          taskType: 'SEMANTIC_SIMILARITY',
-          outputDimensionality: EMBEDDING_DIMENSION,
-          content: {
-            parts: [{ text }],
+          contents: [{ parts: [{ text: prompt }] }],
+          generationConfig: {
+            temperature: 0,
+            responseMimeType: 'application/json',
+            responseSchema,
           },
         }),
       });
@@ -55,25 +57,25 @@ export class EmbeddingService extends LocalizedEntityService {
         const errorBody = await response.text();
 
         console.error(
-          `Gemini embedding failed (${response.status}):`,
+          `Gemini generation failed (${response.status}):`,
           errorBody,
         );
 
         return left(this.serviceUnavailable());
       }
 
-      const data = (await response.json()) as GeminiEmbedContentResponse;
-      const values = data.embedding?.values;
+      const data = (await response.json()) as GeminiGenerateContentResponse;
+      const text = data.candidates?.[0]?.content?.parts?.[0]?.text;
 
-      if (!values?.length) {
-        console.error('Gemini embedding response is empty');
+      if (!text) {
+        console.error('Gemini generation response is empty');
 
         return left(this.serviceUnavailable());
       }
 
-      return right(values);
+      return right(JSON.parse(text) as T);
     } catch (error) {
-      console.error('Gemini embedding request failed:', error);
+      console.error('Gemini generation request failed:', error);
 
       return left(this.serviceUnavailable());
     }

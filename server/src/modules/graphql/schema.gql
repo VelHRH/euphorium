@@ -524,16 +524,15 @@ type RevokePasswordOutput {
 
 """"""
 type SearchEventsOutput {
-  byDescription: [SearchEventsOutput_ByDescription!]!
-  byReviews: [SearchEventsOutput_ByDescription!]!
+  events: [SearchEventsOutput_Events!]!
 }
 
-type SearchEventsOutput_ByDescription {
-  item: SearchEventsOutput_ByDescription_Item!
+type SearchEventsOutput_Events {
+  item: SearchEventsOutput_Events_Item!
   similarity: Float!
 }
 
-type SearchEventsOutput_ByDescription_Item {
+type SearchEventsOutput_Events_Item {
   createdAt: DateTime!
   description: String!
   id: String!

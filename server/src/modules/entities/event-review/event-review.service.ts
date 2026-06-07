@@ -110,6 +110,21 @@ export class EventReviewService extends LocalizedEntityService {
     }
   }
 
+  async getEventReviews(
+    eventId: string,
+  ): Promise<Either<NotFoundException, EventReviewEntity[]>> {
+    try {
+      const eventReviews = await this.eventReviewRepository.find({
+        where: { eventInstance: { event: { id: eventId } } },
+      });
+
+      return right(eventReviews);
+    } catch (error) {
+      console.error(error);
+      return left(this.notFound());
+    }
+  }
+
   async list(
     input: PaginationInput,
   ): Promise<Either<BadRequestException, ListEventReviewsOutput>> {
