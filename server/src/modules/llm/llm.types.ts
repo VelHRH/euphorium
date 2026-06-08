@@ -1,3 +1,7 @@
+export interface GeminiCountTokensResponse {
+  totalTokens?: number;
+}
+
 export interface GeminiGenerateContentResponse {
   candidates?: Array<{
     content?: {

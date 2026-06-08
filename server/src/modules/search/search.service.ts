@@ -3,27 +3,52 @@ import { InjectRepository } from '@nestjs/typeorm';
 import { Either, left, right } from '@sweet-monads/either';
 import { Repository } from 'typeorm';
 
-import { InternalServerException } from '$exceptions';
+import { BadRequestException, InternalServerException } from '$exceptions';
 import { EmbeddingService } from '$modules/embedding/embedding.service';
+import { LlmService } from '$modules/llm/llm.service';
 import { EventEntity } from '$modules/entities/event/event.entity';
 import { EventRagService } from '$modules/entities/event/event-rag.service';
 import { SearchEventOutput, SearchEventsOutput } from 'shared';
 import { EventReviewService } from '$modules/entities/event-review/event-review.service';
+import { LocalizedEntityService } from '$i18n/base/entity-i18n.service';
+import { I18nService } from 'nestjs-i18n';
+import { SearchI18nKey } from '$i18n/keys/search';
+import { MAX_SEARCH_QUERY_TOKENS } from './search.constants';
 
 @Injectable()
-export class SearchService {
+export class SearchService extends LocalizedEntityService {
   constructor(
     @InjectRepository(EventEntity)
     private readonly eventRepository: Repository<EventEntity>,
     private readonly embeddingService: EmbeddingService,
+    private readonly llmService: LlmService,
     private readonly eventRagService: EventRagService,
     private readonly eventReviewService: EventReviewService,
-  ) {}
+    i18n: I18nService,
+  ) {
+    super(i18n);
+  }
+
+  protected localizedEntityKey(): string {
+    return SearchI18nKey.SEARCH;
+  }
 
   async searchEvents(
     query: string,
     limit: number = 5,
-  ): Promise<Either<InternalServerException, SearchEventsOutput>> {
+  ): Promise<
+    Either<BadRequestException | InternalServerException, SearchEventsOutput>
+  > {
+    const tokenCountResult = await this.llmService.countTokens(query);
+
+    if (tokenCountResult.isLeft()) {
+      return left(tokenCountResult.value);
+    }
+
+    if (tokenCountResult.value > MAX_SEARCH_QUERY_TOKENS) {
+      return left(this.badRequest(SearchI18nKey.QUERY_TOO_LONG));
+    }
+
     const embeddingResult = await this.embeddingService.embed(query);
 
     if (embeddingResult.isLeft()) {

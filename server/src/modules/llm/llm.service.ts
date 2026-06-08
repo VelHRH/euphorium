@@ -6,9 +6,12 @@ import { infer as Infer, ZodTypeAny } from 'zod';
 
 import { InternalServerException } from '$exceptions';
 import { Config } from '$config';
-import { GEMINI_GENERATE_URL } from './llm.constants';
+import { GEMINI_COUNT_TOKENS_URL, GEMINI_GENERATE_URL } from './llm.constants';
 import { zodToGeminiJsonSchema } from './helpers/zod-to-gemini-schema';
-import { GeminiGenerateContentResponse } from './llm.types';
+import {
+  GeminiCountTokensResponse,
+  GeminiGenerateContentResponse,
+} from './llm.types';
 import { LocalizedEntityService } from '$i18n/base/entity-i18n.service';
 import { LlmI18nKey } from '$i18n/keys/llm';
 
@@ -23,6 +26,56 @@ export class LlmService extends LocalizedEntityService {
 
   protected localizedEntityKey(): string {
     return LlmI18nKey.LLM;
+  }
+
+  async countTokens(
+    text: string,
+  ): Promise<Either<InternalServerException, number>> {
+    const { apiKey } = this.configService.getOrThrow('gemini', { infer: true });
+
+    if (!apiKey) {
+      console.error('GEMINI_API_KEY is not configured');
+
+      return left(this.serviceUnavailable());
+    }
+
+    try {
+      const response = await fetch(GEMINI_COUNT_TOKENS_URL, {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+          'x-goog-api-key': apiKey,
+        },
+        body: JSON.stringify({
+          contents: [{ parts: [{ text }] }],
+        }),
+      });
+
+      if (!response.ok) {
+        const errorBody = await response.text();
+
+        console.error(
+          `Gemini countTokens failed (${response.status}):`,
+          errorBody,
+        );
+
+        return left(this.serviceUnavailable());
+      }
+
+      const data = (await response.json()) as GeminiCountTokensResponse;
+
+      if (data.totalTokens === undefined) {
+        console.error('Gemini countTokens response is empty');
+
+        return left(this.serviceUnavailable());
+      }
+
+      return right(data.totalTokens);
+    } catch (error) {
+      console.error('Gemini countTokens request failed:', error);
+
+      return left(this.serviceUnavailable());
+    }
   }
 
   async generateJson<T extends ZodTypeAny>(

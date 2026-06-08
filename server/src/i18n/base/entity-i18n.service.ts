@@ -21,6 +21,10 @@ export abstract class LocalizedEntityService {
     );
   }
 
+  protected badRequest(messageKey: string): BadRequestException {
+    return new BadRequestException(this.i18n.t(messageKey));
+  }
+
   protected cannotCreate(): BadRequestException {
     return new BadRequestException(
       this.i18n.t(ExceptionsI18nKey.CANNOT_CREATE, {

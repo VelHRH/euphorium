@@ -1,0 +1,1 @@
+export const MAX_SEARCH_QUERY_TOKENS = 5000;
