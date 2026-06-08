@@ -2,12 +2,13 @@ import { Injectable } from '@nestjs/common';
 import { ConfigService } from '@nestjs/config';
 import { Either, left, right } from '@sweet-monads/either';
 import { I18nService } from 'nestjs-i18n';
+import { infer as Infer, ZodTypeAny } from 'zod';
 
 import { InternalServerException } from '$exceptions';
 import { Config } from '$config';
-import { ExceptionsI18nKey } from '$i18n/keys/exceptions';
 import { GEMINI_GENERATE_URL } from './llm.constants';
-import { GeminiGenerateContentResponse, GeminiJsonSchema } from './llm.types';
+import { zodToGeminiJsonSchema } from './helpers/zod-to-gemini-schema';
+import { GeminiGenerateContentResponse } from './llm.types';
 import { LocalizedEntityService } from '$i18n/base/entity-i18n.service';
 import { LlmI18nKey } from '$i18n/keys/llm';
 
@@ -24,10 +25,10 @@ export class LlmService extends LocalizedEntityService {
     return LlmI18nKey.LLM;
   }
 
-  async generateJson<T>(
+  async generateJson<T extends ZodTypeAny>(
     prompt: string,
-    responseSchema: GeminiJsonSchema,
-  ): Promise<Either<InternalServerException, T>> {
+    schema: T,
+  ): Promise<Either<InternalServerException, Infer<T>>> {
     const { apiKey } = this.configService.getOrThrow('gemini', { infer: true });
 
     if (!apiKey) {
@@ -48,7 +49,7 @@ export class LlmService extends LocalizedEntityService {
           generationConfig: {
             temperature: 0,
             responseMimeType: 'application/json',
-            responseSchema,
+            responseSchema: zodToGeminiJsonSchema(schema),
           },
         }),
       });
@@ -73,7 +74,31 @@ export class LlmService extends LocalizedEntityService {
         return left(this.serviceUnavailable());
       }
 
-      return right(JSON.parse(text) as T);
+      let raw: unknown;
+
+      try {
+        raw = JSON.parse(text);
+      } catch (parseError) {
+        console.error(
+          'Gemini generation response is not valid JSON:',
+          parseError,
+        );
+
+        return left(this.serviceUnavailable());
+      }
+
+      const validationResult = schema.safeParse(raw);
+
+      if (!validationResult.success) {
+        console.error(
+          'Gemini generation response failed validation:',
+          validationResult.error,
+        );
+
+        return left(this.serviceUnavailable());
+      }
+
+      return right(validationResult.data);
     } catch (error) {
       console.error('Gemini generation request failed:', error);
 

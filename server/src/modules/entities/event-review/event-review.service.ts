@@ -112,13 +112,62 @@ export class EventReviewService extends LocalizedEntityService {
 
   async getEventReviews(
     eventId: string,
+    limit: number = 5,
   ): Promise<Either<NotFoundException, EventReviewEntity[]>> {
-    try {
-      const eventReviews = await this.eventReviewRepository.find({
-        where: { eventInstance: { event: { id: eventId } } },
-      });
+    const eventReviewsResult = await this.getEventReviewsByEventIds(
+      [eventId],
+      limit,
+    );
 
-      return right(eventReviews);
+    if (eventReviewsResult.isLeft()) {
+      return left(eventReviewsResult.value);
+    }
+
+    return right(
+      (eventReviewsResult.value.get(eventId) ?? []) as EventReviewEntity[],
+    );
+  }
+
+  async getEventReviewsByEventIds(
+    eventIds: string[],
+    limit: number = 5,
+  ): Promise<
+    Either<
+      NotFoundException,
+      Map<string, Pick<EventReviewEntity, 'comment' | 'rating'>[]>
+    >
+  > {
+    if (!eventIds.length) {
+      return right(new Map());
+    }
+
+    try {
+      const rows = await this.eventReviewRepository
+        .createQueryBuilder('review')
+        .innerJoin('review.eventInstance', 'instance')
+        .innerJoin('instance.event', 'event')
+        .select('review.comment', 'comment')
+        .addSelect('review.rating', 'rating')
+        .addSelect('event.id', 'eventId')
+        .where('event.id IN (:...eventIds)', { eventIds })
+        .getRawMany<{ comment: string; rating: number; eventId: string }>();
+
+      const reviewsByEventId = new Map<
+        string,
+        Pick<EventReviewEntity, 'comment' | 'rating'>[]
+      >(eventIds.map((eventId) => [eventId, []]));
+
+      for (const row of rows) {
+        const reviews = reviewsByEventId.get(row.eventId);
+
+        if (!reviews || reviews.length >= limit) {
+          continue;
+        }
+
+        reviews.push({ comment: row.comment, rating: row.rating });
+      }
+
+      return right(reviewsByEventId);
     } catch (error) {
       console.error(error);
       return left(this.notFound());

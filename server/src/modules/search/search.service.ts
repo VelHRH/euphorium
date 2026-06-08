@@ -9,7 +9,6 @@ import { EventEntity } from '$modules/entities/event/event.entity';
 import { EventRagService } from '$modules/entities/event/event-rag.service';
 import { SearchEventOutput, SearchEventsOutput } from 'shared';
 import { EventReviewService } from '$modules/entities/event-review/event-review.service';
-import { EventReviewEntity } from '$modules/entities/event-review/event-review.entity';
 
 @Injectable()
 export class SearchService {
@@ -35,40 +34,44 @@ export class SearchService {
 
     const similarityLimit = limit * 2;
 
-    const eventsReviews: Map<
-      string,
-      Pick<EventReviewEntity, 'comment' | 'rating'>[]
-    > = new Map();
-
     try {
       const [byDescription, byReviews] = await Promise.all([
         this.searchSimilarEventsByDescription(queryEmbedding, similarityLimit),
         this.searchSimilarEventsByReviews(queryEmbedding, similarityLimit),
       ]);
 
-      for (const eventId of new Set([
-        ...byDescription.map((e) => e.item.id),
-        ...byReviews.map((e) => e.item.id),
-      ])) {
-        const eventReviews =
-          await this.eventReviewService.getEventReviews(eventId);
+      const eventIds = [
+        ...new Set([
+          ...byDescription.map((e) => e.item.id),
+          ...byReviews.map((e) => e.item.id),
+        ]),
+      ];
 
-        if (eventReviews.isLeft()) {
-          return left(eventReviews.value);
-        }
+      const eventReviewsResult =
+        await this.eventReviewService.getEventReviewsByEventIds(eventIds);
 
-        eventsReviews.set(
-          eventId,
-          eventReviews.value.map((e) => ({
-            comment: e.comment,
-            rating: e.rating,
-          })),
+      if (eventReviewsResult.isLeft()) {
+        return left(
+          new InternalServerException(
+            'Search service is temporarily unavailable',
+          ),
         );
       }
 
+      const eventsReviews = eventReviewsResult.value;
+
       const rankingResult = await this.eventRagService.rankEvents(
         query,
-        { byDescription, byReviews, eventsReviews },
+        {
+          byDescription: byDescription.map((e) => ({
+            ...e,
+            reviews: eventsReviews.get(e.item.id) ?? [],
+          })),
+          byReviews: byReviews.map((e) => ({
+            ...e,
+            reviews: eventsReviews.get(e.item.id) ?? [],
+          })),
+        },
         limit,
       );
 

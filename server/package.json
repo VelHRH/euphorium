@@ -60,7 +60,8 @@
     "shared": "file:../shared",
     "typeorm": "^0.3.30",
     "typeorm-naming-strategies": "^4.1.0",
-    "zod": "3.23.8"
+    "zod": "3.23.8",
+    "zod-to-json-schema": "3.23.3"
   },
   "devDependencies": {
     "@cspell/eslint-plugin": "^8.16.0",
