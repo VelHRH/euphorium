@@ -1,6 +1,6 @@
-import { Base, Name } from '../common';
+import { Base } from '../common';
 
-export type City = Base &
-  Name & {
-    countryCode: string;
-  };
+export type City = Base & {
+  name: string;
+  countryCode: string;
+};

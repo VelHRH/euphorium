@@ -2,7 +2,7 @@ import { z } from 'zod';
 
 import { baseSchema } from '../database';
 import { City } from '../../types';
-import { nameSchema } from '../common/name';
+import { nameSchema } from '../common';
 
 export const citySchema = baseSchema.extend({
   name: nameSchema,

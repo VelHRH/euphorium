@@ -1,9 +1,9 @@
 import { Field, ObjectType } from '@nestjs/graphql';
-import { City, Venue } from 'shared';
+import { City } from 'shared';
 import { Column, Entity, OneToMany } from 'typeorm';
 
 import { BaseEntity } from '$modules/database/entities';
-import { VenueEntity } from '../venue/venue.entity';
+import { LocationEntity } from '../location/location.entity';
 
 @ObjectType()
 @Entity('cities')
@@ -16,7 +16,7 @@ export class CityEntity extends BaseEntity implements City {
   @Field()
   readonly countryCode: string;
 
-  @OneToMany(() => VenueEntity, (venue) => venue.city)
-  @Field(() => [VenueEntity])
-  readonly venues: Venue[];
+  @OneToMany(() => LocationEntity, (location) => location.city)
+  @Field(() => [LocationEntity])
+  readonly locations: LocationEntity[];
 }

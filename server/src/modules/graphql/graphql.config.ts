@@ -43,22 +43,25 @@ export const graphqlConfig: ApolloDriverConfig = {
       };
     }
 
-    // Handle Zod validation errors
+    // Handle ValidationException (all ZodErrors should be converted to ValidationException)
+    if (originalError instanceof ValidationException) {
+      return {
+        message: originalError.message,
+        stacktrace: originalError.stack?.split('\n'),
+        type: ErrorType.EXCEPTION,
+      };
+    }
+
+    // Handle direct ZodError (fallback for any missed cases, ideally should not happen)
     if (originalError instanceof ZodError) {
-      // Get the first error issue for the main error message
       const firstIssue = originalError.issues[0];
       const errorMessage = firstIssue?.message || 'Validation failed';
 
-      const exception = new ValidationException(errorMessage);
-
-      // Preserve original stack if available
-      if (originalError.stack !== undefined && originalError.stack.length > 0) {
-        exception.stack = originalError.stack;
-      }
+      const exception = new ValidationException(errorMessage, originalError);
 
       return {
         message: exception.message,
-        stacktrace: exception.stack?.split('\n'),
+        stacktrace: originalError.stack?.split('\n'),
         type: ErrorType.EXCEPTION,
       };
     }

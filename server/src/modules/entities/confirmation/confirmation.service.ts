@@ -14,7 +14,7 @@ import { ConfirmationEntity } from './confirmation.entity';
 import { CreateConfirmationParams, SendConfirmationParams } from './types';
 
 import { Config } from '$config';
-import { AuthExceptionMessage } from '$exceptions/constants/auth';
+import { AuthExceptionMessage } from '$constants';
 import { CryptoService } from '$modules/crypto/crypto.service';
 import { MailTemplateConfig } from '$modules/mail/constants';
 import { MailService } from '$modules/mail/mail.service';

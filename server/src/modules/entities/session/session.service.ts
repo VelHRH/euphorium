@@ -16,11 +16,11 @@ import {
 import { UserService } from '../user/user.service';
 
 import { NotFoundException } from '$exceptions';
-import { AuthExceptionMessage } from '$exceptions/constants/auth';
 import { GqlContext } from '$modules/app/types';
 import { CryptoService } from '$modules/crypto/crypto.service';
 import { TokenService } from '$modules/token/token.service';
 import { JwtPayload, SignedTokens } from '$modules/token/types';
+import { AuthExceptionMessage } from '$constants';
 
 @Injectable()
 export class SessionService {
@@ -52,6 +52,8 @@ export class SessionService {
       return right(undefined);
     } catch (error) {
       await queryRunner.rollbackTransaction();
+
+      console.error(error);
 
       return left(new UnauthorizedException());
     } finally {
