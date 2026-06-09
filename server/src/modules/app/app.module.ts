@@ -23,6 +23,7 @@ import {
 } from 'nestjs-i18n';
 import { ConfigService } from '@nestjs/config';
 import { join } from 'path';
+import { EventInstanceModule } from '$modules/entities/event-instance/event-instance.module';
 
 @Module({
   imports: [
@@ -39,6 +40,7 @@ import { join } from 'path';
     EventModule,
     CityModule,
     EventReviewModule,
+    EventInstanceModule,
     SearchModule,
     I18nModule.forRootAsync({
       useFactory: (configService: ConfigService) => ({

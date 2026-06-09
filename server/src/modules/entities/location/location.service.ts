@@ -41,6 +41,7 @@ export class LocationService extends LocalizedEntityService {
     const location = await this.locationRepository.findOne({
       where,
       select,
+      relations: ['city'],
     });
 
     if (!location) {
@@ -66,7 +67,16 @@ export class LocationService extends LocalizedEntityService {
         city: { id: cityId },
       });
 
-      return right(savedLocation);
+      const location = await this.locationRepository.findOne({
+        where: { id: savedLocation.id },
+        relations: ['city'],
+      });
+
+      if (!location) {
+        return left(this.cannotCreate());
+      }
+
+      return right(location);
     } catch (error) {
       console.error(error);
       return left(this.cannotCreate());
@@ -77,7 +87,9 @@ export class LocationService extends LocalizedEntityService {
     input: PaginationInput,
   ): Promise<Either<BadRequestException, ListLocationsOutput>> {
     try {
-      const locations = await this.locationRepository.find();
+      const locations = await this.locationRepository.find({
+        relations: ['city'],
+      });
 
       return right(
         this.paginationService.paginate({ items: locations, ...input }),

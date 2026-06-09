@@ -5,18 +5,28 @@ import { I18nService } from 'nestjs-i18n';
 
 import { InternalServerException } from '$exceptions';
 import { Config } from '$config';
-import { ExceptionsI18nKey } from '$i18n/keys/exceptions';
-import { EMBEDDING_DIMENSION, GEMINI_EMBED_URL } from './embedding.constants';
+import { GEMINI_EMBED_URL } from './embedding.constants';
 import { GeminiEmbedContentResponse } from './embedding.types';
+import { EMBEDDING_DIMENSION } from 'shared';
+import { LocalizedEntityService } from '$i18n/base/entity-i18n.service';
+import { EmbeddingI18nKey } from '$i18n/keys/embedding';
 
 @Injectable()
-export class EmbeddingService {
+export class EmbeddingService extends LocalizedEntityService {
   constructor(
     private readonly configService: ConfigService<Config, true>,
-    private readonly i18n: I18nService,
-  ) {}
+    i18n: I18nService,
+  ) {
+    super(i18n);
+  }
 
-  async embed(text: string): Promise<Either<InternalServerException, number[]>> {
+  protected localizedEntityKey(): string {
+    return EmbeddingI18nKey.EMBEDDING;
+  }
+
+  async embed(
+    text: string,
+  ): Promise<Either<InternalServerException, number[]>> {
     const { apiKey } = this.configService.getOrThrow('gemini', { infer: true });
 
     if (!apiKey) {
@@ -67,11 +77,5 @@ export class EmbeddingService {
 
       return left(this.serviceUnavailable());
     }
-  }
-
-  private serviceUnavailable(): InternalServerException {
-    return new InternalServerException(
-      this.i18n.t(ExceptionsI18nKey.SERVICE_UNAVAILABLE),
-    );
   }
 }

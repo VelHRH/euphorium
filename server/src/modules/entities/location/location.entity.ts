@@ -9,19 +9,19 @@ import { EventInstanceEntity } from '../event-instance/event-instance.entity';
 @ObjectType()
 @Entity('locations')
 export class LocationEntity extends BaseEntity implements Location {
-  @Column({ nullable: false })
-  @Field()
-  readonly name: string;
+  @Column({ type: 'varchar', nullable: true })
+  @Field(() => String, { nullable: true })
+  readonly name?: string | null;
 
   @ManyToOne(() => CityEntity, (city) => city.locations)
   @Field(() => CityEntity)
   readonly city: City;
 
-  @Column({ nullable: false })
+  @Column({ type: 'double precision', nullable: false })
   @Field()
   readonly latitude: number;
 
-  @Column({ nullable: false })
+  @Column({ type: 'double precision', nullable: false })
   @Field()
   readonly longitude: number;
 

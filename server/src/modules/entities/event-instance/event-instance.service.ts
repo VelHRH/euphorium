@@ -20,6 +20,8 @@ import { EventI18nKey } from '$i18n/keys/event';
 
 @Injectable()
 export class EventInstanceService extends LocalizedEntityService {
+  private readonly relations = ['event', 'location', 'location.city'] as const;
+
   constructor(
     @InjectRepository(EventInstanceEntity)
     private readonly eventInstanceRepository: Repository<EventInstanceEntity>,
@@ -40,6 +42,7 @@ export class EventInstanceService extends LocalizedEntityService {
     const eventInstance = await this.eventInstanceRepository.findOne({
       where,
       select,
+      relations: [...this.relations],
     });
 
     if (!eventInstance) {
@@ -66,7 +69,16 @@ export class EventInstanceService extends LocalizedEntityService {
         location: { id: locationId },
       });
 
-      return right(savedEventInstance);
+      const eventInstance = await this.eventInstanceRepository.findOne({
+        where: { id: savedEventInstance.id },
+        relations: [...this.relations],
+      });
+
+      if (!eventInstance) {
+        return left(this.cannotCreate());
+      }
+
+      return right(eventInstance);
     } catch (error) {
       console.error(error);
       return left(this.cannotCreate());
@@ -77,7 +89,9 @@ export class EventInstanceService extends LocalizedEntityService {
     input: PaginationInput,
   ): Promise<Either<BadRequestException, ListEventInstancesOutput>> {
     try {
-      const eventInstances = await this.eventInstanceRepository.find();
+      const eventInstances = await this.eventInstanceRepository.find({
+        relations: [...this.relations],
+      });
 
       return right(
         this.paginationService.paginate({ items: eventInstances, ...input }),

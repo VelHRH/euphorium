@@ -25,6 +25,13 @@ import { EmbeddingService } from '$modules/embedding/embedding.service';
 
 @Injectable()
 export class EventReviewService extends LocalizedEntityService {
+  private readonly relations = [
+    'eventInstance',
+    'eventInstance.event',
+    'eventInstance.location',
+    'eventInstance.location.city',
+  ] as const;
+
   constructor(
     @InjectRepository(EventReviewEntity)
     private readonly eventReviewRepository: Repository<EventReviewEntity>,
@@ -46,6 +53,7 @@ export class EventReviewService extends LocalizedEntityService {
     const eventReview = await this.eventReviewRepository.findOne({
       where,
       select,
+      relations: [...this.relations],
     });
 
     if (!eventReview) {
@@ -71,7 +79,9 @@ export class EventReviewService extends LocalizedEntityService {
   > {
     const { eventInstanceId, ...reviewData } = input;
 
-    const embeddingResult = await this.embeddingService.embed(reviewData.comment);
+    const embeddingResult = await this.embeddingService.embed(
+      reviewData.comment,
+    );
 
     if (embeddingResult.isLeft()) {
       return left(embeddingResult.value);
@@ -84,10 +94,83 @@ export class EventReviewService extends LocalizedEntityService {
         commentEmbedding: embeddingResult.value,
       });
 
-      return right(savedEventReview);
+      const eventReview = await this.eventReviewRepository.findOne({
+        where: { id: savedEventReview.id },
+        relations: [...this.relations],
+      });
+
+      if (!eventReview) {
+        return left(this.cannotCreate());
+      }
+
+      return right(eventReview);
     } catch (error) {
       console.error(error);
       return left(this.cannotCreate());
+    }
+  }
+
+  async getEventReviews(
+    eventId: string,
+    limit: number = 5,
+  ): Promise<Either<NotFoundException, EventReviewEntity[]>> {
+    const eventReviewsResult = await this.getEventReviewsByEventIds(
+      [eventId],
+      limit,
+    );
+
+    if (eventReviewsResult.isLeft()) {
+      return left(eventReviewsResult.value);
+    }
+
+    return right(
+      (eventReviewsResult.value.get(eventId) ?? []) as EventReviewEntity[],
+    );
+  }
+
+  async getEventReviewsByEventIds(
+    eventIds: string[],
+    limit: number = 5,
+  ): Promise<
+    Either<
+      NotFoundException,
+      Map<string, Pick<EventReviewEntity, 'comment' | 'rating'>[]>
+    >
+  > {
+    if (!eventIds.length) {
+      return right(new Map());
+    }
+
+    try {
+      const rows = await this.eventReviewRepository
+        .createQueryBuilder('review')
+        .innerJoin('review.eventInstance', 'instance')
+        .innerJoin('instance.event', 'event')
+        .select('review.comment', 'comment')
+        .addSelect('review.rating', 'rating')
+        .addSelect('event.id', 'eventId')
+        .where('event.id IN (:...eventIds)', { eventIds })
+        .getRawMany<{ comment: string; rating: number; eventId: string }>();
+
+      const reviewsByEventId = new Map<
+        string,
+        Pick<EventReviewEntity, 'comment' | 'rating'>[]
+      >(eventIds.map((eventId) => [eventId, []]));
+
+      for (const row of rows) {
+        const reviews = reviewsByEventId.get(row.eventId);
+
+        if (!reviews || reviews.length >= limit) {
+          continue;
+        }
+
+        reviews.push({ comment: row.comment, rating: row.rating });
+      }
+
+      return right(reviewsByEventId);
+    } catch (error) {
+      console.error(error);
+      return left(this.notFound());
     }
   }
 
@@ -95,7 +178,9 @@ export class EventReviewService extends LocalizedEntityService {
     input: PaginationInput,
   ): Promise<Either<BadRequestException, ListEventReviewsOutput>> {
     try {
-      const eventReviews = await this.eventReviewRepository.find();
+      const eventReviews = await this.eventReviewRepository.find({
+        relations: [...this.relations],
+      });
 
       return right(
         this.paginationService.paginate({ items: eventReviews, ...input }),
