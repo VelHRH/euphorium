@@ -13,7 +13,7 @@ const router = useRouter()
 const { isAuthenticated, logout } = useAuth()
 
 const navigationItems = Object.keys(routes)
-  .filter(key => [Route.FESTIVALS].includes(key as Route))
+  .filter(key => [Route.EVENTS, Route.HOME].includes(key as Route))
   .map(key => routes[key as Route])
   .filter(i => i !== undefined)
   .map(i => ({
@@ -45,11 +45,13 @@ const handleLogout = async () => {
           ></div>
 
           <div
-            class="text-2xl font-bold bg-linear-to-r from-primary to-secondary bg-clip-text text-transparent"
+            class="text-t2 bg-linear-to-r from-primary to-secondary bg-clip-text text-transparent"
           >
             {{ SITE_NAME }}
           </div>
         </div>
+      </div>
+      <div class="flex items-center gap-2">
         <NavbarButton
           v-for="item in navigationItems"
           :key="item.path"
@@ -59,14 +61,13 @@ const handleLogout = async () => {
       </div>
       <div class="flex items-center gap-2">
         <ThemeToggler />
-        <Button class="flex gap-2 items-center" @click="router.push(routes[Route.PROFILE].path)"
+        <Button class="flex gap-2 items-center" variant="ghost" @click="router.push(routes[Route.PROFILE].path)"
           ><UserIcon
         /></Button>
         <NavbarButton
           v-if="!isAuthenticated"
           :label="loginRoute.name?.toString() || ''"
           :path="loginRoute.path"
-          :isGhost="false"
         />
         <Button v-else @click="handleLogout" variant="outline"> Logout </Button>
       </div>

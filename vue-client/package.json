@@ -14,11 +14,13 @@
     "build-only": "vite build",
     "type-check": "vue-tsc --build",
     "lint": "eslint . --fix --cache",
-    "format": "prettier --write --experimental-cli src/"
+    "format": "prettier --write --experimental-cli src/",
+    "shared:build": "cd ../shared && npm run build && cd ../vue-client && rm -rf node_modules/shared && npm install ../shared"
   },
   "dependencies": {
     "@tailwindcss/vite": "^4.1.17",
     "@tanstack/vue-query": "^5.92.9",
+    "@velhrh/new-blood-shared": "file:../shared",
     "@vueuse/core": "^14.1.0",
     "class-variance-authority": "^0.7.1",
     "clsx": "^2.1.1",
@@ -26,12 +28,12 @@
     "pinia": "^3.0.4",
     "radix-vue": "^1.9.17",
     "reka-ui": "^2.7.0",
+    "shared": "file:../shared",
     "tailwind-merge": "^3.4.0",
     "tailwindcss": "^4.1.17",
     "vue": "^3.5.25",
     "vue-router": "^4.6.3",
-    "vue-sonner": "^2.0.9",
-    "shared": "file:../shared"
+    "vue-sonner": "^2.0.9"
   },
   "devDependencies": {
     "@graphql-codegen/cli": "^6.1.1",

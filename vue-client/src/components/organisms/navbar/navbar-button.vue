@@ -1,6 +1,5 @@
 <script setup lang="ts">
 import { computed } from 'vue'
-import { useRoute } from 'vue-router'
 
 interface NavbarButtonProps {
   label: string
@@ -10,27 +9,20 @@ interface NavbarButtonProps {
 
 const { label, path, isGhost } = defineProps<NavbarButtonProps>()
 
-const route = useRoute()
-
-const isActive = computed(() => {
-  return route.path.includes(path)
-})
-
 const buttonClasses = computed(() => {
   const baseClasses =
-    'px-4 py-2 rounded-full font-medium transition-colors duration-200 cursor-pointer'
+    'px-4 py-2 rounded-md font-medium transition-colors duration-200 cursor-pointer text-body'
 
   if (isGhost) {
     return [
       baseClasses,
-      'text-foreground hover:bg-muted/50',
-      isActive.value && 'bg-primary/20 text-primary',
+      'text-foreground hover:bg-muted/50'
     ]
       .filter(Boolean)
       .join(' ')
   }
 
-  return [baseClasses, 'bg-primary text-background hover:bg-primary/90'].join(' ')
+  return [baseClasses, 'bg-primary/0 text-primary hover:bg-primary/25'].join(' ')
 })
 </script>
 

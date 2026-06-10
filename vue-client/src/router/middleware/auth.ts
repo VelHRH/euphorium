@@ -3,7 +3,7 @@ import { getCurrentUser } from '@/modules/auth/services/get-user'
 import { Route } from '../types/routes'
 import { routes } from '..'
 
-const PROTECTED_ROUTES = [Route.HOME, Route.SHOWS, Route.LIBRARY, Route.PROFILE] // TODO: do it in router config
+const PROTECTED_ROUTES = [Route.HOME, Route.EVENTS, Route.PROFILE] // TODO: do it in router config
 const PUBLIC_ONLY_ROUTES = [Route.LOGIN, Route.SIGN_UP]
 
 export const authMiddleware = async (
@@ -13,9 +13,9 @@ export const authMiddleware = async (
 ) => {
   const isAuthenticated = await getCurrentUser()
 
-  const targetRoute = Object.keys(routes).find((route) => 
-    to.path === routes[route as Route].path
-  ) as Route | undefined
+  const targetRoute = Object.keys(routes).find(route => to.path === routes[route as Route].path) as
+    | Route
+    | undefined
 
   // If user is authenticated and trying to access auth-only pages (login/signup)
   if (isAuthenticated && targetRoute && PUBLIC_ONLY_ROUTES.includes(targetRoute)) {

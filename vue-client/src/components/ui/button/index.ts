@@ -4,7 +4,7 @@ import { cva } from 'class-variance-authority'
 export { default as Button } from './Button.vue'
 
 export const buttonVariants = cva(
-  "inline-flex items-center justify-center gap-2 whitespace-nowrap cursor-pointer text-sm font-medium transition-all disabled:pointer-events-none disabled:opacity-50 [&_svg]:pointer-events-none [&_svg:not([class*='size-'])]:size-4 shrink-0 [&_svg]:shrink-0 outline-none focus-visible:border-ring focus-visible:ring-ring/50 focus-visible:ring-[3px] aria-invalid:ring-destructive/20 aria-invalid:border-destructive rounded-2xl",
+  "inline-flex items-center justify-center gap-2 whitespace-nowrap cursor-pointer font-medium transition-all disabled:pointer-events-none disabled:opacity-50 [&_svg]:pointer-events-none [&_svg:not([class*='size-'])]:size-4 shrink-0 [&_svg]:shrink-0 outline-none focus-visible:border-ring focus-visible:ring-ring/50 focus-visible:ring-[3px] aria-invalid:ring-destructive/20 aria-invalid:border-destructive rounded-2xl",
   {
     variants: {
       variant: {
@@ -13,7 +13,7 @@ export const buttonVariants = cva(
           'bg-destructive/15 text-destructive hover:bg-destructive/20 border border-destructive/40 focus-visible:ring-destructive/20',
         outline: 'bg-primary/10 border border-primary/40 text-primary hover:bg-primary/17',
         secondary: 'bg-secondary text-secondary-foreground hover:bg-secondary/90',
-        ghost: 'hover:bg-primary/20 text-primary',
+        ghost: 'hover:bg-primary/25 text-primary',
         link: 'text-primary underline-offset-4 underline hover:underline-offset-5',
       },
       size: {

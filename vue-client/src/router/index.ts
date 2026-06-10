@@ -5,7 +5,7 @@ import { Route } from './types/routes'
 import SignUpPage from '@/modules/auth/pages/sign-up-page.vue'
 import LoginPage from '@/modules/auth/pages/login-page.vue'
 import { authMiddleware } from './middleware/auth'
-import FestivalsPage from '@/modules/festivals/pages/festivals-page.vue'
+import EventsPage from '@/modules/events/events-page.vue'
 
 export const routes: Record<Route, RouteRecordRaw> = {
   [Route.HOME]: {
@@ -16,18 +16,10 @@ export const routes: Record<Route, RouteRecordRaw> = {
       layout: Layouts.APP,
     },
   },
-  [Route.SHOWS]: {
-    path: '/shows',
-    name: 'shows',
-    component: HomePage, // TODO: Add shows page
-    meta: {
-      layout: Layouts.APP,
-    },
-  },
-  [Route.LIBRARY]: {
-    path: '/library',
-    name: 'library',
-    component: HomePage, // TODO: Add library page
+  [Route.EVENTS]: {
+    path: '/events',
+    name: 'events',
+    component: EventsPage,
     meta: {
       layout: Layouts.APP,
     },
@@ -54,14 +46,6 @@ export const routes: Record<Route, RouteRecordRaw> = {
     component: SignUpPage,
     meta: {
       layout: Layouts.AUTH,
-    },
-  },
-  [Route.FESTIVALS]: {
-    path: '/festivals',
-    name: 'festivals',
-    component: FestivalsPage,
-    meta: {
-      layout: Layouts.APP,
     },
   },
 }
