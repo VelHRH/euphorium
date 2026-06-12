@@ -6,6 +6,9 @@ import { cn } from '@/lib/utils'
 import { useSearchEvents } from '@/modules/events/composables/use-search-events'
 import EventSearchResult from './event-search-result.vue'
 import { showError } from '@/utils/show-error'
+import { useI18n } from 'vue-i18n'
+
+const { t } = useI18n()
 
 const query = ref('')
 const textareaRef = useTemplateRef<HTMLTextAreaElement>('textareaRef')
@@ -13,7 +16,7 @@ const textareaRef = useTemplateRef<HTMLTextAreaElement>('textareaRef')
 const { data: results, isFetching, isSuccess, search, reset, error } = useSearchEvents()
 
 watch(error, (err) => {
-  if (err) showError('Search failed', err)
+  if (err) showError(t('home.search.failed'), err)
 })
 
 const canSubmit = computed(() => query.value.trim().length > 0 && !isFetching.value)
@@ -58,9 +61,9 @@ const handleClear = () => {
 <template>
   <div class="mx-auto flex w-full max-w-2xl flex-col gap-6">
     <div class="flex flex-col items-center gap-2 text-center">
-      <h1 class="text-t2 font-bold tracking-tight">Find your next night</h1>
+      <h2>{{ t('home.search.title') }}</h2>
       <p class="text-muted-foreground text-body">
-        Describe the vibe — we'll find matching events
+        {{ t('home.search.subtitle') }}
       </p>
     </div>
 
@@ -73,7 +76,7 @@ const handleClear = () => {
           ref="textareaRef"
           v-model="query"
           rows="1"
-          placeholder="Techno warehouse party this Friday in Kyiv…"
+          :placeholder="t('home.search.placeholder')"
           class="placeholder:text-muted-foreground min-h-[28px] w-full resize-none bg-transparent text-body leading-relaxed outline-none md:text-sm"
           :disabled="isFetching"
           @input="handleInput"
@@ -84,9 +87,9 @@ const handleClear = () => {
       <div class="flex items-center justify-between gap-3 px-3 pb-3 pt-2">
         <p class="text-muted-foreground pl-1 text-caption">
           <kbd class="bg-muted rounded px-1.5 py-0.5 text-caption">Enter</kbd>
-          to search ·
+          {{ t('home.search.enterToSearch') }} ·
           <kbd class="bg-muted rounded px-1.5 py-0.5 text-caption">Shift+Enter</kbd>
-          new line
+          {{ t('home.search.newLine') }}
         </p>
 
         <Button
@@ -111,14 +114,18 @@ const handleClear = () => {
     </div>
 
     <div v-else-if="isSuccess && results?.length === 0" class="text-center">
-      <p class="text-muted-foreground text-sm">No events found. Try a different description.</p>
-      <Button variant="ghost" size="sm" class="mt-2" @click="handleClear">Clear search</Button>
+      <p class="text-muted-foreground text-sm">{{ t('home.search.noResults') }}</p>
+      <Button variant="ghost" size="sm" class="mt-2" @click="handleClear">{{
+        t('home.search.clearSearch')
+      }}</Button>
     </div>
 
     <div v-else-if="hasResults" class="flex flex-col gap-3">
       <div class="flex items-center justify-between">
-        <p class="text-muted-foreground text-sm">{{ results!.length }} results</p>
-        <Button variant="ghost" size="sm" @click="handleClear">Clear</Button>
+        <p class="text-muted-foreground text-sm">
+          {{ t('home.search.results', { count: results!.length }) }}
+        </p>
+        <Button variant="ghost" size="sm" @click="handleClear">{{ t('home.search.clear') }}</Button>
       </div>
       <EventSearchResult
         v-for="event in results"

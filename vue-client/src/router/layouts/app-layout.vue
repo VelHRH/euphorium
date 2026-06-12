@@ -1,5 +1,8 @@
 <script setup lang="ts">
 import NavBarPanel from '@/components/organisms/navbar/navbar-panel.vue'
+import { useI18n } from 'vue-i18n'
+
+const { t } = useI18n()
 </script>
 
 <template>
@@ -9,7 +12,7 @@ import NavBarPanel from '@/components/organisms/navbar/navbar-panel.vue'
     <div className="min-h-[calc(100vh-9.25rem)]"><slot /></div>
     <div className="py-4 mt-4">
         <p className="text-muted-foreground text-caption text-center">
-          &copy; {{ new Date().getFullYear() }} Euphorium family
+          {{ t('layout.copyright', { year: new Date().getFullYear() }) }}
         </p>
     </div>
   </div>

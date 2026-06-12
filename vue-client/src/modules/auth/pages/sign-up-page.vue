@@ -6,5 +6,5 @@ const { signUp } = useAuth()
 </script>
 
 <template>
-  <AuthForm title="Sign Up" @submit="signUp" />
+  <AuthForm variant="signUp" @submit="signUp" />
 </template>

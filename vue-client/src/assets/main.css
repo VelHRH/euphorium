@@ -28,6 +28,26 @@
   --neon-purple: oklch(65% 0.25 320);
   --neon-pink: oklch(70% 0.25 340);
   --neon-cyan: oklch(75% 0.2 195);
+
+  --text-caption: 0.75rem;
+  --leading-caption: 1;
+  --font-weight-caption: 400;
+
+  --text-body: 0.875rem;
+  --leading-body: 1;
+  --font-weight-body: 400;
+
+  --text-h3: 1rem;
+  --leading-h3: 1;
+  --font-weight-h3: 500;
+
+  --text-h2: 1.25rem;
+  --leading-h2: 1;
+  --font-weight-h2: 600;
+
+  --text-h1: 1.875rem;
+  --leading-h1: 1;
+  --font-weight-h1: 700;
 }
 
 [data-theme='dark'] {
@@ -51,7 +71,6 @@
   --input: oklch(30% 0.04 264);
   --ring: oklch(65% 0.25 320);
 
-  /* Неоновые акценты для темной темы */
   --neon-blue: oklch(70% 0.25 264);
   --neon-purple: oklch(70% 0.25 320);
   --neon-pink: oklch(75% 0.25 340);
@@ -83,26 +102,36 @@
   --color-neon-purple: var(--neon-purple);
   --color-neon-pink: var(--neon-pink);
   --color-neon-cyan: var(--neon-cyan);
+}
 
-  --text-caption: 0.75rem;
-  --text-caption--line-height: 1;
-  --text-caption--font-weight: 400;
+@utility text-h1 {
+  font-size: var(--text-h1);
+  line-height: var(--leading-h1);
+  font-weight: var(--font-weight-h1);
+}
 
-  --text-body: 0.875rem;
-  --text-body--line-height: 1;
-  --text-body--font-weight: 400;
+@utility text-h2 {
+  font-size: var(--text-h2);
+  line-height: var(--leading-h2);
+  font-weight: var(--font-weight-h2);
+}
 
-  --text-t3: 1rem;
-  --text-t3--line-height: 1;
-  --text-t3--font-weight: 500;
+@utility text-h3 {
+  font-size: var(--text-h3);
+  line-height: var(--leading-h3);
+  font-weight: var(--font-weight-h3);
+}
 
-  --text-t2: 1.25rem;
-  --text-t2--line-height: 1;
-  --text-t2--font-weight: 600;
+@utility text-body {
+  font-size: var(--text-body);
+  line-height: var(--leading-body);
+  font-weight: var(--font-weight-body);
+}
 
-  --text-t1: 1.875rem;
-  --text-t1--line-height: 1;
-  --text-t1--font-weight: 700;
+@utility text-caption {
+  font-size: var(--text-caption);
+  line-height: var(--leading-caption);
+  font-weight: var(--font-weight-caption);
 }
 
 body {
@@ -126,5 +155,14 @@ body {
   }
   body {
     @apply bg-background text-foreground;
+  }
+  h1 {
+    @apply text-h1;
+  }
+  h2 {
+    @apply text-h2;
+  }
+  h3 {
+    @apply text-h3;
   }
 }
